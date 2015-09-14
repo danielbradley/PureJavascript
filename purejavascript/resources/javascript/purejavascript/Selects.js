@@ -89,9 +89,14 @@ function( lists )
 			
 			if ( kind && lists.hasOwnProperty( id + kind ) )
 			{
-				if ( select.hasAttribute( "data-cascade" ) && select.hasAttribute( "data-value" ) )
+				if ( select.hasAttribute( "data-cascade" ) )
 				{
-					purejavascript.selects.DoCascade( select );
+					select.addEventListener( "change", purejavascript.selects.Cascade );
+
+					if ( select.hasAttribute( "data-value" ) )
+					{
+						purejavascript.selects.DoCascade( select );
+					}
 				}
 			}
 		}
@@ -104,6 +109,7 @@ function( select, lists )
 {
 	var id       = select.hasAttribute( "id" ) ? select.getAttribute( "id" ) + ":" : "";
 	var kind     = select.getAttribute( "data-kind" );
+	var type     = select.getAttribute( "data-select-type" );
 	var tuples   = lists[id + kind];
 	
 	if ( tuples )
@@ -119,7 +125,7 @@ function( select, lists )
 			offset++;
 		}
 
-		if ( ! select.disabled )
+		//if ( ! select.disabled )
 		{
 			var data_value = select.getAttribute( "data-value" );
 			var data_text  = select.getAttribute( "data-text"  );
@@ -144,6 +150,14 @@ function( select, lists )
 			}
 
 			select.selectedIndex = selected;
+		}
+		
+		if ( ("progressive" == type) && (0 < selected) )
+		{
+			for ( var i=selected - 1; i >= 0; i-- )
+			{
+				select.options[i].disabled = true;
+			}
 		}
 	}
 }

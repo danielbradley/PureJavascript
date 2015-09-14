@@ -1,10 +1,5 @@
 
-purejavascript     = purejavascript     || {}
-purejavascript.csv = purejavascript.csv || {}
-
-purejavascript.csv.CSVFile
-=
-function( file_content )
+function CSVFile( file_content )
 {
 	this.headers = new Array();
 	this.rows    = new Array();
@@ -12,7 +7,24 @@ function( file_content )
 	this.parseContent( file_content );
 }
 
-purejavascript.csv.CSVFile.prototype.getValue
+CSVFile.prototype.getValueFor
+=
+function( row, labels )
+{
+	var value = "";
+	var n     = labels.length;
+
+	for ( var i=0; i < n; i++ )
+	{
+		var value = this.getValue( row, labels[i] );
+		
+		if ( "" != value ) break;
+	}
+
+	return value;
+}
+
+CSVFile.prototype.getValue
 =
 function( row, label )
 {
@@ -22,7 +34,10 @@ function( row, label )
 	
 	for ( var i=0; i < n; i++ )
 	{
-		if ( label == this.headers[i] )
+		var text1 = label.toLowerCase().trim();
+		var text2 = this.headers[i].toLowerCase().trim();
+	
+		if ( text1 == text2 )
 		{
 			column = i; break;
 		}
@@ -37,14 +52,14 @@ function( row, label )
 	return value;
 }
 
-purejavascript.csv.CSVFile.prototype.getNrOfRows
+CSVFile.prototype.getNrOfRows
 =
 function()
 {
 	return this.rows.length;
 }
 
-purejavascript.csv.CSVFile.prototype.parseContent
+CSVFile.prototype.parseContent
 =
 function( file_content )
 {
@@ -61,7 +76,7 @@ function( file_content )
 	}
 }
 
-purejavascript.csv.CSVFile.prototype.SplitAndTrim
+CSVFile.prototype.SplitAndTrim
 =
 function( line )
 {
@@ -77,13 +92,15 @@ function( line )
 
 		if ( '"' == field.charAt( x ) ) field = field.substring( 0, x );
 		if ( '"' == field.charAt( 0 ) ) field = field.substring( 1    );
+
+		field = field.trim();
 	
 		array.push( field );
 	}
 	return array;
 }
 
-purejavascript.csv.CSVFile.prototype.SplitWhileRespectingQuotes
+CSVFile.prototype.SplitWhileRespectingQuotes
 =
 function( line, delimiter )
 {

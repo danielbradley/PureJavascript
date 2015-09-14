@@ -9,12 +9,26 @@ function InsertFormValues( form, object )
 		{
 			if ( "INPUT" == input.tagName )
 			{
-				input.value = object[member];
+				if ( "checkbox" == input.type )
+				{
+					input.checked = "1" == object[member] ? true : false;
+				}
+				else
+				{
+					input.value = object[member];
+				}
 			}
 			else
 			if ( "SELECT" == input.tagName )
 			{
-				input.value = object[member];
+				if ( input.setValue )
+				{
+					input.setValue( object[member] );
+				}
+				else
+				{
+					input.value = object[member];
+				}
 			}
 		}
 	}
