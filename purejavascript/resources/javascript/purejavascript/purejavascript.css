@@ -1,0 +1,10 @@
+
+.pj .slide
+{
+	display:none;
+}
+
+.pj .slide:first-child
+{
+	display:block;
+}
