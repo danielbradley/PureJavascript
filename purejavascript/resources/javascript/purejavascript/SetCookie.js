@@ -7,3 +7,23 @@ function SetCookie( path, cname, cvalue, exdays )
 	
     document.cookie = cookie;
 }
+
+function SetIDTypeCookie( idtype )
+{
+	SetCookie( "/", "idtype", idtype, 1 );
+}
+
+function SetSessionIDTypeCookie( sid )
+{
+	SetCookie( "/", "sessionid", sid, 1 );
+}
+
+function UnsetIDTypeCookie()
+{
+	document.cookie = "idtype=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=/";
+}
+
+function UnsetSessionIDTypeCookie()
+{
+	document.cookie = "sessionid=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=/";
+}

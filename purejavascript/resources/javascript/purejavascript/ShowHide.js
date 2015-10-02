@@ -11,9 +11,12 @@ function ShowHide( id, show_id, hide_id )
 	
 	if ( show_e && hide_e )
 	{
-		ShowHide.ShowElement( show_e );
 		ShowHide.HideElement( hide_e );
+		ShowHide.ShowElement( show_e );
+	}
 
+	if ( self )
+	{
 		ShowHide.MakePeersInactive( self );
 		ShowHide.MakeActive( self );
 	}
