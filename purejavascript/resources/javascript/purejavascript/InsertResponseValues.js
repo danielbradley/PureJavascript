@@ -1,6 +1,7 @@
 
 function InsertResponseValues( formID, keyName, responseText )
 {
+	var status     = false;
 	var parameters = GetSearchValues();
 	
 	if ( "" != parameters[keyName] )
@@ -11,7 +12,10 @@ function InsertResponseValues( formID, keyName, responseText )
 		if ( ("OK" == json.status) && (1 == json.results.length) )
 		{
 			InsertFormValues( form, json.results[0] );
+
+			status = true;
 		}
 	}
+	return status;
 }
 
