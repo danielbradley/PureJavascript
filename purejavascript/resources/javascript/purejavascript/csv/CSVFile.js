@@ -59,6 +59,8 @@ function()
 	return this.rows.length;
 }
 
+CSVFile.prototype.CSVLineRE = new RegExp('("[\\w ,]+" ?|[\\w ]*), ?("[\\w ,]+" ?|[\\w ]*)$');
+
 CSVFile.prototype.parseContent
 =
 function( file_content )
@@ -67,6 +69,7 @@ function( file_content )
 	var line  = line_reader.readLine();
 	if ( line )
 	{
+        if (!this.CSVLineRE.test(line)) throw "Header of file does not match expected Excel/LibreOffice CSV format."
 		this.headers = this.SplitAndTrim( line );
 
 		while ( (line = line_reader.readLine()) )
