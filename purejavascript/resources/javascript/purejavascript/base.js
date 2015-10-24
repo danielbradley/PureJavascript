@@ -289,6 +289,21 @@ function(srcObject, destinationObj) {
     for (var _p in srcObject) destinationObj[_p] = srcObject[_p];
 }
 
+purejavascript.extend = function (context, destinationObj, key) {
+    // More future-proofed than setAllProprties and also deals with arrays.
+    // Adapted from
+    //   http://stackoverflow.com/questions/9362716/how-to-duplicate-object-properties-in-another-object
+    // The names and parameter order were changed to make more sense in the reading direction.
+    
+    for (key in context)
+        if (context.hasOwnProperty(key))
+            if (Object.prototype.toString.call(context[key]) === '[object Object]')
+                destinationObj[key] = extend(destinationObj[key] || {}, context[key]);
+            else
+                destinationObj[key] = context[key];
+    return destinationObj;
+};
+
 purejavascript.contains
 =
 function ( haystack, needle )
