@@ -283,6 +283,12 @@ function ( element, cls )
 	}
 }
 
+purejavascript.setAllProperties
+=
+function(srcObject, destinationObj) {
+    for (var _p in srcObject) destinationObj[_p] = srcObject[_p];
+}
+
 purejavascript.contains
 =
 function ( haystack, needle )
