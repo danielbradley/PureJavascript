@@ -4,6 +4,7 @@ function InsertFormValues( form, object )
 	for ( var member in object )
 	{
 		var input = form[member];
+		var value = object[member];
 
 		if ( input )
 		{
@@ -15,7 +16,7 @@ function InsertFormValues( form, object )
 				}
 				else
 				{
-					input.value = object[member];
+					input.value = value;
 				}
 			}
 			else
@@ -23,11 +24,11 @@ function InsertFormValues( form, object )
 			{
 				if ( input.setValue )
 				{
-					input.setValue( object[member] );
+					input.setValue( value );
 				}
 				else
 				{
-					input.value = object[member];
+					input.value = value;
 				}
 			}
 		}
