@@ -19,6 +19,7 @@ function Up( location, qparams ) {
  */
 function UpHref( location, preserveQueryParams )
 {
+	var ret = "";
     var pathname = location.pathname;
     
 	var docPortion  = "";
