@@ -107,10 +107,10 @@ purejavascript.selects.setup.addOptions
 =
 function( select, lists )
 {
-	var id       = select.hasAttribute( "id" ) ? select.getAttribute( "id" ) + ":" : "";
-	var kind     = select.getAttribute( "data-kind" );
-	var type     = select.getAttribute( "data-select-type" );
-	var tuples   = lists[id + kind];
+	var id           = select.hasAttribute( "id" ) ? select.getAttribute( "id" ) + ":" : "";
+	var kind         = select.getAttribute( "data-kind" );
+	var type         = select.getAttribute( "data-select-type" );
+	var tuples       = lists[id + kind];
 	
 	if ( tuples )
 	{
@@ -231,7 +231,7 @@ function( target, value )
 		
 		purejavascript.selects.Multiselect( target + ":" + kind, value, purejavascript.selects.setup.handler );
 
-		if ( value ) select.disabled = false;
+		//if ( value ) select.disabled = false;
 	}
 }
 

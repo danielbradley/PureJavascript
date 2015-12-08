@@ -4,7 +4,7 @@ function InsertResponseValues( formID, keyName, responseText )
 	var status     = false;
 	var parameters = GetSearchValues();
 	
-	if ( "" != parameters[keyName] )
+	if ( (null == keyName) || ("" != parameters[keyName]) )
 	{
 		var json = JSON.parse( responseText );
 		var form = document.getElementById( formID );
