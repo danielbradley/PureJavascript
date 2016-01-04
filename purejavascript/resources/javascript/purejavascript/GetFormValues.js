@@ -30,7 +30,7 @@ function GetFormValues( form )
 			
 			if ( key && value )
 			{
-				object[key] = value;
+				object[key] = encodeURIComponent( value );
 			}
 		}
 	}
