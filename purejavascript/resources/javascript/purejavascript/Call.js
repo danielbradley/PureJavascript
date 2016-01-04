@@ -21,7 +21,7 @@ function Call( endpoint, parameters, custom_handler )
 		endpoint = Resolve() + endpoint;
 	}
 
-	purejavascript.call.Post( endpoint, command, handler, 300, 0 );
+	purejavascript.call.Post( endpoint, command, handler, 1000, 0 );
 }
 
 purejavascript.call = {}
