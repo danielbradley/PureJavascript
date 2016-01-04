@@ -133,8 +133,15 @@ function( select, lists )
 			var n = tuples.length;
 			for ( var i=0; i < n; i++ )
 			{
-				var name = tuples[i].name;
-				var text = tuples[i].text;
+				var name     = tuples[i].name;
+				var text     = tuples[i].text;
+				var disabled = false;
+
+				if ( 0 == name.indexOf( "!" ) )
+				{
+					disabled = true;
+					name = name.substring( 1 );
+				}
 
 				if ( name == data_value               ) selected = i+offset;
 				if ( -1 !== text.indexOf( data_text ) ) selected = i+offset;
@@ -147,6 +154,7 @@ function( select, lists )
 				{
 					select.options[i+offset] = new Option( text );
 				}
+				select.options[i+offset].disabled = disabled;
 			}
 
 			select.selectedIndex = selected;
