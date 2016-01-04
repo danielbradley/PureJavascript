@@ -31,6 +31,13 @@ function InsertFormValues( form, object )
 					input.value = value;
 				}
 			}
+			else
+			if ( "TEXTAREA" == input.tagName )
+			{
+				value = value.replace( /<br>/g, "\n" );
+			
+				input.innerHTML = value;
+			}
 		}
 	}
 }
