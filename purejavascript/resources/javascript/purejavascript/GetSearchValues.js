@@ -16,3 +16,10 @@ function GetSearchValues()
 	}
 	return object;
 }
+
+function GetSearchValue( name )
+{
+	var parameters = GetSearchValues();
+	
+	return parameters[name] ? parameters[name] : "";
+}
