@@ -16,8 +16,15 @@ function GetFormValues( form )
 			switch ( e.type )
 			{
 			case "checkbox":
-			case "radio":
 				value = e.checked ? "1" : "0";
+				break;
+
+			case "radio":
+				if ( ! e.checked )
+				{
+					key   = null;
+					value = null;
+				}
 				break;
 
 			case "hidden":
