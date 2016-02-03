@@ -21,8 +21,8 @@ function Save( event, handler )
 	case 'select-one':
 	case 'text':
 	default:
-		parameters.name  = element.name;
-		parameters.value = element.value;
+		parameters.name  = encodeURIComponent( element.name  );
+		parameters.value = encodeURIComponent( element.value );
 	}
 
 	Call( Resolve() + url, parameters, handler ? handler : Save.Handler );

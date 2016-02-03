@@ -9,10 +9,17 @@ function GetSearchValues()
 	for ( var i=0; i < n; i++ )
 	{
 		var keyvalue = bits[i].split( "=" );
-		var key      = keyvalue[0];
-		var value    = keyvalue[1];
+		var key      = decodeURIComponent( keyvalue[0] );
+		var value    = decodeURIComponent( keyvalue[1] );
 	
 		object[key] = value;
 	}
 	return object;
+}
+
+function GetSearchValue( name )
+{
+	var parameters = GetSearchValues();
+	
+	return parameters[name] ? parameters[name] : "";
 }
