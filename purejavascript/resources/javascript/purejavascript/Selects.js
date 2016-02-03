@@ -236,8 +236,15 @@ function( target, value )
 	if ( select )
 	{
 		var kind = select.getAttribute( "data-kind" );
-		
-		purejavascript.selects.Multiselect( target + ":" + kind, value, purejavascript.selects.setup.handler );
+        var fval = value;
+        
+        var filter =  select.getAttribute( "data-filter" );
+        if (filter!=null && (typeof filter)=="string") {
+            filterFun = eval(filter); //expect name of custom function.
+            fval = filterFun(target,value);
+        }
+        
+		purejavascript.selects.Multiselect( target + ":" + kind, fval, purejavascript.selects.setup.handler );
 
 		//if ( value ) select.disabled = false;
 	}
