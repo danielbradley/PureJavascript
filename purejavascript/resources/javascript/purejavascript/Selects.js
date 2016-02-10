@@ -228,37 +228,118 @@ function( select )
 	//select.onchange = purejavascript.selects.Cascade;
 }
 
+
 purejavascript.selects.Reload
 =
 function( target, value )
 {
+    // purejavascript.selects.Reload
+    // Reloads valid options into a SELECT control by calling the server Multiselect API with filtering
+    //  parameters gathered from one (or more) elements.
+    
+    // Legacy behaviour is to assume only one value is needed by the dependent SELECT,
+    //  and that this filter value for the dependent SELECT is the new value just chosen
+    //  in the triggering SELECT control which has been conveniently passed in by DoCascade as the 'value' parameter.
+    // In most cases that behaviour is sufficient.
+    
+    // Newer proposed behaviour makes the 2nd value parameter unnecessary because a filter function can be defined
+    //  to generate the filter parameter using any means available on the page, such as multiple form field values.
+    //  This function is defined by an HTML "data-filter" attribute on the dependent SELECT which should be
+    //  a simple variable reference to a named function which will be given the parameters
+    //          (target, value)
+    //  where
+    //          target  = the id string of the select element being reloaded.
+    //          value   = the new value selected in the control triggering the reload.
+    
 	var select = document.getElementById( target );
 	if ( select )
 	{
 		var kind = select.getAttribute( "data-kind" );
         var fval = value;
         
+        //Check if a filter value gathering function is defined.
+        //This should not be done inside DoCascade because the purpose of DoCascade is
+        // only to trigger refreshes of dependent controls. DoCascade does not know which other values each affected
+        // control will need to gather in order to call its own particular option-builder API.
         var filter =  select.getAttribute( "data-filter" );
         if (filter!=null) {
             var filterFun = null;
-            //expect name of custom function.
-            var funnameRE = new RegExp("^ *[\\w._]+ *$");
+            //expect simple variable name containing a custom function.
+            var funnameRE = new RegExp("^ *[\\w.$_]+ *$");
             if ( (typeof filter)=="string" && funnameRE.test(filter) ) {
                 filterFun = eval(filter);
             }
             if (filterFun) fval = filterFun(target,value);
         }
+
+        //Always check if any object encoding is needed on the filter parameter, such as multiple fields from a filter function,
+        // however a simple string value will always be untouched. If the value from the filter function has already been serialised
+        // in some manner specific to that API then it will be preserved. In all other cases a generic encoding is done automatically.
+        var fstring = purejavascript.selects.FilterEncoder(fval);
         
-		purejavascript.selects.Multiselect( target + ":" + kind, fval, purejavascript.selects.setup.handler );
+		purejavascript.selects.Multiselect( target + ":" + kind, fstring, purejavascript.selects.setup.handler );
 
 		//if ( value ) select.disabled = false;
 	}
 }
 
+
+// convenience function.
+purejavascript.selects.isArray
+=
+function isArray(obj) {
+    return Object.prototype.toString.call(obj) === '[object Array]';
+}
+
+
+/** For encoding one or more parameter values into a single string that can be passed into the generic Multiselect filter apparatus.
+ *  A single string will be returned unaltered.  i.e. "x x"
+ *  An object with named properties will be encoded the same as the query parameters portion of a URI. i.e. "a=x%20x&b=yy"
+ *  An array of values will be encoded as pipe-delimited string. i.e. "xx|yy"
+ *  Example data:
+ *      purejavascript.selects.FilterEncoder( {foo:"bar", moo:"Mars' M&Ms x 240g"} )
+ *          == "foo=bar&moo=Mars'%20M%26Ms%20x%20240g"
+ *      purejavascript.selects.FilterEncoder( ["bar", "Mars' M&Ms x 240g"] )
+ *          == "bar|Mars' M&Ms x 240g"
+ */
+purejavascript.selects.FilterEncoder
+=
+function( fval ) {
+    var argType = typeof fval;
+    var answer=null;
+    
+    if ( argType=="string" ) {
+        //Assume only a single string is expected by the function.
+        answer = fval;
+    } else if (argType=="object") {
+        if ( purejavascript.selects.isArray(fval) ) {
+            //Assume positional parameters, encode in pipe-delimited format.
+            for (var i in fval) {
+                if (answer==null) answer = "" + fval[i];
+                else answer = answer + "|" + fval[i];
+            }
+        } else {
+            //Assume named parameters, encode in URI query parameter syntax.
+            answer = '';
+            for (var name in fval) {
+                if (answer==null) answer = "";
+                else answer = answer + "&"
+                answer = answer + encodeURIComponent(name) + "=" + encodeURIComponent( fval[name] );
+            }
+        }
+    } else throw "Unrecognised type passed to FilterEncoder as filter value";
+    return answer;
+}
+
+
+
 purejavascript.selects.Multiselect
 =
 function( kinds, value, handler )
 {
+    //The Multiselect function is supposed to be a 1:1 match for the corresponding API or stored procedure which needs atomic values,
+    // so for consistency a multi-condition filter should be serialised to a single parameter before passing it to Multiselect.
+    
 	var parameters = new Object;
 		parameters.kinds  = kinds;
 		parameters.filter = value;
