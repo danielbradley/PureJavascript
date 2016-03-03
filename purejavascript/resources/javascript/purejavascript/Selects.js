@@ -134,7 +134,7 @@ function( select, lists )
 			for ( var i=0; i < n; i++ )
 			{
 				var name     = tuples[i].name;
-				var text     = tuples[i].text;
+				var text     = DecodeHTMLEntities( tuples[i].text );
 				var disabled = false;
 
 				if ( 0 == name.indexOf( "!" ) )

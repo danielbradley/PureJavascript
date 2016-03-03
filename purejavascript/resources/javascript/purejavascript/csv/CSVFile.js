@@ -70,7 +70,7 @@ function( file_content )
 	if ( line )
 	{
         var trimmed = line.trim(); //trims CRs from Mac apps such as Numbers.
-        if (!this.CSVLineRE.test(trimmed)) throw "Header of file does not match expected Excel/LibreOffice CSV format."
+        //if (!this.CSVLineRE.test(trimmed)) throw "Header of file does not match expected Excel/LibreOffice CSV format."
 		this.headers = this.SplitAndTrim( trimmed );
 
 		while ( (line = line_reader.readLine()) )

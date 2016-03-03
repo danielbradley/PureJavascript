@@ -16,7 +16,14 @@ function GetFormValues( form )
 			switch ( e.type )
 			{
 			case "checkbox":
-				value = e.checked ? "1" : "0";
+				if ( ! e.disabled )
+				{
+					value = e.checked ? value : "";
+				}
+				else
+				{
+					value = "";
+				}
 				break;
 
 			case "radio":
@@ -37,7 +44,14 @@ function GetFormValues( form )
 			
 			if ( key && value )
 			{
-				object[key] = encodeURIComponent( value );
+				if ( object[key] )
+				{
+					object[key] += ("," + encodeURIComponent( value ));
+				}
+				else
+				{
+					object[key] = encodeURIComponent( value );
+				}
 			}
 		}
 	}
