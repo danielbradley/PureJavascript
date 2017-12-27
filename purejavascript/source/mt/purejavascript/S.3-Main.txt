@@ -1,0 +1,8 @@
+
+~!share/content/purejavascript/_index/main_start.htm~
+<main id='main' class='center responsive_page_width level2'>
+~
+
+~!share/content/purejavascript/_site/main_start.htm~
+<main id='main' class='center responsive_page_width level2'>
+~

@@ -1,0 +1,80 @@
+<article>
+<h2>Session (refresh)</h2>
+<h3>Session</h3>
+<blockquote>
+<p class='paragraph'>
+Session( Redirect )
+</p>
+</blockquote>
+<p class='paragraph'>
+The Session function retrieves session information from an API service.
+In order for session information to be retrieved the 'sessionid' cookie needs to have been previously set using Auth.Login.
+</p>
+<pre>
+function Session( Redirect )
+{
+	Session.Redirect = Redirect;
+
+	Call( "/auth/session/", new Array(), Session.Switch );
+}
+</pre>
+<h3>Helper functions</h3>
+<pre>
+Session.Switch
+=
+function( responseText )
+{
+	Session.Handler( responseText );
+
+	if ( Session.Redirect )
+	{
+		Session.Redirect( Session.idtype );
+	}
+}
+
+Session.Handler
+=
+function ( responseText )
+{
+	var idtype = "";
+
+	Session.idtype = "";
+
+	if ( -1 != responseText.indexOf( "UNAUTHENTICATED" ) )
+	{
+		Session.status = "UNAUTHENTICATED";
+	}
+	else
+	if ( -1 != responseText.indexOf( "INVALID_SESSION" ) )
+	{
+		Session.status = "INVALID_SESSION";
+	}
+	else
+	if ( "" != responseText )
+	{
+		var obj = JSON.parse( responseText );
+		if ( obj && obj.sessionid )
+		{
+			Session.USER        = obj.USER;
+			Session.email       = obj.email;
+			Session.sessionid   = obj.sessionid;
+			Session.idtype      = obj.idtype;
+			Session.given_name  = obj.given_name;
+			Session.family_name = obj.family_name;
+			Session.user_hash   = obj.user_hash;
+			Session.read_only   = obj.read_only;
+			Session.status      = "AUTHENTICATED";
+
+			idtype = Session.idtype;
+		}
+		else
+		if ( obj && obj.error )
+		{
+			Session.status = obj["error"];
+		}
+	}
+
+	//Redirect( idtype );
+}
+</pre>
+</article>

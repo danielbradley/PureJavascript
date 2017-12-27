@@ -1,0 +1,4 @@
+
+. Source
+
+The modules contained PureJavascript have been developed for the purpose of faciliating dynamic content within otherwise staticly generated HTML content.

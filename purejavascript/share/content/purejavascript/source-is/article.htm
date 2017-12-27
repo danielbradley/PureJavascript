@@ -1,0 +1,49 @@
+<article>
+<h2>Is (functions)</h2>
+<pre>
+Is        = {}
+Is.Date   = IsDate
+Is.Prefix = IsPrefix
+</pre>
+<h3>Is Date (deprecated - use Date.IsValid)</h3>
+<blockquote>
+<p class='paragraph'>
+Is.Date( datetime )
+</p>
+</blockquote>
+<pre>
+function IsDate( $datetime )
+{
+	var is_date = false;
+
+	switch ( $datetime )
+	{
+	case null:
+	case "NULL":
+	case "null":
+	case "":
+	case "0":
+	case "0000-00-00":
+	case "0000-00-00 00:00:00":
+		break;
+		
+	default:
+		is_date = true;
+	}
+
+	return is_date;
+}
+</pre>
+<h3>Is Prefix (deprecated - use String.HasPrefix)</h3>
+<blockquote>
+<p class='paragraph'>
+Is.Prefix( string, prefix )
+</p>
+</blockquote>
+<pre>
+function IsPrefix( string, prefix )
+{
+	return (0 == string.indexOf( prefix ));
+}
+</pre>
+</article>

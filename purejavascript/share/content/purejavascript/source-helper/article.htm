@@ -1,0 +1,130 @@
+<article>
+<h2>Helper (functions)</h2>
+<h3>Get Tuple</h3>
+<blockquote>
+<p class='paragraph'>
+GetTuple( obj )
+</p>
+</blockquote>
+<p class='paragraph'>
+The GetTuple function recurses down through arrays containing arrays until an object is located.
+This is useful for when database results have been processed into hierarchical array structures,
+and you want to receive a specific value that you know is common to a specific branch.
+</p>
+<pre>
+function GetTuple( obj )
+{
+	var tuple = null;
+
+	if ( obj instanceof Array )
+	{
+		for ( index in obj )
+		{
+			tuple = GetTuple( obj[index] );
+			break;
+		}
+	}
+	else
+	{
+		tuple = obj;
+	}
+
+	return tuple;
+}
+</pre>
+<h3>Limit Offset Parameters</h3>
+<blockquote>
+<p class='paragraph'>
+LimitOffsetParameters( json )
+</p>
+</blockquote>
+<p class='paragraph'>
+The LimitOffsetParameters function simple returns an object with the two attributes 'limit' and 'offset',
+which are calculated from the integer values of the passed object decoded from JSON.
+Before being returned, the 'offset' attribute is incremented by 'limit'.
+</p>
+<p class='paragraph'>
+For example,
+</p>
+<pre>
+function Handler( responseText )
+{
+    var json = JSON.parse( responseText );
+
+    if ( json.status = "OK" )
+    {
+        var parameters = LimitOffsetParameters( json );
+        ...
+    }
+}
+</pre>
+<p class='paragraph'>
+This is used when an AJAX call has retrieve a subset of possible results, and the parameters object needs to be
+modified to request the next set of results.
+</p>
+<pre>
+function LimitOffsetParameters( json )
+{
+	var parameters = null;
+	var offset     = ("" != json.offset) ? parseInt( json.offset ) : 0;
+	var limit      = ("" != json.limit ) ? parseInt( json.limit  ) : 0;
+	
+	if ( limit )
+	{
+		parameters        = new Object();
+		parameters.limit  = limit;
+		parameters.offset = limit + offset;
+	}
+	
+	return parameters;
+}
+</pre>
+<h3>Object Get</h3>
+<blockquote>
+<p class='paragraph'>
+ObjectGet( object, member )
+</p>
+</blockquote>
+<p class='paragraph'>
+If the member exists, returns the URI decoded value of objectmember],
+otherwise returns an empty string.
+</p>
+<pre>
+function Object_Get( $object, $member )
+{
+	if ( $object.hasOwnProperty( $member ) )
+	{
+		return decodeURI( $object[$member] );
+	}
+	else
+	{
+		return "";
+	}
+}
+</pre>
+<h3>Replace</h3>
+<blockquote>
+<p class='paragraph'>
+Replace( text, dictionary )
+</p>
+</blockquote>
+<p class='paragraph'>
+For each key of the dictionary, searches and replaces any instances of '%key%' in the text with the value from the dictionary.
+</p>
+<pre>
+function Replace( text, array )
+{
+	for ( var member in array )
+	{
+		var key   = "%" + member + "%";
+		var value = array[member];
+
+		while ( -1 != text.indexOf( key ) )
+		{
+			text = text.replace( key, value );
+		}
+	}
+	return text;
+}
+</pre>
+</article>

@@ -1,0 +1,143 @@
+
+.. Helper (functions)
+
+!
+~!share/content/purejavascript/_resources/javascript/purejavascript/Helper.js~
+/*
+ *  PureJavacript, Helper.js
+ *
+ *  Copyright 2014 - 2017, CrossAdaptive
+ */
+~
+!
+
+... Get Tuple
+
+|
+GetTuple( obj )
+|
+
+The GetTuple function recurses down through arrays containing arrays until an object is located.
+This is useful for when database results have been processed into hierarchical array structures,
+and you want to receive a specific value that you know is common to a specific branch.
+
+~share/content/purejavascript/_resources/javascript/purejavascript/Helper.js~
+function GetTuple( obj )
+{
+	var tuple = null;
+
+	if ( obj instanceof Array )
+	{
+		for ( index in obj )
+		{
+			tuple = GetTuple( obj[index] );
+			break;
+		}
+	}
+	else
+	{
+		tuple = obj;
+	}
+
+	return tuple;
+}
+~
+
+... Limit Offset Parameters
+
+|
+LimitOffsetParameters( json )
+|
+
+The LimitOffsetParameters function simple returns an object with the two attributes 'limit' and 'offset',
+which are calculated from the integer values of the passed object decoded from JSON.
+Before being returned, the 'offset' attribute is incremented by 'limit'.
+
+For example,
+
+~
+function Handler( responseText )
+{
+    var json = JSON.parse( responseText );
+
+    if ( json.status = "OK" )
+    {
+        var parameters = LimitOffsetParameters( json );
+        ...
+    }
+}
+~
+
+This is used when an AJAX call has retrieve a subset of possible results, and the parameters object needs to be
+modified to request the next set of results.
+
+~share/content/purejavascript/_resources/javascript/purejavascript/Helper.js~
+function LimitOffsetParameters( json )
+{
+	var parameters = null;
+	var offset     = ("" != json.offset) ? parseInt( json.offset ) : 0;
+	var limit      = ("" != json.limit ) ? parseInt( json.limit  ) : 0;
+	
+	if ( limit )
+	{
+		parameters        = new Object();
+		parameters.limit  = limit;
+		parameters.offset = limit + offset;
+	}
+	
+	return parameters;
+}
+~
+
+... Object Get
+
+|
+ObjectGet( object, member )
+|
+
+If the member exists, returns the URI decoded value of object[member],
+otherwise returns an empty string.
+
+~share/content/purejavascript/_resources/javascript/purejavascript/Helper.js~
+function Object_Get( $object, $member )
+{
+	if ( $object.hasOwnProperty( $member ) )
+	{
+		return decodeURI( $object[$member] );
+	}
+	else
+	{
+		return "";
+	}
+}
+~
+
+
+... Replace
+
+|
+Replace( text, dictionary )
+|
+
+For each key of the dictionary, searches and replaces any instances of '%key%' in the text with the value from the dictionary.
+
+~share/content/purejavascript/_resources/javascript/purejavascript/Helper.js~
+function Replace( text, array )
+{
+	for ( var member in array )
+	{
+		var key   = "%" + member + "%";
+		var value = array[member];
+
+		while ( -1 != text.indexOf( key ) )
+		{
+			text = text.replace( key, value );
+		}
+	}
+	return text;
+}
+~
+
+
+
+

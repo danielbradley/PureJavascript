@@ -1,0 +1,36 @@
+<article>
+<h2>Enum</h2>
+<p class='paragraph'>
+The Enum function is used to produce an Enum(eration) object.
+</p>
+<p class='paragraph'>
+An Enum object has a member that contains the string value of the members name.
+For example, the following returns an object with the member 'UNKNOWN' that points to the string "UNKNOWN".
+</p>
+<pre>
+var enum = new Enum( ["UNKNOWN"] )
+</pre>
+<p class='paragraph'>
+is equivalent to:
+</p>
+<pre>
+enum         = {}
+enum.UNKNOWN = "UNKNOWN"
+</pre>
+<pre>
+function Enum( values )
+{
+    var e = {}
+    var n = values.length;
+
+    for ( var i=0; i &lt; n; i++ )
+    {
+        var name = values[i]
+
+        e[name] = name;
+    }
+
+    return e;
+}
+</pre>
+</article>

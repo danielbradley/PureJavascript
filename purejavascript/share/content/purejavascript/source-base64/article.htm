@@ -1,0 +1,25 @@
+<article>
+<h2>Base64 (encoding/decoding)</h2>
+<p class='paragraph'>
+The Base64 module is merely a convenience class that encapsulates the use of the 'btoa' and 'atob' native Javascript functions.
+</p>
+<pre>
+Base64 = {}
+Base64.Encode = Base64Encode;
+Base64.Decode = Base64Decode;
+</pre>
+<h3>Encode</h3>
+<pre>
+function Base64Encode( data )
+{
+	return btoa( data );
+}
+</pre>
+<h3>Decode</h3>
+<pre>
+function Base64Decode( base64 )
+{
+	return atob( base64 );
+}
+</pre>
+</article>

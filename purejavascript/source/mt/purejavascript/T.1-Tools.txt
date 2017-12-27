@@ -1,0 +1,48 @@
+
+. Tools
+
+.. Generate content
+
+The 'libexec/tools/generate_content.sh' script is used to create a web site content directory under 'share/content/',
+call 'max2html' to generate the content, then wrap it in appropriate tags.
+
+~!libexec/tools/generate_content.sh~
+#!/bin/bash
+~
+
+First the script ensures that appropriate arguments are passed.
+The 'type' should be either 'article', or 'aside', and is used to name the output file.
+The 'name' corresponds to the directory to create.
+The files passed are the source files for 'max2html'.
+
+~libexec/tools/generate_content.sh~
+if [ $# -lt 3 ]
+then
+
+    echo "Usage: generate_content.sh <path> <type> <file> ..."
+    exit
+
+fi
+~
+
+The code below assigns the first two arguments to the variables 'type' and 'name',
+then calls 'shift' twice to remove them from the argument list leave just any source files.
+
+~libexec/tools/generate_content.sh~
+path=$1
+type=$2
+
+shift
+shift
+~
+
+Finally, the script creates a content directory, then generates the appropriate HTM file.
+
+~libexec/tools/generate_content.sh~
+echo "generate_content.sh \"${path}\" \"${type}\" \"$@\""
+
+mkdir -p ${path}
+echo  "<${type}>"             > ${path}/${type}.htm
+max2html --content-only "$@" >> ${path}/${type}.htm
+echo "</${type}>"            >> ${path}/${type}.htm
+~

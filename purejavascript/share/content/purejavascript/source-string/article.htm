@@ -1,0 +1,89 @@
+<article>
+<h2>Strings (funtions)</h2>
+<pre>
+Strings = {}
+Strings.EndsWith     = StringEndsWith
+Strings.StartsWith   = StringStartsWith
+Strings.StripUnicode = StringStripUnicode
+Strings.Truncate     = StringTruncate
+</pre>
+<h3>Ends with</h3>
+<blockquote>
+<p class='paragraph'>
+Strings.EndsWith( string, suffix )
+</p>
+</blockquote>
+<pre>
+function StringEndsWith( string, suffix )
+{
+	var n = string.length;
+	var s = suffix.length;
+	var i = string.indexOf( suffix );
+
+	return (i == (n - s));
+}
+</pre>
+<h3>Starts with</h3>
+<blockquote>
+<p class='paragraph'>
+Strings.StartsWith( string, prefix )
+</p>
+</blockquote>
+<pre>
+function StringStartsWith( string, prefix )
+{
+    return (0 === string.indexOf( prefix ));
+}
+</pre>
+<h3>Strip unicode</h3>
+<blockquote>
+<p class='paragraph'>
+Strings.StripUnicode( string )
+</p>
+</blockquote>
+<pre>
+function StringStripUnicode( s )
+{
+	var r = "";
+	var l = "";
+	var n = s.length;
+	
+	for ( var i=0; i &lt; n; i++ )
+	{
+		try {
+			if ( s.charCodeAt( i ) &lt;= 255 )
+			{
+				r += s.charAt( i );
+				l += "#";
+			}
+			else
+			{
+				l += "U";
+			}
+		}
+		catch (err)
+		{}
+	}
+	
+	console.log( l );
+	
+	return r;
+}
+</pre>
+<h3>Truncate</h3>
+<blockquote>
+<p class='paragraph'>
+Strings.Truncate( string, prefix )
+</p>
+</blockquote>
+<pre>
+function StringTruncate( text, max_length )
+{
+	if ( text && (text.length &gt; max_length) )
+	{
+		text = text.substring( 0, max_length - 3 ) + "...";
+	}
+	return text;
+}
+</pre>
+</article>

@@ -1,0 +1,168 @@
+
+.. Location (of browser)
+
+!
+~!share/content/purejavascript/_resources/javascript/purejavascript/Locations.js~
+/*
+ *  PureJavacript, Locations.js
+ *
+ *  Copyright 2014 - 2017, CrossAdaptive
+ */
+~
+!
+
+~share/content/purejavascript/_resources/javascript/purejavascript/Locations.js~
+Locations              = {}
+Locations.SearchValues = GetSearchValues
+Locations.SearchValue  = GetSearchValue
+Locations.Up           = Up
+Locations.CreateDownFn = CreateDownFn
+Locations.Down         = Down
+~
+
+... Search values
+
+|
+Locations.SearchValues( parameter_names )
+|
+
+~share/content/purejavascript/_resources/javascript/purejavascript/Locations.js~
+function GetSearchValues()
+{
+	var object = new Object;
+	
+	var bits = window.location.search.substring( 1 ).split( "&" );
+	var n    = bits.length;
+	
+	for ( var i=0; i < n; i++ )
+	{
+		var keyvalue = bits[i].split( "=" );
+
+        if ( 2 == keyvalue.length )
+        {
+            var key      = decodeURIComponent( keyvalue[0] );
+            var value    = decodeURIComponent( keyvalue[1] );
+
+            object[key] = value;
+        }
+	}
+	return object;
+}
+~
+
+... Search value
+
+|
+Locations.SearchValue( parameter_name )
+|
+
+~share/content/purejavascript/_resources/javascript/purejavascript/Locations.js~
+function GetSearchValue( name )
+{
+	var parameters = GetSearchValues();
+	
+	return parameters[name] ? parameters[name] : "";
+}
+~
+
+... Up
+
+|
+Locations.Up( parameter_names )
+|
+
+The Up function navigates the browser to the parent page.
+The argument 'parameter_names' is an array of strings that name search parameters that should be kept.
+Up is usually called when a form on a page has sucessfully completed,
+and the expected action is to return to a parent page.
+
+~share/content/purejavascript/_resources/javascript/purejavascript/Locations.js~
+function Up( search_parameters )
+{
+	var loc  = location.protocol + "//" + location.host;
+	var bits = location.pathname.split( "/" );
+	var path = "";
+
+    if ( null == search_parameters )
+    {
+        search_parameters = new Array();
+    }
+
+	switch ( bits.length )
+	{
+	case 0: // ""
+	case 1: // Can't happen
+		path = "/";
+		break;
+	
+	case 2: // "/"
+		path = "/";
+		break;
+	
+	default:
+		bits = ("" == bits[bits.length - 1]) ? bits.slice( 0, -2 ) : bits.slice( 0, -1 );
+		path = bits.join( "/" ) + "/";
+	}
+
+	loc += path;
+
+    if ( 0 == search_parameters.length )
+    {
+        loc += location.search;
+    }
+    else
+    {
+        loc += "?";
+
+        for ( key in search_parameters )
+        {
+            loc += search_parameters[key] + "=" + GetSearchValue( search_parameters[key] ) + "&";
+        }
+        loc = loc.substring( 0, loc.length - 1 );
+    }
+
+	location.replace( loc );
+}
+~
+
+... Create Down Function
+
+|
+Locations.CreateDownFn( pathname, search )
+|
+
+Returns a function suitable for assigning as an 'onclick' handler,
+that will keep a copy of pathname and search (as it is in the scope of a function).
+The function calls Down.
+
+~share/content/purejavascript/_resources/javascript/purejavascript/Locations.js~
+function CreateDownFn( pathname, search )
+{
+    return function()
+    {
+        Down( pathname, search );
+    }
+}
+~
+
+... Down
+
+|
+Locations.Down( pathname, search )
+|
+
+~share/content/purejavascript/_resources/javascript/purejavascript/Locations.js~
+function Down( pathname, search )
+{
+    var loc  = location.protocol + "//" + location.host + location.pathname + pathname + search;
+
+    if ( -1 !== loc.indexOf( '%' ) )
+    {
+        var parameters = Locations.SearchValues();
+
+        loc = Replace( loc, parameters );
+    }
+
+    location.replace( loc );
+}
+~

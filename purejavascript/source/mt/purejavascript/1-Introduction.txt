@@ -1,0 +1,18 @@
+
+. Introduction
+
+Pure Javascript is a collection of Javascript modules that have no other Javascript dependencies.
+
+To include such a Javascript module in your project, write:
+
+~
+<script type='text/javascript' src='https://cdn.purejavascript.org/generate/?modules=...' ></script>
+~
+
+For example, to include the *GetSearchValues* module, which returns a dictionary object of the URL's search values, write:
+
+~
+<script type='text/javascript' src='https://cdn.purejavascript.org/generate/?modules=GetSearchValues' ></script>
+~
+
+You may either browse the Javscript modules available, or search for relevant modules below.

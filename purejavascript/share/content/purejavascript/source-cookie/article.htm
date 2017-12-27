@@ -1,0 +1,91 @@
+<article>
+<h2>Cookie (manipulation)</h2>
+<pre>
+Cookie            = {}
+Cookie.Get        = GetCookie
+Cookie.Set        = SetCookie
+Cookie.Unset      = UnsetCookie
+</pre>
+<h3>Get</h3>
+<blockquote>
+<p class='paragraph'>
+Cookie.Get( key )
+</p>
+</blockquote>
+<pre>
+function GetCookie( search )
+{
+    var key = "";
+    var val = "";
+
+    if ( "" != search )
+    {
+        var bits = document.cookie.split( ";" );
+        var n    = bits.length;
+
+        for ( var i=0; i &lt; n; i++ )
+        {
+            var keyval = bits[i].split( "=" );
+
+            if ( (2 == keyval.length) && (keyval[0].trim() == search) )
+            {
+                val = keyval[1].trim();
+                break;
+            }
+        }
+    }
+
+    return val;
+}
+</pre>
+<h3>Set</h3>
+<blockquote>
+<p class='paragraph'>
+Cookie.Set( path, cname, cvalue, expiration_days )
+</p>
+</blockquote>
+<pre>
+function SetCookie( path, cname, cvalue, exdays )
+{
+    var d       = new Date(); d.setTime(d.getTime() + (exdays*24*60*60*1000));
+    var expires = (0 != exdays) ? "expires="+d.toUTCString() + ";" : "";
+	var cookie  = cname + "=" + cvalue + "; " + expires + " " + "path=/" + ";";
+	
+    document.cookie = cookie;
+}
+</pre>
+<h3>Unset</h3>
+<blockquote>
+<p class='paragraph'>
+Cookie.Unset( cname )
+</p>
+</blockquote>
+<pre>
+function UnsetCookie( name )
+{
+	document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=/";
+}
+</pre>
+<h3>Helper functions</h3>
+<pre>
+function SetIDTypeCookie( idtype )
+{
+	SetCookie( "/", "idtype", idtype, 1 );
+}
+
+function SetSessionIDTypeCookie( sid )
+{
+	SetCookie( "/", "sessionid", sid, 1 );
+}
+
+function UnsetIDTypeCookie()
+{
+	document.cookie = "idtype=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=/";
+}
+
+function UnsetSessionIDTypeCookie()
+{
+	document.cookie = "sessionid=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=/";
+}
+</pre>
+</article>

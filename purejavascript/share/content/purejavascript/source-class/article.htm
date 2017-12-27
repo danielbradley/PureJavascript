@@ -1,0 +1,96 @@
+<article>
+<h2>Class (attribute manipulation)</h2>
+<pre>
+Class             = {}
+Class.AddClass    = AddClass;
+Class.RemoveClass = RemoveClass;
+</pre>
+<h3>Add class</h3>
+<pre>
+function AddClass( e, className )
+{
+	if ( ! Class.Contains( e, className ) )
+	{
+		if ( "" == e.className )
+		{
+			e.className = className;
+		}
+		else
+		{
+			e.className += " " + className;
+		}
+	}
+}
+</pre>
+<h3>Remove class</h3>
+<pre>
+function RemoveClass( e, className )
+{
+	if ( Class.Contains( e, className ) )
+	{
+		e.className = Class.Remove( e.className, className );
+	}
+}
+</pre>
+<h3>Helper functions</h3>
+<pre>
+Class.Remove
+=
+function( hay, needle )
+{
+	var ret = hay.replace( needle, "" ).trim();
+
+	while ( -1 != ret.indexOf( "  " ) )
+	{
+		ret = ret.replace( "  ", " " );
+	}
+	
+	return ret;
+}
+
+Class.Contains
+=
+function( e, className )
+{
+	//
+	//	AddClass.Contains( { className="cls active" }, "active' );
+	//
+	//	var st = 10 - 6;
+	//
+	//	0123456789
+	//	cls active
+	//	01234
+
+	var contains = false;
+
+	if ( e.className && className )
+	{
+		var st = (e.className.length - className.length) - 1;
+
+		if ( className == e.className )
+		{
+			contains = true;
+		}
+		else
+		if ( 0 &lt;= st )
+		{
+			if ( -1 != e.className.indexOf( " " + className + " " ) )
+			{
+				contains = true;
+			}
+			else
+			if ( 0 == e.className.indexOf( className + " " ) )
+			{
+				contains = true;
+			}
+			else
+			if ( st == e.className.indexOf( " " + className ) )
+			{
+				contains = true;
+			}
+		}
+	}
+	return contains;
+}
+</pre>
+</article>

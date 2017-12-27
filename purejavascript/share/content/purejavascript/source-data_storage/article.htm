@@ -1,0 +1,196 @@
+<article>
+<h2>Data Storage (session and local)</h2>
+<pre>
+DataStorage         = {}
+DataStorage.Local   = {}
+DataStorage.Session = {}
+</pre>
+<h3>Exists</h3>
+<blockquote>
+<p class='paragraph'>
+DataStorage.Exists()
+</p>
+</blockquote>
+<pre>
+DataStorage.Exists
+=
+function()
+{
+	return typeof( Storage ) !== "undefined";
+}
+</pre>
+<h3>Set item (local)</h3>
+<blockquote>
+<p class='paragraph'>
+DataStorage.Local.SetItem( key, value )
+</p>
+</blockquote>
+<pre>
+DataStorage.Local.SetItem
+=
+function( key, value )
+{
+	var success = false;
+
+	if ( typeof( Storage ) !== "undefined" )
+	{
+		if ( value && "" != value )
+		{
+			window.localStorage.setItem( key, value );
+		
+			success = (window.localStorage.key == value);
+		}
+	}
+	return success;
+}
+</pre>
+<h3>Get item (local)</h3>
+<blockquote>
+<p class='paragraph'>
+DataStorage.GetItem( key )
+</p>
+</blockquote>
+<pre>
+DataStorage.Local.GetItem
+=
+function( key )
+{
+	var value = null;
+
+	if ( DataStorage.Exists() )
+	{
+		value = window.localStorage.getItem( key );
+	}
+	return value;
+}
+</pre>
+<h3>Remove item (local)</h3>
+<blockquote>
+<p class='paragraph'>
+DataStorage.RemoveItem( key )
+</p>
+</blockquote>
+<pre>
+DataStorage.Local.RemoveItem
+=
+function( key )
+{
+	var success = false;
+
+	if ( typeof( Storage ) !== "undefined" )
+	{
+		window.localStorage.removeItem( key );
+		
+		success = (window.localStorage.key == null);
+	}
+	return success;
+}
+</pre>
+<h3>Has item (local)</h3>
+<blockquote>
+<p class='paragraph'>
+DataStorage.Local.HasItem( key )
+</p>
+</blockquote>
+<pre>
+DataStorage.Local.HasItem
+=
+function( key )
+{
+	var success = false;
+
+	if ( typeof( Storage ) !== "undefined" )
+	{
+		success = window.localStorage.hasOwnProperty( key );
+	}
+	return success;
+}
+</pre>
+<h3>Set item (session)</h3>
+<blockquote>
+<p class='paragraph'>
+DataStorage.Session.SetItem( key, value )
+</p>
+</blockquote>
+<pre>
+DataStorage.Session.SetItem
+=
+function( key, value )
+{
+	var success = false;
+
+	if ( typeof( Storage ) !== "undefined" )
+	{
+		if ( value && "" != value )
+		{
+			window.sessionStorage.setItem( key, value );
+		
+			success = (window.sessionStorage.key == value);
+		}
+	}
+	return success;
+}
+</pre>
+<h3>Get item (session)</h3>
+<blockquote>
+<p class='paragraph'>
+DataStorage.Session.GetItem( key )
+</p>
+</blockquote>
+<pre>
+DataStorage.Session.GetItem
+=
+function( key )
+{
+	var value = null;
+
+	if ( DataStorage.Exists() )
+	{
+		value = window.sessionStorage.getItem( key );
+	}
+	return value;
+}
+</pre>
+<h3>Remove item (session)</h3>
+<blockquote>
+<p class='paragraph'>
+DataStorage.Session.RemoveItem( key )
+</p>
+</blockquote>
+<pre>
+DataStorage.Session.RemoveItem
+=
+function( key )
+{
+	var success = false;
+
+	if ( typeof( Storage ) !== "undefined" )
+	{
+		window.sessionStorage.removeItem( key );
+		
+		success = (window.sessionStorage.key == null);
+	}
+	return success;
+}
+</pre>
+<h3>Has item (session)</h3>
+<blockquote>
+<p class='paragraph'>
+DataStorage.Session.HasItem( key )
+</p>
+</blockquote>
+<pre>
+DataStorage.Session.HasItem
+=
+function( key )
+{
+	var success = false;
+
+	if ( typeof( Storage ) !== "undefined" )
+	{
+		success = window.sessionStorage.hasOwnProperty( key );
+	}
+	return success;
+}
+</pre>
+</article>

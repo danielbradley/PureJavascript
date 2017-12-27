@@ -1,0 +1,221 @@
+
+.. Data Storage (session and local)
+
+!
+~!share/content/purejavascript/_resources/javascript/purejavascript/DataStorage.js~
+/*
+ *  PureJavacript, DataStorage.js
+ *
+ *  Copyright 2014 - 2017, CrossAdaptive
+ */
+~
+!
+
+~share/content/purejavascript/_resources/javascript/purejavascript/DataStorage.js~
+DataStorage         = {}
+DataStorage.Local   = {}
+DataStorage.Session = {}
+~
+
+
+... Exists
+
+|
+DataStorage.Exists()
+|
+
+~share/content/purejavascript/_resources/javascript/purejavascript/DataStorage.js~
+DataStorage.Exists
+=
+function()
+{
+	return typeof( Storage ) !== "undefined";
+}
+~
+
+
+... Set item (local)
+
+|
+DataStorage.Local.SetItem( key, value )
+|
+
+~share/content/purejavascript/_resources/javascript/purejavascript/DataStorage.js~
+DataStorage.Local.SetItem
+=
+function( key, value )
+{
+	var success = false;
+
+	if ( typeof( Storage ) !== "undefined" )
+	{
+		if ( value && "" != value )
+		{
+			window.localStorage.setItem( key, value );
+		
+			success = (window.localStorage.key == value);
+		}
+	}
+	return success;
+}
+~
+
+
+... Get item (local)
+
+|
+DataStorage.GetItem( key )
+|
+
+~share/content/purejavascript/_resources/javascript/purejavascript/DataStorage.js~
+DataStorage.Local.GetItem
+=
+function( key )
+{
+	var value = null;
+
+	if ( DataStorage.Exists() )
+	{
+		value = window.localStorage.getItem( key );
+	}
+	return value;
+}
+~
+
+
+
+... Remove item (local)
+
+|
+DataStorage.RemoveItem( key )
+|
+
+~share/content/purejavascript/_resources/javascript/purejavascript/DataStorage.js~
+DataStorage.Local.RemoveItem
+=
+function( key )
+{
+	var success = false;
+
+	if ( typeof( Storage ) !== "undefined" )
+	{
+		window.localStorage.removeItem( key );
+		
+		success = (window.localStorage.key == null);
+	}
+	return success;
+}
+~
+
+
+... Has item (local)
+
+|
+DataStorage.Local.HasItem( key )
+|
+
+~share/content/purejavascript/_resources/javascript/purejavascript/DataStorage.js~
+DataStorage.Local.HasItem
+=
+function( key )
+{
+	var success = false;
+
+	if ( typeof( Storage ) !== "undefined" )
+	{
+		success = window.localStorage.hasOwnProperty( key );
+	}
+	return success;
+}
+~
+
+... Set item (session)
+
+|
+DataStorage.Session.SetItem( key, value )
+|
+
+~share/content/purejavascript/_resources/javascript/purejavascript/DataStorage.js~
+DataStorage.Session.SetItem
+=
+function( key, value )
+{
+	var success = false;
+
+	if ( typeof( Storage ) !== "undefined" )
+	{
+		if ( value && "" != value )
+		{
+			window.sessionStorage.setItem( key, value );
+		
+			success = (window.sessionStorage.key == value);
+		}
+	}
+	return success;
+}
+~
+
+... Get item (session)
+
+|
+DataStorage.Session.GetItem( key )
+|
+
+~share/content/purejavascript/_resources/javascript/purejavascript/DataStorage.js~
+DataStorage.Session.GetItem
+=
+function( key )
+{
+	var value = null;
+
+	if ( DataStorage.Exists() )
+	{
+		value = window.sessionStorage.getItem( key );
+	}
+	return value;
+}
+~
+
+... Remove item (session)
+
+|
+DataStorage.Session.RemoveItem( key )
+|
+
+~share/content/purejavascript/_resources/javascript/purejavascript/DataStorage.js~
+DataStorage.Session.RemoveItem
+=
+function( key )
+{
+	var success = false;
+
+	if ( typeof( Storage ) !== "undefined" )
+	{
+		window.sessionStorage.removeItem( key );
+		
+		success = (window.sessionStorage.key == null);
+	}
+	return success;
+}
+~
+
+... Has item (session)
+
+|
+DataStorage.Session.HasItem( key )
+|
+
+~share/content/purejavascript/_resources/javascript/purejavascript/DataStorage.js~
+DataStorage.Session.HasItem
+=
+function( key )
+{
+	var success = false;
+
+	if ( typeof( Storage ) !== "undefined" )
+	{
+		success = window.sessionStorage.hasOwnProperty( key );
+	}
+	return success;
+}
+~

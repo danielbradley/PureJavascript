@@ -1,0 +1,201 @@
+<article>
+<h2>Auth (authentication)</h2>
+<p class='paragraph'>
+The Auth module is used to authenticate to compatible authentication system.
+</p>
+<pre>
+Auth                 = {}
+Auth.Login           = Auth_Login;
+Auth.Logout          = Auth_Logout;
+Auth.LogoutAndReload = Auth_LogoutAndReload;
+</pre>
+<h3>Login</h3>
+<blockquote>
+<p class='paragraph'>
+Auth.Login( event )
+</p>
+</blockquote>
+<p class='paragraph'>
+It is assumed that the event passed to the Auth.Login function was caused by clicking the submit button of a form that includes 'username' and 'password' fields.
+</p>
+<p class='paragraph'>
+The values of the fields are passed as parameters to a request to the host returned from a call to 'Resolve()',
+e.g. https:<i></i>api-example.com:8443,
+and the path specified as the value of the 'data-submit-url' attribute of the form,
+e.g. '/auth/login/.
+For example:
+</p>
+<pre>
+https://api-example.com:8443/auth/login/&username=$username&password=$password
+</pre>
+<p class='paragraph'>
+It is expected that the reply will be JSON formatted with the following fields set:
+'status', 'sessionid', 'idtype', and 'email'; and if an error has occurred, 'error'; e.g.:
+</p>
+<pre>
+{
+    "status"    : "OK",
+    "sessionid" : "xxx",
+    "idtype"    : "USER",
+    "email"     : "joe@example.com"
+}
+</pre>
+<p class='paragraph'>
+The default handler will set the 'sessionid', 'idtype', and 'email' into cookies with the same names,
+and will call the 'Redirect()' function passing the idtype.
+This means that the 'sessionid' will be passed each time a call is made to the API server.
+</p>
+<pre>
+function Auth_Login( event )
+{
+	Submit( event, Auth.Login.Handler );
+}
+</pre>
+<h3>Logout</h3>
+<blockquote>
+<p class='paragraph'>
+Auth.Logout()
+</p>
+</blockquote>
+<p class='paragraph'>
+The Auth.Logout function is usually called when the user clicks a logout button or link.
+The call takes no parameters, and will delete the 'idtype', 'sessionid', and 'email' cookies,
+then call the '/auth/logout/' API endpoint.
+</p>
+<pre>
+function Auth_Logout( event )
+{
+	Auth.UnsetIDTypeCookie();
+	Auth.UnsetSessionIDTypeCookie();
+	Auth.UnsetCookie( "email" );
+
+	Call( "/auth/logout/", new Array(), Auth.Logout.Handler );
+}
+</pre>
+<h3>Logout and reload (page)</h3>
+<blockquote>
+<p class='paragraph'>
+Auth.LogoutAndReload()
+</p>
+</blockquote>
+<p class='paragraph'>
+The Auth.LogoutAndReload function, as the name suggests, is identical to the Auth.Logout function except that the handler of the '/auth/logout/' call will also reload the page.
+</p>
+<pre>
+function Auth_LogoutAndReload()
+{
+	Auth.UnsetIDTypeCookie();
+	Auth.UnsetSessionIDTypeCookie();
+	Auth.UnsetCookie( "email" );
+
+	Call( "/auth/logout/", new Array(), Auth.LogoutAndReload.Handler );
+}
+</pre>
+<h3>Helper functions</h3>
+<pre>
+Auth.Login.Handler
+=
+function ( responseText )
+{
+	if ( "" != responseText )
+	{
+		var obj = JSON.parse( responseText );
+
+		if ( obj && obj.idtype )
+		{
+			Auth.SetIDTypeCookie( obj.idtype );
+			Auth.SetSessionIDTypeCookie( obj.sessionid );
+			Auth.SetCookie( "email", obj.email, 1 );
+
+			Redirect( obj.idtype ); // External Call
+		}
+		else
+		{
+			if ( obj["error"] == "INVALID_CREDENTIALS" )
+			{
+				var errorText = "Invalid username or password.";
+			}
+			else
+			{
+				var errorText = "Error logging in, please try again.";
+			}
+
+			var loginErrorDiv = document.getElementById( 'login-error' );
+
+            if ( loginErrorDiv )
+            {
+				loginErrorDiv.innerHTML = "";
+				loginErrorDiv.innerHTML = errorText;
+            }
+            else
+            {
+                alert( errorText );
+            }
+		}
+	}
+	else
+	{
+		Auth.Logout();
+	}
+}
+
+Auth.Logout.Handler
+=
+function ( responseText )
+{
+	location.replace( location.protocol + "//" + location.hostname + "/" );
+}
+
+Auth.LogoutAndReload.Handler
+=
+function ( responseText )
+{
+	location.reload();
+}
+
+Auth.SetIDTypeCookie
+=
+function( idtype )
+{
+	Auth.SetCookie( "idtype", idtype, 1 );
+}
+
+Auth.SetSessionIDTypeCookie
+=
+function( sid )
+{
+	Auth.SetCookie( "sessionid", sid, 1 );
+}
+
+Auth.UnsetCookie
+=
+function ( cname )
+{
+	document.cookie = cname + "=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=/";
+}
+
+Auth.UnsetIDTypeCookie
+=
+function ()
+{
+	document.cookie = "idtype=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=/";
+}
+
+Auth.UnsetSessionIDTypeCookie
+=
+function ()
+{
+	document.cookie = "sessionid=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=/";
+}
+
+Auth.SetCookie
+=
+function( cname, cvalue, exdays )
+{
+    var d = new Date();
+    d.setTime(d.getTime() + (exdays*24*60*60*1000));
+    var expires = "expires="+d.toUTCString();
+    document.cookie = cname + "=" + cvalue + "; " + expires + ";path=/;";
+}
+</pre>
+</article>

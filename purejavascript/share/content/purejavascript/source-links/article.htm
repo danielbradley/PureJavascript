@@ -1,0 +1,60 @@
+<article>
+<h2>Links (functions)</h2>
+<pre>
+Links          = {}
+Links.Activate = LinksActivate
+Links.Complete = LinksComplete
+</pre>
+<h3>Activate</h3>
+<blockquote>
+<p class='paragraph'>
+Links.Activate( links, pathname )
+</p>
+</blockquote>
+<pre>
+function LinksActivate( links, href )
+{
+	var n = links.length;
+	
+	for ( var i=0; i &lt; n; i++ )
+	{
+		var link = links[i];
+
+        if ( link.href == href )
+        {
+            link.className += ("" == link.className) ? "active" : " active";
+        }
+
+        if ( ((location.protocol + '//') != href) && (0 === href.indexOf(link.href)) )
+        {
+            var dashboard_url = location.protocol + '//' + location.hostname + '/dashboard/';
+
+            if ( dashboard_url != link.href )
+            {
+                link.className += ("" == link.className) ? "subactive" : " subactive";
+            }
+        }
+	}
+}
+</pre>
+<h3>Complete</h3>
+<blockquote>
+<p class='paragraph'>
+Links.Complete( links, tuple )
+</p>
+</blockquote>
+<pre>
+function LinksComplete( links, tuple )
+{
+	var n = links.length;
+	
+	for ( var i=0; i &lt; n; i++ )
+	{
+		var link = links[i];
+
+		link.href      = Replace( link.href,      tuple );
+		link.innerHTML = Replace( link.innerHTML, tuple );
+	}
+}
+</pre>
+</article>
