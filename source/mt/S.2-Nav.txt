@@ -1,0 +1,32 @@
+
+~!share/content/_site/main_start.htm~
+<main id='main' class='center responsive_page_width'>
+~
+
+~!share/content/source/nav1.htm~
+<nav id='nav1'>
+    <div class='center responsive_page_width'>
+        <nav class='breadcrumbs'>
+            <a href='/'        >Home</a>
+            <span></span>
+            <a href='/source/' >Source</a>
+        </nav>
+        <nav>
+        </nav>
+    </div>
+</nav>
+~
+
+~!share/content/downloads/nav1.htm~
+<nav id='nav1'>
+    <div class='center responsive_page_width'>
+        <nav class='breadcrumbs'>
+            <a href='/'           >Home</a>
+            <span></span>
+            <a href='/downloads/' >Downloads</a>
+        </nav>
+        <nav>
+        </nav>
+    </div>
+</nav>
+~

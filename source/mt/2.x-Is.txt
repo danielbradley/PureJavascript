@@ -1,0 +1,64 @@
+
+.. Is (functions)
+
+!
+~!share/js/Is.js~
+/*
+ *  PureJavacript, Is.js
+ *
+ *  Copyright 2014 - 2017, CrossAdaptive
+ */
+~
+!
+
+~share/js/Is.js~
+Is        = {}
+Is.Date   = IsDate
+Is.Prefix = IsPrefix
+~
+
+
+
+... Is Date (deprecated - use Date.IsValid)
+
+|
+Is.Date( datetime )
+|
+
+~share/js/Is.js~
+function IsDate( $datetime )
+{
+	var is_date = false;
+
+	switch ( $datetime )
+	{
+	case null:
+	case "NULL":
+	case "null":
+	case "":
+	case "0":
+	case "0000-00-00":
+	case "0000-00-00 00:00:00":
+		break;
+		
+	default:
+		is_date = true;
+	}
+
+	return is_date;
+}
+~
+
+
+... Is Prefix (deprecated - use String.HasPrefix)
+
+|
+Is.Prefix( string, prefix )
+|
+
+~share/js/Is.js~
+function IsPrefix( string, prefix )
+{
+	return (0 == string.indexOf( prefix ));
+}
+~

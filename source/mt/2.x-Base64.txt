@@ -1,0 +1,43 @@
+
+.. Base64 (encoding/decoding)
+
+!
+~!share/js/Base64.js~
+/*
+ *  PureJavacript, Base64.js
+ *
+ *  Copyright 2014 - 2017, CrossAdaptive
+ *
+ *  License LGPL v2
+ */
+~
+!
+
+The Base64 module is merely a convenience class that encapsulates the use of the 'btoa' and 'atob' native Javascript functions.
+
+~share/js/Base64.js~
+Base64 = {}
+Base64.Encode = Base64Encode;
+Base64.Decode = Base64Decode;
+~
+
+
+... Encode
+
+
+~share/js/Base64.js~
+function Base64Encode( data )
+{
+	return btoa( data );
+}
+~
+
+
+... Decode
+
+~share/js/Base64.js~
+function Base64Decode( base64 )
+{
+	return atob( base64 );
+}
+~
