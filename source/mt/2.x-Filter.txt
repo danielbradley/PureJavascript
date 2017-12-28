@@ -1,0 +1,113 @@
+
+.. Filter
+
+Interates through each 'tag_name' element of 'id',
+for each element, that element is shown if its 'innerHTML' or 'title' attribute contains any of the search terms contained within the pattern.
+
+~
+<input type='text' name='filter' onkeyup='Filter( "some_id", "TR", this.value )'>
+~
+
+!
+~!_gen/js/Filter.js~
+/*
+ *  PureJavacript, Filter.js
+ *
+ *  Copyright 2017, CrossAdaptive
+ */
+~
+!
+
+~_gen/js/Filter.js~
+function Filter( id, tag_name, pattern )
+{
+    var element = document.getElementById( id );
+
+    if ( !element )
+    {
+        alert( "Filter: could not find target element: " + id );
+    }
+    else
+    {
+        var terms    = pattern.split( ' ' );
+        var elements = element.getElementsByTagName( tag_name );
+        var n        = elements.length;
+
+        for ( var i=0; i < n; i++ )
+        {
+            var e     = elements[i];
+            var title = e.getAttribute( "title" );
+            var html  = e.innerHTML;
+
+            Toggle.Show( e );
+
+            for ( index in terms )
+            {
+                var term = terms[index];
+
+                if ( ! Filter.ElementContainsText( e, term ) )
+                {
+                    Toggle.Hide( e )
+                    break;
+                }
+            }
+        }
+    }
+}
+
+Filter.ElementContainsText
+=
+function( e, t )
+{
+    var contains = false;
+
+    if ( e.children && (0 < e.children.length) )
+    {
+        for ( index in e.children )
+        {
+            var child = e.children[index];
+
+            if ( (contains = Filter.ElementContainsText( child, t )) )
+            {
+                break;
+            }
+        }
+    }
+    else
+    if ( Filter.StringContainsText( e.title, t ) )
+    {
+        contains = true;
+    }
+    else
+    if ( Filter.StringContainsText( e.innerHTML, t ) )
+    {
+        contains = true;
+    }
+
+    return contains;
+}
+
+Filter.StringContainsText
+=
+function( s, t )
+{
+    var contains = false;
+
+    if ( s )
+    {
+        if ( "" == t )
+        {
+            contains = true;
+        }
+        else
+        {
+            var lc_s = s.toLowerCase();
+            var lc_t = t.toLowerCase();
+
+            contains = (-1 != lc_s.indexOf( lc_t ));
+        }
+    }
+
+    return contains;
+}
+~

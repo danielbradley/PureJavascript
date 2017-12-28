@@ -1,7 +1,7 @@
 
 , Footer content
 
-~!share/content/_site/footer.htm~
+~!_content/_site/footer.htm~
 <footer id='footer'>
     <div class='center responsive_page_width'>
         <nav class='float_left'>

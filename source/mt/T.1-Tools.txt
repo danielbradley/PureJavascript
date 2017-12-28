@@ -3,7 +3,7 @@
 
 .. Generate content
 
-The 'libexec/tools/generate_content.sh' script is used to create a web site content directory under 'share/content/',
+The 'libexec/tools/generate_content.sh' script is used to create a web site content directory under '_content/',
 call 'max2html' to generate the content, then wrap it in appropriate tags.
 
 ~!libexec/tools/generate_content.sh~

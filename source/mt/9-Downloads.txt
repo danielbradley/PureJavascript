@@ -3,7 +3,7 @@
 
 The following downloads are avaialable:
 
-~!share/content/downloads/main.htm~
+~!_content/downloads/main.htm~
 <main id='main' class='center responsive_page_width level2'>
     <header>
         <span>Downloads</span>
@@ -16,6 +16,9 @@ The following downloads are avaialable:
                 </tr>
             </thead>
             <tbody>
+                <tr>
+                    <td><a href='/resources/downloads/purejavascript-0.3.js'>purejavascript-0.3.js</a></td>
+                </tr>
                 <tr>
                     <td><a href='/resources/downloads/purejavascript-0.2.js'>purejavascript-0.2.js</a></td>
                 </tr>

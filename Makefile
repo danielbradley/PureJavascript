@@ -1,43 +1,46 @@
-version=0.2
+version=0.3
 
-all: doc site content archive resources
+.PHONY: archive
+
+all: doc quasi content archive resources
 
 doc:
 	mkdir -p _documentation
-	max2html --style source/css/style.css --out _documentation/purejavascript source/mt/purejavascript/*.txt
+	max2html --style source/css/style.css --out _documentation/purejavascript source/mt/*.txt
 
-site:
+quasi:
 	quasi -f . source/mt/*.txt
 
 content:
-	libexec/tools/generate_content.sh  share/content/source                article  source/mt/purejavascript/2-Source.txt
-	libexec/tools/generate_content.sh  share/content/source                aside    source/mt/purejavascript/2.1-Outline.txt
-	libexec/tools/generate_content.sh  share/content/source-api_server     article  source/mt/purejavascript/*-APIServer.txt
-	libexec/tools/generate_content.sh  share/content/source-auth           article  source/mt/purejavascript/*-Auth.txt
-	libexec/tools/generate_content.sh  share/content/source-base64         article  source/mt/purejavascript/*-Base64.txt
-	libexec/tools/generate_content.sh  share/content/source-call           article  source/mt/purejavascript/*-Call.txt
-	libexec/tools/generate_content.sh  share/content/source-class          article  source/mt/purejavascript/*-Class.txt
-	libexec/tools/generate_content.sh  share/content/source-cookie         article  source/mt/purejavascript/*-Cookie.txt
-	libexec/tools/generate_content.sh  share/content/source-csv_file       article  source/mt/purejavascript/*-CSV_file.txt
-	libexec/tools/generate_content.sh  share/content/source-date           article  source/mt/purejavascript/*-Date.txt
-	libexec/tools/generate_content.sh  share/content/source-datalist       article  source/mt/purejavascript/*-Datalist.txt
-	libexec/tools/generate_content.sh  share/content/source-data_storage   article  source/mt/purejavascript/*-DataStorage.txt
-	libexec/tools/generate_content.sh  share/content/source-element        article  source/mt/purejavascript/*-Element.txt
-	libexec/tools/generate_content.sh  share/content/source-enum           article  source/mt/purejavascript/*-Enum.txt
-	libexec/tools/generate_content.sh  share/content/source-form           article  source/mt/purejavascript/*-Form.txt
-	libexec/tools/generate_content.sh  share/content/source-geocode        article  source/mt/purejavascript/*-Geocode.txt
-	libexec/tools/generate_content.sh  share/content/source-helper         article  source/mt/purejavascript/*-Helper.txt
-	libexec/tools/generate_content.sh  share/content/source-html_entities  article  source/mt/purejavascript/*-HTML_entities.txt
-	libexec/tools/generate_content.sh  share/content/source-input_file     article  source/mt/purejavascript/*-Input_file.txt
-	libexec/tools/generate_content.sh  share/content/source-is             article  source/mt/purejavascript/*-Is.txt
-	libexec/tools/generate_content.sh  share/content/source-links          article  source/mt/purejavascript/*-Links.txt
-	libexec/tools/generate_content.sh  share/content/source-load           article  source/mt/purejavascript/*-Load.txt
-	libexec/tools/generate_content.sh  share/content/source-location       article  source/mt/purejavascript/*-Location.txt
-	libexec/tools/generate_content.sh  share/content/source-modal          article  source/mt/purejavascript/*-Modal.txt
-	libexec/tools/generate_content.sh  share/content/source-session        article  source/mt/purejavascript/*-Session.txt
-	libexec/tools/generate_content.sh  share/content/source-selects        article  source/mt/purejavascript/*-Selects.txt
-	libexec/tools/generate_content.sh  share/content/source-setup          article  source/mt/purejavascript/*-Setup.txt
-	libexec/tools/generate_content.sh  share/content/source-string         article  source/mt/purejavascript/*-String.txt
+	libexec/tools/generate_content.sh  _content/source                article  source/mt/2-Source.txt
+	libexec/tools/generate_content.sh  _content/source                aside    source/mt/2.1-Outline.txt
+	libexec/tools/generate_content.sh  _content/source-api_server     article  source/mt/*-APIServer.txt
+	libexec/tools/generate_content.sh  _content/source-auth           article  source/mt/*-Auth.txt
+	libexec/tools/generate_content.sh  _content/source-base64         article  source/mt/*-Base64.txt
+	libexec/tools/generate_content.sh  _content/source-call           article  source/mt/*-Call.txt
+	libexec/tools/generate_content.sh  _content/source-class          article  source/mt/*-Class.txt
+	libexec/tools/generate_content.sh  _content/source-cookie         article  source/mt/*-Cookie.txt
+	libexec/tools/generate_content.sh  _content/source-csv_file       article  source/mt/*-CSV_file.txt
+	libexec/tools/generate_content.sh  _content/source-date           article  source/mt/*-Date.txt
+	libexec/tools/generate_content.sh  _content/source-datalist       article  source/mt/*-Datalist.txt
+	libexec/tools/generate_content.sh  _content/source-data_storage   article  source/mt/*-DataStorage.txt
+	libexec/tools/generate_content.sh  _content/source-element        article  source/mt/*-Element.txt
+	libexec/tools/generate_content.sh  _content/source-enum           article  source/mt/*-Enum.txt
+	libexec/tools/generate_content.sh  _content/source-filter         article  source/mt/*-Filter.txt
+	libexec/tools/generate_content.sh  _content/source-form           article  source/mt/*-Form.txt
+	libexec/tools/generate_content.sh  _content/source-geocode        article  source/mt/*-Geocode.txt
+	libexec/tools/generate_content.sh  _content/source-helper         article  source/mt/*-Helper.txt
+	libexec/tools/generate_content.sh  _content/source-html_entities  article  source/mt/*-HTML_entities.txt
+	libexec/tools/generate_content.sh  _content/source-input_file     article  source/mt/*-Input_file.txt
+	libexec/tools/generate_content.sh  _content/source-is             article  source/mt/*-Is.txt
+	libexec/tools/generate_content.sh  _content/source-links          article  source/mt/*-Links.txt
+	libexec/tools/generate_content.sh  _content/source-load           article  source/mt/*-Load.txt
+	libexec/tools/generate_content.sh  _content/source-location       article  source/mt/*-Location.txt
+	libexec/tools/generate_content.sh  _content/source-modal          article  source/mt/*-Modal.txt
+	libexec/tools/generate_content.sh  _content/source-session        article  source/mt/*-Session.txt
+	libexec/tools/generate_content.sh  _content/source-selects        article  source/mt/*-Selects.txt
+	libexec/tools/generate_content.sh  _content/source-setup          article  source/mt/*-Setup.txt
+	libexec/tools/generate_content.sh  _content/source-string         article  source/mt/*-String.txt
 
 archive:
 	mkdir -p archive/js/purejavascript
@@ -46,10 +49,14 @@ archive:
 resources:
 	mkdir -p _resources/downloads
 	cp -f  archive/js/purejavascript/*.js _resources/downloads
+	ln -sf _resources/downloads/purejavascript-$(version).js _resources/downloads/purejavascript-latest.js
 	cp -rf share/resources/thirdparty _resources
+
+public: all
+	rsync --delete -avz _content _resources ../../_Public/purejavascript.com
 
 clean:
 	rm -rf _documentation
 	rm -rf _gen
 	rm -rf _resources
-	rm -rf share/content
+	rm -rf _content

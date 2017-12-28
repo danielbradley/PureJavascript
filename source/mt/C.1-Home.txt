@@ -1,5 +1,5 @@
 
-~!share/content/_index/main.htm~
+~!_content/_index/main.htm~
 <main id='main' class='center responsive_page_width level1'>
     <header>
         <span>About</span>
@@ -11,11 +11,11 @@
         PureJavascript is a collection of Javascript modules that have no other Javascript dependencies.
         </p>
         <p>
-        To include such a Javascript module in your project, write:
+        To include Pure Javascript in your project, write:
         </p>
         <blockquote>
         <pre>
-        {{script type='text/javascript' src='https://purejavascript.com/download/purejavascript-0.2.js' }}{{/script}}
+        {{script type='text/javascript' src='https://purejavascript.com/download/purejavascript-latest.js' }}{{/script}}
         </pre>
         </blockquote>
 

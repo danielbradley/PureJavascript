@@ -1,10 +1,10 @@
 
 . Head content
 
-~!share/content/_site/styles.htm~
+~!_content/_site/styles.htm~
 <link rel='stylesheet' type='text/css' href='/resources/thirdparty/snapcss/snapcss-0.1.css'>
 ~
 
-~!share/content/_site/title.htm~
+~!_content/_site/title.htm~
     <title>Pure Javascript</title>
 ~

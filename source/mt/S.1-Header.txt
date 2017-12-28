@@ -1,5 +1,5 @@
 
-~!share/content/_site/header.htm~
+~!_content/_site/header.htm~
 <header id='header'>
     <div class='center responsive_page_width'>
         <nav>
