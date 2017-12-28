@@ -3,8 +3,8 @@ version=0.2
 all: doc site content archive resources
 
 doc:
-	mkdir -p documentation
-	max2html --style source/css/style.css --out documentation/purejavascript source/mt/purejavascript/*.txt
+	mkdir -p _documentation
+	max2html --style source/css/style.css --out _documentation/purejavascript source/mt/purejavascript/*.txt
 
 site:
 	quasi -f . source/mt/*.txt
@@ -49,6 +49,7 @@ resources:
 	cp -rf share/resources/thirdparty _resources
 
 clean:
+	rm -rf _documentation
 	rm -rf _gen
 	rm -rf _resources
 	rm -rf share/content
