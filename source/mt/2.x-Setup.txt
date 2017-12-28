@@ -2,7 +2,7 @@
 .. Setup (divs and tables on page load)
 
 !
-~!share/js/Setup.js~
+~!_gen/js/Setup.js~
 /*
  *  PureJavacript, Setup.js
  *
@@ -17,7 +17,7 @@
 Setup()
 |
 
-~share/js/Setup.js~
+~_gen/js/Setup.js~
 function Setup()
 {
 	Setup.Elements( document.getElementsByTagName( "DIV"   ) );
@@ -26,7 +26,7 @@ function Setup()
 }
 ~
 
-~share/js/Setup.js~
+~_gen/js/Setup.js~
 Setup.CreateTableSetupFn
 =
 function( id, nr_columns )
@@ -129,7 +129,7 @@ function( tbody )
 }
 ~
 
-~share/js/Setup.js~
+~_gen/js/Setup.js~
 Setup.CreateFormSetupFn
 =
 function( id, key_field )
@@ -145,7 +145,7 @@ function( id, key_field )
 }
 ~
 
-~share/js/Setup.js~
+~_gen/js/Setup.js~
 Setup.CreateDivSetupFn
 =
 function( id )
@@ -178,7 +178,7 @@ function( id )
 
 ... Helper functions
 
-~share/js/Setup.js~
+~_gen/js/Setup.js~
 Setup.Elements
 =
 function( elements )

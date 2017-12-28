@@ -2,7 +2,7 @@
 .. Selects (auto-populate)
 
 !
-~!share/js/Selects.js~
+~!_gen/js/Selects.js~
 /*
  *  PureJavacript, Selects.js
  *
@@ -17,7 +17,7 @@
 Selects( Resolve )
 |
 
-~share/js/Selects.js~
+~_gen/js/Selects.js~
 function Selects( resolver )
 {
 	Selects.resolver = resolver;
@@ -30,7 +30,7 @@ function Selects( resolver )
 
 ... Helper functions
 
-~share/js/Selects.js~
+~_gen/js/Selects.js~
 Selects.setup
 =
 function()

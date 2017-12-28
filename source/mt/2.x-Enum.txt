@@ -19,7 +19,7 @@ enum.UNKNOWN = "UNKNOWN"
 
 
 !
-~!share/js/Enum.js~
+~!_gen/js/Enum.js~
 /*
  *  PureJavacript, Enum.js
  *
@@ -28,7 +28,7 @@ enum.UNKNOWN = "UNKNOWN"
 ~
 !
 
-~share/js/Enum.js~
+~_gen/js/Enum.js~
 function Enum( values )
 {
     var e = {}

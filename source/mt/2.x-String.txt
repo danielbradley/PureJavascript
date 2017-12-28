@@ -2,7 +2,7 @@
 .. Strings (funtions)
 
 !
-~!share/js/Strings.js~
+~!_gen/js/Strings.js~
 /*
  *  PureJavacript, String.js
  *
@@ -11,7 +11,7 @@
 ~
 !
 
-~share/js/Strings.js~
+~_gen/js/Strings.js~
 Strings = {}
 Strings.EndsWith     = StringEndsWith
 Strings.StartsWith   = StringStartsWith
@@ -26,7 +26,7 @@ Strings.Truncate     = StringTruncate
 Strings.EndsWith( string, suffix )
 |
 
-~share/js/Strings.js~
+~_gen/js/Strings.js~
 function StringEndsWith( string, suffix )
 {
 	var n = string.length;
@@ -43,7 +43,7 @@ function StringEndsWith( string, suffix )
 Strings.StartsWith( string, prefix )
 |
 
-~share/js/Strings.js~
+~_gen/js/Strings.js~
 function StringStartsWith( string, prefix )
 {
     return (0 === string.indexOf( prefix ));
@@ -57,7 +57,7 @@ function StringStartsWith( string, prefix )
 Strings.StripUnicode( string )
 |
 
-~share/js/Strings.js~
+~_gen/js/Strings.js~
 function StringStripUnicode( s )
 {
 	var r = "";
@@ -94,7 +94,7 @@ function StringStripUnicode( s )
 Strings.Truncate( string, prefix )
 |
 
-~share/js/Strings.js~
+~_gen/js/Strings.js~
 function StringTruncate( text, max_length )
 {
 	if ( text && (text.length > max_length) )

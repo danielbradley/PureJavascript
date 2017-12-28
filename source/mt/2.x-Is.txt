@@ -2,7 +2,7 @@
 .. Is (functions)
 
 !
-~!share/js/Is.js~
+~!_gen/js/Is.js~
 /*
  *  PureJavacript, Is.js
  *
@@ -11,7 +11,7 @@
 ~
 !
 
-~share/js/Is.js~
+~_gen/js/Is.js~
 Is        = {}
 Is.Date   = IsDate
 Is.Prefix = IsPrefix
@@ -25,7 +25,7 @@ Is.Prefix = IsPrefix
 Is.Date( datetime )
 |
 
-~share/js/Is.js~
+~_gen/js/Is.js~
 function IsDate( $datetime )
 {
 	var is_date = false;
@@ -56,7 +56,7 @@ function IsDate( $datetime )
 Is.Prefix( string, prefix )
 |
 
-~share/js/Is.js~
+~_gen/js/Is.js~
 function IsPrefix( string, prefix )
 {
 	return (0 == string.indexOf( prefix ));

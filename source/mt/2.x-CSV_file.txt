@@ -1,5 +1,5 @@
 !
-~!share/js/CSVFile.js~
+~!_gen/js/CSVFile.js~
 /*
  *  PureJavacript, CSVFile.js
  *
@@ -47,7 +47,7 @@ for ( var i=0; i < n; i++ )
 CSVFile( file_content )
 |
 
-~share/js/CSVFile.js~
+~_gen/js/CSVFile.js~
 function CSVFile( file_content )
 {
 	this.headers = new Array();
@@ -68,7 +68,7 @@ getValueFor( row, labels )
 Searches the 'row' specified for the first of the labels specified in array that has a value.
 This allows CSV files that have inconsistent column titles, e.g., "Given name" or "Given names", to be searched.
 
-~share/js/CSVFile.js~
+~_gen/js/CSVFile.js~
 CSVFile.prototype.getValueFor
 =
 function( row, labels )
@@ -89,7 +89,7 @@ function( row, labels )
 
 
 
-~share/js/CSVFile.js~
+~_gen/js/CSVFile.js~
 CSVFile.prototype.getValue
 =
 function( row, label )
@@ -121,7 +121,7 @@ function( row, label )
 
 
 
-~share/js/CSVFile.js~
+~_gen/js/CSVFile.js~
 CSVFile.prototype.getNrOfRows
 =
 function()
@@ -134,7 +134,7 @@ function()
 
 ... Helper functions
 
-~share/js/CSVFile.js~
+~_gen/js/CSVFile.js~
 CSVFile.prototype.CSVLineRE = new RegExp('("[\\w ,]+" ?|[\\w ]*), ?("[\\w ,]+" ?|[\\w ]*)$');
 
 CSVFile.prototype.parseContent

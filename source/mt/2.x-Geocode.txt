@@ -4,7 +4,7 @@
 The Geocode module helps translate between coordinates (latitude and longitude) and addresses (using Google Maps APIs).
 
 !
-~!share/js/Geocode.js~
+~!_gen/js/Geocode.js~
 /*
  *  PureJavacript, Geocode.js
  *
@@ -19,7 +19,7 @@ The Geocode module helps translate between coordinates (latitude and longitude) 
 Geocode( apikey, latitude, longitude, handler )
 |
 
-~share/js/Geocode.js~
+~_gen/js/Geocode.js~
 function Geocode( latitude, longitude, handler )
 {
 	var GOOGLE_URL = "https://maps.googleapis.com";

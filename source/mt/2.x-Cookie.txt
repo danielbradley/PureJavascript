@@ -2,7 +2,7 @@
 .. Cookie (manipulation)
 
 !
-~!share/js/Cookie.js~
+~!_gen/js/Cookie.js~
 /*
  *  PureJavacript, Cookie.js
  *
@@ -11,7 +11,7 @@
 ~
 !
 
-~share/js/Cookie.js~
+~_gen/js/Cookie.js~
 Cookie            = {}
 Cookie.Get        = GetCookie
 Cookie.Set        = SetCookie
@@ -24,7 +24,7 @@ Cookie.Unset      = UnsetCookie
 Cookie.Get( key )
 |
 
-~share/js/Cookie.js~
+~_gen/js/Cookie.js~
 function GetCookie( search )
 {
     var key = "";
@@ -57,7 +57,7 @@ function GetCookie( search )
 Cookie.Set( path, cname, cvalue, expiration_days )
 |
 
-~share/js/Cookie.js~
+~_gen/js/Cookie.js~
 function SetCookie( path, cname, cvalue, exdays )
 {
     var d       = new Date(); d.setTime(d.getTime() + (exdays*24*60*60*1000));
@@ -74,7 +74,7 @@ function SetCookie( path, cname, cvalue, exdays )
 Cookie.Unset( cname )
 |
 
-~share/js/Cookie.js~
+~_gen/js/Cookie.js~
 function UnsetCookie( name )
 {
 	document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=/";
@@ -83,7 +83,7 @@ function UnsetCookie( name )
 
 ... Helper functions
 
-~share/js/Cookie.js~
+~_gen/js/Cookie.js~
 function SetIDTypeCookie( idtype )
 {
 	SetCookie( "/", "idtype", idtype, 1 );

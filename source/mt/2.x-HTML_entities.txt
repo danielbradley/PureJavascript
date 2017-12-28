@@ -2,7 +2,7 @@
 .. HTML Entities
 
 !
-~!share/js/HTMLEntities.js~
+~!_gen/js/HTMLEntities.js~
 /*
  *  PureJavacript, HTMLEntities.js
  *
@@ -11,7 +11,7 @@
 ~
 !
 
-~share/js/HTMLEntities.js~
+~_gen/js/HTMLEntities.js~
 HTMLEntities        = {}
 HTMLEntities.Encode = HTMLEntitiesEncode
 HTMLEntities.Decode = DecodeHTMLEntities
@@ -19,7 +19,7 @@ HTMLEntities.Decode = DecodeHTMLEntities
 
 ... Encode
 
-~share/js/HTMLEntities.js~
+~_gen/js/HTMLEntities.js~
 /*
  *	The following implementations were copied from the following opensource implementations:
  *	
@@ -81,7 +81,7 @@ function HTMLEntitiesEncode( string, quoteStyle, charset, doubleEncode )
 
 ... Decode
 
-~share/js/HTMLEntities.js~
+~_gen/js/HTMLEntities.js~
 function DecodeHTMLEntities( htmlEncodedString )
 {
 	var ret = htmlEncodedString;
@@ -144,7 +144,7 @@ function DecodeHTMLEntities( htmlEncodedString )
 
 ... Helper functions
 
-~share/js/HTMLEntities.js~
+~_gen/js/HTMLEntities.js~
 HTMLEntitiesEncode.GetHTMLTranslationTable
 =
 function( table, quoteStyle )
@@ -327,7 +327,7 @@ function( table, quoteStyle )
 }
 ~
 
-~share/js/HTMLEntities.js~
+~_gen/js/HTMLEntities.js~
 DecodeHTMLEntities.DecodeEntity
 =
 function( entity )

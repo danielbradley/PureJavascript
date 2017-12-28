@@ -6,7 +6,7 @@ Datalist support among browsers is currently very low.
 This function allows you to provide cross browser datalist style support to text fields.
 
 !
-~!share/js/Datalist.js~
+~!_gen/js/Datalist.js~
 /*
  *  PureJavacript, Datalist.js
  *
@@ -21,7 +21,7 @@ This function allows you to provide cross browser datalist style support to text
 Datalist( elements )
 |
 
-~share/js/Datalist.js~
+~_gen/js/Datalist.js~
 function Datalist( elements )
 {
 	var n = elements.length;
@@ -40,7 +40,7 @@ function Datalist( elements )
 
 ... Helper functions
 
-~share/js/Datalist.js~
+~_gen/js/Datalist.js~
 Datalist.Setup
 =
 function( datalist )
@@ -456,7 +456,7 @@ function()
 
 ... CSS
 
-~share/content/_resources/styles/purejavascript/datalist.css~
+~_resources/styles/purejavascript/datalist.css~
 .datalist_list
 {
     display: none;

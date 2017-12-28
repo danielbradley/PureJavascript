@@ -2,7 +2,7 @@
 .. Data Storage (session and local)
 
 !
-~!share/js/DataStorage.js~
+~!_gen/js/DataStorage.js~
 /*
  *  PureJavacript, DataStorage.js
  *
@@ -11,7 +11,7 @@
 ~
 !
 
-~share/js/DataStorage.js~
+~_gen/js/DataStorage.js~
 DataStorage         = {}
 DataStorage.Local   = {}
 DataStorage.Session = {}
@@ -24,7 +24,7 @@ DataStorage.Session = {}
 DataStorage.Exists()
 |
 
-~share/js/DataStorage.js~
+~_gen/js/DataStorage.js~
 DataStorage.Exists
 =
 function()
@@ -40,7 +40,7 @@ function()
 DataStorage.Local.SetItem( key, value )
 |
 
-~share/js/DataStorage.js~
+~_gen/js/DataStorage.js~
 DataStorage.Local.SetItem
 =
 function( key, value )
@@ -67,7 +67,7 @@ function( key, value )
 DataStorage.GetItem( key )
 |
 
-~share/js/DataStorage.js~
+~_gen/js/DataStorage.js~
 DataStorage.Local.GetItem
 =
 function( key )
@@ -90,7 +90,7 @@ function( key )
 DataStorage.RemoveItem( key )
 |
 
-~share/js/DataStorage.js~
+~_gen/js/DataStorage.js~
 DataStorage.Local.RemoveItem
 =
 function( key )
@@ -114,7 +114,7 @@ function( key )
 DataStorage.Local.HasItem( key )
 |
 
-~share/js/DataStorage.js~
+~_gen/js/DataStorage.js~
 DataStorage.Local.HasItem
 =
 function( key )
@@ -135,7 +135,7 @@ function( key )
 DataStorage.Session.SetItem( key, value )
 |
 
-~share/js/DataStorage.js~
+~_gen/js/DataStorage.js~
 DataStorage.Session.SetItem
 =
 function( key, value )
@@ -161,7 +161,7 @@ function( key, value )
 DataStorage.Session.GetItem( key )
 |
 
-~share/js/DataStorage.js~
+~_gen/js/DataStorage.js~
 DataStorage.Session.GetItem
 =
 function( key )
@@ -182,7 +182,7 @@ function( key )
 DataStorage.Session.RemoveItem( key )
 |
 
-~share/js/DataStorage.js~
+~_gen/js/DataStorage.js~
 DataStorage.Session.RemoveItem
 =
 function( key )
@@ -205,7 +205,7 @@ function( key )
 DataStorage.Session.HasItem( key )
 |
 
-~share/js/DataStorage.js~
+~_gen/js/DataStorage.js~
 DataStorage.Session.HasItem
 =
 function( key )

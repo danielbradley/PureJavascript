@@ -2,7 +2,7 @@
 .. Element
 
 !
-~!share/js/Elements.js~
+~!_gen/js/Elements.js~
 /*
  *  PureJavacript, Element.js
  *
@@ -11,7 +11,7 @@
 ~
 !
 
-~share/js/Elements.js~
+~_gen/js/Elements.js~
 Elements          = {}
 Elements.Toggle   = Toggle
 Elements.Show     = Toggle.Show
@@ -27,7 +27,7 @@ Elements.HideShow = null;
 Elements.Toggle( id )
 |
 
-~share/js/Elements.js~
+~_gen/js/Elements.js~
 function Toggle( id )
 {
 	var ret = null;
@@ -56,7 +56,7 @@ function Toggle( id )
 Elements.Show( e )
 |
 
-~share/js/Elements.js~
+~_gen/js/Elements.js~
 Toggle.Show
 =
 function ( e )
@@ -96,7 +96,7 @@ function ( e )
 Elements.Hide( e )
 |
 
-~share/js/Elements.js~
+~_gen/js/Elements.js~
 Toggle.Hide
 =
 function ( e )
@@ -116,7 +116,7 @@ Elements.HideShow( cls, id )
 
 Hides all elements containing the specified class, then shows the class with the specified ID.
 
-~share/js/Elements.js~
+~_gen/js/Elements.js~
 Elements.HideShow
 =
 function ( cls, id )
@@ -150,7 +150,7 @@ Elements.HideShow( cls, id )
 
 Hides all elements containing the specified class, then shows the class with the specified ID.
 
-~share/js/Elements.js~
+~_gen/js/Elements.js~
 function ShowHide( id, show_id, hide_id )
 {
 	var self   = document.getElementById( id );

@@ -2,7 +2,7 @@
 .. Load (functions)
 
 !
-~!share/js/Load.js~
+~!_gen/js/Load.js~
 /*
  *  PureJavacript, Load.js
  *
@@ -11,7 +11,7 @@
 ~
 !
 
-~share/js/Load.js~
+~_gen/js/Load.js~
 Load           = {}
 Load.ImageFile = LoadInputFromImageFile
 Load.Table     = LoadTableFromFile
@@ -26,7 +26,7 @@ Load.ImageFile( targetID, fileID, holderID )
 
 The Load.ImageFile function allows an image selected using a file input form field to be automatically loaded and displayed within the element identified by 'targetID'.
 
-~share/js/Load.js~
+~_gen/js/Load.js~
 function LoadInputFromImageFile( targetID, fileID, holderID )
 {
 	var target = document.getElementById( targetID );
@@ -67,7 +67,7 @@ Load.Table( event )
 The Load.Table function allows a table to be automatically filled when a CSV file is selected using a file input form field
 by passing the corresponding 'onchange' event to the function.
 
-~share/js/Load.js~
+~_gen/js/Load.js~
 function LoadTableFromFile( event )
 {
 	var table_id = event.target.getAttribute( "data-target-id" );
@@ -88,7 +88,7 @@ function LoadTableFromFile( event )
 
 ... Helper functions
 
-~share/js/Load.js~
+~_gen/js/Load.js~
 LoadTableFromFile.OnLoad
 =
 function()
@@ -133,7 +133,7 @@ function()
 }
 ~
 
-~share/js/Load.js~
+~_gen/js/Load.js~
 LoadTableFromFile.ExtractColumnSpecs
 =
 function( table )

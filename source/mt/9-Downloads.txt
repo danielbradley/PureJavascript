@@ -17,7 +17,7 @@ The following downloads are avaialable:
             </thead>
             <tbody>
                 <tr>
-                    <td><a href='/client/purejavascript/resources/downloads/purejavascript-0.1.js'>purejavascript-0.1.js</a></td>
+                    <td><a href='/resources/downloads/purejavascript-0.2.js'>purejavascript-0.2.js</a></td>
                 </tr>
             </tbody>
         </table>

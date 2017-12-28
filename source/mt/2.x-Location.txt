@@ -2,7 +2,7 @@
 .. Location (of browser)
 
 !
-~!share/js/Locations.js~
+~!_gen/js/Locations.js~
 /*
  *  PureJavacript, Locations.js
  *
@@ -11,7 +11,7 @@
 ~
 !
 
-~share/js/Locations.js~
+~_gen/js/Locations.js~
 Locations              = {}
 Locations.SearchValues = GetSearchValues
 Locations.SearchValue  = GetSearchValue
@@ -26,7 +26,7 @@ Locations.Down         = Down
 Locations.SearchValues( parameter_names )
 |
 
-~share/js/Locations.js~
+~_gen/js/Locations.js~
 function GetSearchValues()
 {
 	var object = new Object;
@@ -56,7 +56,7 @@ function GetSearchValues()
 Locations.SearchValue( parameter_name )
 |
 
-~share/js/Locations.js~
+~_gen/js/Locations.js~
 function GetSearchValue( name )
 {
 	var parameters = GetSearchValues();
@@ -76,7 +76,7 @@ The argument 'parameter_names' is an array of strings that name search parameter
 Up is usually called when a form on a page has sucessfully completed,
 and the expected action is to return to a parent page.
 
-~share/js/Locations.js~
+~_gen/js/Locations.js~
 function Up( search_parameters )
 {
 	var loc  = location.protocol + "//" + location.host;
@@ -135,7 +135,7 @@ Returns a function suitable for assigning as an 'onclick' handler,
 that will keep a copy of pathname and search (as it is in the scope of a function).
 The function calls Down.
 
-~share/js/Locations.js~
+~_gen/js/Locations.js~
 function CreateDownFn( pathname, search )
 {
     return function()
@@ -151,7 +151,7 @@ function CreateDownFn( pathname, search )
 Locations.Down( pathname, search )
 |
 
-~share/js/Locations.js~
+~_gen/js/Locations.js~
 function Down( pathname, search )
 {
     var loc  = location.protocol + "//" + location.host + location.pathname + pathname + search;

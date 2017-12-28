@@ -5,7 +5,7 @@ The APIServer function generates a hostname for the API server by adding 'api-' 
 If SSL is being used, the returned port is 8443; other 8080.
 
 !
-~!share/js/APIServer.js~
+~!_gen/js/APIServer.js~
 /*
  *  PureJavacript, APIServer.js
  *
@@ -16,7 +16,7 @@ If SSL is being used, the returned port is 8443; other 8080.
 ~
 !
 
-~share/js/APIServer.js~
+~_gen/js/APIServer.js~
 APIServer = Resolve;
 
 function Resolve()

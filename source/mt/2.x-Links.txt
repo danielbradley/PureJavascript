@@ -2,7 +2,7 @@
 .. Links (functions)
 
 !
-~!share/js/Links.js~
+~!_gen/js/Links.js~
 /*
  *  PureJavacript, Links.js
  *
@@ -11,7 +11,7 @@
 ~
 !
 
-~share/js/Links.js~
+~_gen/js/Links.js~
 Links          = {}
 Links.Activate = LinksActivate
 Links.Complete = LinksComplete
@@ -24,7 +24,7 @@ Links.Complete = LinksComplete
 Links.Activate( links, pathname )
 |
 
-~share/js/Links.js~
+~_gen/js/Links.js~
 function LinksActivate( links, href )
 {
 	var n = links.length;
@@ -58,7 +58,7 @@ function LinksActivate( links, href )
 Links.Complete( links, tuple )
 |
 
-~share/js/Links.js~
+~_gen/js/Links.js~
 function LinksComplete( links, tuple )
 {
 	var n = links.length;

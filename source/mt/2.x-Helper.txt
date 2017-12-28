@@ -2,7 +2,7 @@
 .. Helper (functions)
 
 !
-~!share/js/Helper.js~
+~!_gen/js/Helper.js~
 /*
  *  PureJavacript, Helper.js
  *
@@ -21,7 +21,7 @@ The GetTuple function recurses down through arrays containing arrays until an ob
 This is useful for when database results have been processed into hierarchical array structures,
 and you want to receive a specific value that you know is common to a specific branch.
 
-~share/js/Helper.js~
+~_gen/js/Helper.js~
 function GetTuple( obj )
 {
 	var tuple = null;
@@ -71,7 +71,7 @@ function Handler( responseText )
 This is used when an AJAX call has retrieve a subset of possible results, and the parameters object needs to be
 modified to request the next set of results.
 
-~share/js/Helper.js~
+~_gen/js/Helper.js~
 function LimitOffsetParameters( json )
 {
 	var parameters = null;
@@ -98,7 +98,7 @@ ObjectGet( object, member )
 If the member exists, returns the URI decoded value of object[member],
 otherwise returns an empty string.
 
-~share/js/Helper.js~
+~_gen/js/Helper.js~
 function Object_Get( $object, $member )
 {
 	if ( $object.hasOwnProperty( $member ) )
@@ -121,7 +121,7 @@ Replace( text, dictionary )
 
 For each key of the dictionary, searches and replaces any instances of '%key%' in the text with the value from the dictionary.
 
-~share/js/Helper.js~
+~_gen/js/Helper.js~
 function Replace( text, array )
 {
 	for ( var member in array )

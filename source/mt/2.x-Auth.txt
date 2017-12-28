@@ -4,7 +4,7 @@
 The Auth module is used to authenticate to compatible authentication system.
 
 !
-~!share/js/Auth.js~
+~!_gen/js/Auth.js~
 /*
  *  PureJavacript, Auth.js
  *
@@ -15,7 +15,7 @@ The Auth module is used to authenticate to compatible authentication system.
 ~
 !
 
-~share/js/Auth.js~
+~_gen/js/Auth.js~
 Auth                 = {}
 Auth.Login           = Auth_Login;
 Auth.Logout          = Auth_Logout;
@@ -56,7 +56,7 @@ The default handler will set the 'sessionid', 'idtype', and 'email' into cookies
 and will call the 'Redirect()' function passing the idtype.
 This means that the 'sessionid' will be passed each time a call is made to the API server.
 
-~share/js/Auth.js~
+~_gen/js/Auth.js~
 function Auth_Login( event )
 {
 	Submit( event, Auth.Login.Handler );
@@ -74,7 +74,7 @@ The Auth.Logout function is usually called when the user clicks a logout button 
 The call takes no parameters, and will delete the 'idtype', 'sessionid', and 'email' cookies,
 then call the '/auth/logout/' API endpoint.
 
-~share/js/Auth.js~
+~_gen/js/Auth.js~
 function Auth_Logout( event )
 {
 	Auth.UnsetIDTypeCookie();
@@ -94,7 +94,7 @@ Auth.LogoutAndReload()
 
 The Auth.LogoutAndReload function, as the name suggests, is identical to the Auth.Logout function except that the handler of the '/auth/logout/' call will also reload the page.
 
-~share/js/Auth.js~
+~_gen/js/Auth.js~
 function Auth_LogoutAndReload()
 {
 	Auth.UnsetIDTypeCookie();
@@ -109,7 +109,7 @@ function Auth_LogoutAndReload()
 
 ... Helper functions
 
-~share/js/Auth.js~
+~_gen/js/Auth.js~
 Auth.Login.Handler
 =
 function ( responseText )

@@ -2,7 +2,7 @@
 .. Class (attribute manipulation)
 
 !
-~!share/js/Class.js~
+~!_gen/js/Class.js~
 /*
  *  PureJavacript, Class.js
  *
@@ -11,7 +11,7 @@
 ~
 !
 
-~share/js/Class.js~
+~_gen/js/Class.js~
 Class             = {}
 Class.AddClass    = AddClass;
 Class.RemoveClass = RemoveClass;
@@ -19,7 +19,7 @@ Class.RemoveClass = RemoveClass;
 
 ... Add class
 
-~share/js/Class.js~
+~_gen/js/Class.js~
 function AddClass( e, className )
 {
 	if ( ! Class.Contains( e, className ) )
@@ -38,7 +38,7 @@ function AddClass( e, className )
 
 ... Remove class
 
-~share/js/Class.js~
+~_gen/js/Class.js~
 function RemoveClass( e, className )
 {
 	if ( Class.Contains( e, className ) )
@@ -50,7 +50,7 @@ function RemoveClass( e, className )
 
 ... Helper functions
 
-~share/js/Class.js~
+~_gen/js/Class.js~
 Class.Remove
 =
 function( hay, needle )

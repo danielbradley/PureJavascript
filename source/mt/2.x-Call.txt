@@ -2,7 +2,7 @@
 .. Call (AJAX-style asynchronous web requests)
 
 !
-~!share/js/Call.js~
+~!_gen/js/Call.js~
 /*
  *  PureJavacript, Call.js
  *
@@ -29,7 +29,7 @@ An example call is shown below:
 Call( "https://chart.googleapis.com/chart", ["cht":"qr", "chs":"300x300", "chl=MyQRCode"], my_response_handler );
 ~
 
-~share/js/Call.js~
+~_gen/js/Call.js~
 function Call( endpoint, parameters, custom_handler )
 {
 	var command = Call.EncodeToString( parameters );
@@ -46,7 +46,7 @@ function Call( endpoint, parameters, custom_handler )
 
 ... Helper functions
 
-~share/js/Call.js~
+~_gen/js/Call.js~
 Call.Post
 =
 function ( endpoint, command, handler, timeout, timeouts )

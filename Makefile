@@ -1,6 +1,6 @@
 version=0.2
 
-all: doc site content download
+all: doc site content archive resources
 
 doc:
 	mkdir -p documentation
@@ -10,7 +10,6 @@ site:
 	quasi -f . source/mt/*.txt
 
 content:
-	libexec/tools/generate_content.sh  share/content/_index                article  source/mt/purejavascript/1-Introduction.txt
 	libexec/tools/generate_content.sh  share/content/source                article  source/mt/purejavascript/2-Source.txt
 	libexec/tools/generate_content.sh  share/content/source                aside    source/mt/purejavascript/2.1-Outline.txt
 	libexec/tools/generate_content.sh  share/content/source-api_server     article  source/mt/purejavascript/*-APIServer.txt
@@ -40,11 +39,16 @@ content:
 	libexec/tools/generate_content.sh  share/content/source-setup          article  source/mt/purejavascript/*-Setup.txt
 	libexec/tools/generate_content.sh  share/content/source-string         article  source/mt/purejavascript/*-String.txt
 
-download:
+archive:
 	mkdir -p archive/js/purejavascript
-	mkdir -p share/resources/downloads
-	cat `find share/js -name "*.js"` > archive/js/purejavascript/purejavascript-$(version).js
-	cp -f archive/js/purejavascript/*.js share/resources/downloads
+	cat `find _gen/js -name "*.js"` > archive/js/purejavascript/purejavascript-$(version).js
+
+resources:
+	mkdir -p _resources/downloads
+	cp -f  archive/js/purejavascript/*.js _resources/downloads
+	cp -rf share/resources/thirdparty _resources
 
 clean:
-	rm -rf share
+	rm -rf _gen
+	rm -rf _resources
+	rm -rf share/content

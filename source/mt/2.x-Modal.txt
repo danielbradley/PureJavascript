@@ -2,7 +2,7 @@
 .. Modal (functions)
 
 !
-~!share/js/Modal.js~
+~!_gen/js/Modal.js~
 /*
  *  PureJavacript, Modal.js
  *
@@ -11,7 +11,7 @@
 ~
 !
 
-~share/js/Modal.js~
+~_gen/js/Modal.js~
 Modal        = {}
 Modal.Close  = CloseModals;
 Modal.Toggle = ToggleModal;
@@ -24,7 +24,7 @@ Modal.Toggle = ToggleModal;
 Modal.Close()
 |
 
-~share/js/Modal.js~
+~_gen/js/Modal.js~
 function CloseModals()
 {
 	var modal_bg = document.getElementById( "modal-bg" );
@@ -52,7 +52,7 @@ function CloseModals()
 Modal.Toggle( modalID )
 |
 
-~share/js/Modal.js~
+~_gen/js/Modal.js~
 function ToggleModal( modal_id )
 {
 	var modal    = document.getElementById( modal_id   );

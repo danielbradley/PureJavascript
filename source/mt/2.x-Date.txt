@@ -2,7 +2,7 @@
 .. Date
 
 !
-~!share/js/Datetime.js~
+~!_gen/js/Datetime.js~
 /*
  *  PureJavacript, Datetime.js
  *
@@ -11,7 +11,7 @@
 ~
 !
 
-~share/js/Datetime.js~
+~_gen/js/Datetime.js~
 Datetime         = {}
 Datetime.IsValid = DateIsValid
 Datetime.ToYMD   = YMDDate
@@ -24,7 +24,7 @@ Datetime.ToYMD   = YMDDate
 Datetime.IsValid( datetime )
 |
 
-~share/js/Datetime.js~
+~_gen/js/Datetime.js~
 function DateIsValid( $datetime )
 {
 	var is_date = false;
@@ -55,7 +55,7 @@ function DateIsValid( $datetime )
 Datetime.YMDDate( date_string )
 |
 
-~share/js/Datetime.js~
+~_gen/js/Datetime.js~
 function YMDDate( date_string )
 {
 	var ymd_date = null;
@@ -108,7 +108,7 @@ function YMDDate( date_string )
 
 ... Helper functions
 
-~share/js/Datetime.js~
+~_gen/js/Datetime.js~
 YMDDate.IsMonth
 =
 function( month )
