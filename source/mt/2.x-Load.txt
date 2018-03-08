@@ -34,17 +34,17 @@ function LoadInputFromImageFile( targetID, fileID, holderID )
 	
 	if ( target && file )
 	{
-		file.imageFile = new InputImageFile( fileID, null, function() { LoadInputFromImageFileHandler( targetID, fileID, holderID ); }, null );
+		file.imageFile = new InputFile( fileID, null, function() { LoadInputFromImageFileHandler( targetID, fileID, holderID ); }, null );
 	}
 }
 
 function LoadInputFromImageFileHandler( targetID, fileID, holderID )
 {
-	var target  = document.getElementById( targetID  );
-	var file    = document.getElementById( fileID   );
-	var holder  = document.getElementById( holderID );
+	var target = document.getElementById( targetID  );
+	var file   = document.getElementById( fileID   );
+	var holder = document.getElementById( holderID );
 
-	var base64 = Base64Encode( file.imageFile.reader.result );
+	var base64 = file.imageFile.reader.resultAsBase64;
 	var ext    = file.imageFile.fileType;
 	var url64  = "data:image/" + ext + ";base64," + base64;
 	
