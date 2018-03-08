@@ -289,9 +289,10 @@ Selects.Multiselect
 =
 function( kinds, value, handler )
 {
-	var parameters = new Object;
-		parameters.kinds  = kinds;
-		parameters.filter = value;
+	var search            = GetSearchValues();
+    var parameters        = new Object();
+    	parameters.kinds  = kinds;
+        parameters.filter = value ? value : search.filter ? search.filter : "";
 
 	var api_host = Selects.resolver();
 
