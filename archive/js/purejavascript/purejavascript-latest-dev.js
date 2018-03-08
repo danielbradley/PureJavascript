@@ -11,16 +11,19 @@ APIServer = Resolve;
 function Resolve()
 {
     var base_domain = Resolve.ExtractBaseDomain( location.hostname );
-	var dom = "";
+	var dom         = "";
+    var http_port   = Resolve.httpPort  ? Resolve.httpPort  : "80";
+    var https_port  = Resolve.httpsPort ? Resolve.httpsPort : "443";
+        https_port  = Resolve.IsLocalAPIServer() ? "8443" : https_port;
 
 	switch ( location.protocol )
 	{
 	case "http:":
-		dom = location.protocol + "//api-" + base_domain + ":8080";
+		dom = location.protocol + "//api" + base_domain + ":" + http_port;
 		break;
 
 	case "https:":
-		dom = location.protocol + "//api-" + base_domain + ":8443";
+        dom = location.protocol + "//api" + base_domain + ":" + https_port;
 		break;
 	}
 
@@ -42,7 +45,104 @@ function( domain )
 	{
 		base_domain = bits[1];
 	}
+
+    //  If base_domain == 'example.com'
+    if ( Resolve.IsRegisteredDomain( base_domain ) )
+    {
+        //  Then return '.example.com'
+        base_domain = "." + base_domain;
+    }
+    else    // If base_domain == 'myapp.example.com'
+    {
+        //  Then return '-myapp.example.com'
+        base_domain = "-" + base_domain;
+    }
+
 	return base_domain;
+}
+
+Resolve.IsLocalAPIServer
+=
+function()
+{
+    return (-1 !== location.hostname.indexOf( ".local" ));
+}
+
+Resolve.IsRegisteredDomain
+=
+function( domain )
+{
+    //  Could be:
+    //
+    //  1)           example            returns false
+    //  2)           example.com        returns true
+    //  3)           example.com.au     returns true
+    //  4)  mydomain.example.com        returns false
+    //  5)  mydomain.example.com.au     returns false
+
+    var bits = domain.split( "." );
+
+    switch ( bits.length )
+    {
+    case 1:
+        //  Is an invalid domain so return false.
+        return false;
+
+    case 2:
+        //  Is a registered domain if last bit is a TLD.
+        return Resolve.IsTopLevelDomain( bits[1] );
+
+    case 3:
+        //  Is a registered domain if last bit is a TLD.
+        return Resolve.IsSecondLevelDomainOf( bits[1], bits[2] );
+
+    default:
+        //  Any with more will not be registered domain.
+        return false;
+    }
+}
+
+Resolve.IsTopLevelDomain
+=
+function( tld )
+{
+    switch( tld )
+    {
+    case "com":
+    case "net":
+    case "online":
+    case "org":
+    case "xyz":
+        return true;
+
+    default:
+        return false;
+    }
+}
+
+Resolve.IsSecondLevelDomainOf
+=
+function( sld, tld )
+{
+    switch( tld )
+    {
+    case "au":
+        switch ( sld )
+        {
+        case "com":
+        case "net":
+        case "org":
+        case "info":
+            return true;
+
+        default:
+            return false;
+        }
+        break;
+
+    default:
+        return false;
+    }
 }
 
 /*
@@ -1691,7 +1791,7 @@ function purejavascript_Forms_Changed( event )
 {
     var input  = event.target;
     var form   = input.form;
-    var submit = document.querySelector( "BUTTON[type='submit']" );
+    var submit = form.querySelector( "BUTTON[type='submit']" );
 
     if ( submit )
     {
@@ -3136,17 +3236,17 @@ function LoadInputFromImageFile( targetID, fileID, holderID )
 	
 	if ( target && file )
 	{
-		file.imageFile = new InputImageFile( fileID, null, function() { LoadInputFromImageFileHandler( targetID, fileID, holderID ); }, null );
+		file.imageFile = new InputFile( fileID, null, function() { LoadInputFromImageFileHandler( targetID, fileID, holderID ); }, null );
 	}
 }
 
 function LoadInputFromImageFileHandler( targetID, fileID, holderID )
 {
-	var target  = document.getElementById( targetID  );
-	var file    = document.getElementById( fileID   );
-	var holder  = document.getElementById( holderID );
+	var target = document.getElementById( targetID  );
+	var file   = document.getElementById( fileID   );
+	var holder = document.getElementById( holderID );
 
-	var base64 = Base64Encode( file.imageFile.reader.result );
+	var base64 = file.imageFile.reader.resultAsBase64;
 	var ext    = file.imageFile.fileType;
 	var url64  = "data:image/" + ext + ";base64," + base64;
 	
@@ -3676,9 +3776,10 @@ Selects.Multiselect
 =
 function( kinds, value, handler )
 {
-	var parameters = new Object;
-		parameters.kinds  = kinds;
-		parameters.filter = value;
+	var search            = GetSearchValues();
+    var parameters        = new Object();
+    	parameters.kinds  = kinds;
+        parameters.filter = value ? value : search.filter ? search.filter : "";
 
 	var api_host = Selects.resolver();
 

@@ -1,8 +1,38 @@
-version=0.3
+version=1.2
 
 .PHONY: archive
 
-all: doc quasi content archive resources
+default:
+	echo "make dev | release | public"
+
+dev:     artifacts     dev_proxy copy
+
+release: artifacts release_proxy copy
+
+public:
+	rsync --delete -avz _content _resources ../../_Public/purejavascript.com
+
+copy:
+	mkdir -p _resources/downloads
+	cp -f  archive/js/purejavascript/*.js _resources/downloads
+	cp -rf share/resources/thirdparty _resources
+
+release_proxy: archive/js/purejavascript/purejavascript-$(version).js
+
+archive/js/purejavascript/purejavascript-$(version).js:
+	mkdir -p archive/js/purejavascript
+	cat `find _gen/js -name "*.js"` > archive/js/purejavascript/purejavascript-$(version).js
+	cp -f archive/js/purejavascript/purejavascript-$(version).js archive/js/purejavascript/purejavascript-latest.js
+
+dev_proxy: archive/js/purejavascript/purejavascript-$(version)-dev.js
+
+archive/js/purejavascript/purejavascript-$(version)-dev.js:
+	mkdir -p archive/js/purejavascript
+	cat `find _gen/js -name "*.js"` > archive/js/purejavascript/purejavascript-$(version)-dev.js
+	cp -f archive/js/purejavascript/purejavascript-$(version)-dev.js archive/js/purejavascript/purejavascript-latest-dev.js
+
+
+artifacts: doc quasi content
 
 doc:
 	mkdir -p _documentation
@@ -27,7 +57,7 @@ content:
 	libexec/tools/generate_content.sh  _content/source-element        article  source/mt/*-Element.txt
 	libexec/tools/generate_content.sh  _content/source-enum           article  source/mt/*-Enum.txt
 	libexec/tools/generate_content.sh  _content/source-filter         article  source/mt/*-Filter.txt
-	libexec/tools/generate_content.sh  _content/source-form           article  source/mt/*-Form.txt
+	libexec/tools/generate_content.sh  _content/source-forms          article  source/mt/*-Forms.txt
 	libexec/tools/generate_content.sh  _content/source-geocode        article  source/mt/*-Geocode.txt
 	libexec/tools/generate_content.sh  _content/source-helper         article  source/mt/*-Helper.txt
 	libexec/tools/generate_content.sh  _content/source-html_entities  article  source/mt/*-HTML_entities.txt
@@ -41,19 +71,6 @@ content:
 	libexec/tools/generate_content.sh  _content/source-selects        article  source/mt/*-Selects.txt
 	libexec/tools/generate_content.sh  _content/source-setup          article  source/mt/*-Setup.txt
 	libexec/tools/generate_content.sh  _content/source-string         article  source/mt/*-String.txt
-
-archive:
-	mkdir -p archive/js/purejavascript
-	cat `find _gen/js -name "*.js"` > archive/js/purejavascript/purejavascript-$(version).js
-
-resources:
-	mkdir -p _resources/downloads
-	cp -f  archive/js/purejavascript/*.js _resources/downloads
-	ln -sf _resources/downloads/purejavascript-$(version).js _resources/downloads/purejavascript-latest.js
-	cp -rf share/resources/thirdparty _resources
-
-public: all
-	rsync --delete -avz _content _resources ../../_Public/purejavascript.com
 
 clean:
 	rm -rf _documentation

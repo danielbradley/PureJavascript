@@ -1691,7 +1691,7 @@ function purejavascript_Forms_Changed( event )
 {
     var input  = event.target;
     var form   = input.form;
-    var submit = document.querySelector( "BUTTON[type='submit']" );
+    var submit = document.querySelector( "BUTTON[type='submit'" );
 
     if ( submit )
     {
@@ -1802,22 +1802,6 @@ function InsertResponseValues( formID, keyName, responseText )
 			InsertFormValues( form, json.results[0] );
 
 			status = true;
-
-            var submit = form.querySelector( "BUTTON[type='submit']" );
-            if ( submit )
-            {
-                submit.disabled = true;
-            }
-
-            for ( index in form.elements )
-            {
-                var input = form.elements[index];
-
-                if ( input.addEventListener )
-                {
-                    input.addEventListener( "change", Forms.Changed );
-                }
-            }
 		}
 	}
 	return status;
@@ -3287,6 +3271,11 @@ function Up( search_parameters )
 	var bits = location.pathname.split( "/" );
 	var path = "";
 
+    if ( null == search_parameters )
+    {
+        search_parameters = new Array();
+    }
+
 	switch ( bits.length )
 	{
 	case 0: // ""
@@ -3305,7 +3294,7 @@ function Up( search_parameters )
 
 	loc += path;
 
-    if ( null == search_parameters )
+    if ( 0 == search_parameters.length )
     {
         loc += location.search;
     }
