@@ -1,5 +1,5 @@
 
-.. Form (functions)
+.. Forms (functions)
 
 The Form module provides functions for manipulating forms such as the bulk retreival or setting of form field values.
 In particular, the Forms.InsertResponseValues function is a convenience function
@@ -20,6 +20,7 @@ and the function will fill in the values of that form, as appropriate.
 
 ~_gen/js/Forms.js~
 Forms                      = {}
+Forms.Changed              = purejavascript_Forms_Changed
 Forms.GetValues            = GetFormValues
 Forms.InsertResponseValues = InsertResponseValues
 Forms.InsertValues         = InsertFormValues
@@ -28,6 +29,34 @@ Forms.Submit               = Submit
 Forms.SubmitTableValues    = SubmitTableValues
 Forms.Validate             = Validate
 ~
+
+
+... Changed
+
+|
+Forms.Changed( event )
+|
+
+This function is called by input fields when they change in order to enable the submit button, if needed.
+
+~
+<input type='text' name='given_name' onchange='Forms.Changed( event );return false'>
+~
+
+~_gen/js/Forms.js~
+function purejavascript_Forms_Changed( event )
+{
+    var input  = event.target;
+    var form   = input.form;
+    var submit = document.querySelector( "BUTTON[type='submit'" );
+
+    if ( submit )
+    {
+        submit.disabled = false;
+    }
+}
+~
+
 
 
 ... Get Values
