@@ -16,7 +16,7 @@
 <li><a href='/source/element/'       >Element       </a>
 <li><a href='/source/enum/'          >Enum          </a>
 <li><a href='/source/filter/'        >Filter        </a>
-<li><a href='/source/form/'          >Form          </a>
+<li><a href='/source/forms/'         >Forms          </a>
 <li><a href='/source/geocode/'       >Geocode       </a>
 <li><a href='/source/helper/'        >Helper        </a>
 <li><a href='/source/html_entities/' >HTML Entities </a>
