@@ -2211,12 +2211,12 @@ SubmitTableValues.DoCall
 =
 function( endpoint, parameters, table, i, verify )
 {
-	var combined_parameters = SubmitTableValues.ConvertTRToParameters( parameters, table.rows[i] );
+	var parameters = SubmitTableValues.ConvertTRToParameters( parameters, table.rows[i] );
 
 	Call
 	(
 		endpoint,
-		combined_parameters,
+		parameters,
 		function ( responseText )
 		{
 			var table_copy = table;

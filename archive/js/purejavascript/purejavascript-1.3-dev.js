@@ -2183,7 +2183,7 @@ function( table, verify, i )
 
 SubmitTableValues.Handler
 =
-function( responseText, parameters, table, i, verify )
+function( responseText, table, i, verify )
 {
 	var endpoint = table.getAttribute( "data-url" );
 	var json     = JSON.parse( responseText );
@@ -2194,7 +2194,7 @@ function( responseText, parameters, table, i, verify )
 
 	if ( false !== i )
 	{
-		SubmitTableValues.DoCall( endpoint, parameters, table, i, verify );
+		SubmitTableValues.DoCall( endpoint, table, i, verify );
 	}
 	else
 	{
@@ -2211,19 +2211,19 @@ SubmitTableValues.DoCall
 =
 function( endpoint, parameters, table, i, verify )
 {
-	var combined_parameters = SubmitTableValues.ConvertTRToParameters( parameters, table.rows[i] );
+	var parameters = SubmitTableValues.ConvertTRToParameters( parameters, table.rows[i] );
 
 	Call
 	(
 		endpoint,
-		combined_parameters,
+		parameters,
 		function ( responseText )
 		{
 			var table_copy = table;
 			var i_copy     = i;
 			var v_copy     = verify;
 	 
-			SubmitTableValues.Handler( responseText, parameters, table_copy, i_copy, v_copy );
+			SubmitTableValues.Handler( responseText, table_copy, i_copy, v_copy );
 		}
 	);
 }
@@ -2254,8 +2254,7 @@ SubmitTableValues.ConvertTRToParameters
 =
 function( parameters, tr )
 {
-	var ret = Object.assign( {}, parameters );
-	var n   = tr.cells.length;
+	var n          = tr.cells.length;
 	
 	for ( var i=0; i < n; i++ )
 	{
@@ -2266,11 +2265,12 @@ function( parameters, tr )
 		
 			if ( key && val )
 			{
-				ret[key] = val;
+				parameters      = parameters ? parameters : new Object();
+				parameters[key] = val;
 			}
 		}
 	}
-	return ret;
+	return parameters;
 }
 
 SubmitTableValues.Finish

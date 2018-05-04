@@ -2211,12 +2211,12 @@ SubmitTableValues.DoCall
 =
 function( endpoint, parameters, table, i, verify )
 {
-	var combined_parameters = SubmitTableValues.ConvertTRToParameters( parameters, table.rows[i] );
+	var parameters = SubmitTableValues.ConvertTRToParameters( parameters, table.rows[i] );
 
 	Call
 	(
 		endpoint,
-		combined_parameters,
+		parameters,
 		function ( responseText )
 		{
 			var table_copy = table;
@@ -2254,7 +2254,7 @@ SubmitTableValues.ConvertTRToParameters
 =
 function( parameters, tr )
 {
-	var ret = Object.assign( {}, parameters );
+	var ret = Object.assign( parameters );
 	var n   = tr.cells.length;
 	
 	for ( var i=0; i < n; i++ )

@@ -2116,17 +2116,20 @@ function( responseText )
 
 function SubmitTableValues( event, verify )
 {
-	var target_id = event.target.getAttribute( "data-target" );
-	var table     = document.getElementById( target_id );
-	var endpoint  = table.getAttribute( "data-url" );
-	
+	var form       = event.target;
+	var target_id  = form.getAttribute( "data-target" );
+	var table      = document.getElementById( target_id );
+	var endpoint   = table.getAttribute( "data-url" );
+	var parameters = Forms.GetValues( form );
+
+
 	if ( table && table.rows && (1 < table.rows.length) )
 	{
 		var i = SubmitTableValues.NextVerifiedRow( table, verify, 0 );
 
 		if ( i )
 		{
-			SubmitTableValues.DoCall( endpoint, table, i, verify );
+			SubmitTableValues.DoCall( endpoint, parameters, table, i, verify );
 		}
 		else
 		{
@@ -2180,7 +2183,7 @@ function( table, verify, i )
 
 SubmitTableValues.Handler
 =
-function( responseText, table, i, verify )
+function( responseText, parameters, table, i, verify )
 {
 	var endpoint = table.getAttribute( "data-url" );
 	var json     = JSON.parse( responseText );
@@ -2191,7 +2194,7 @@ function( responseText, table, i, verify )
 
 	if ( false !== i )
 	{
-		SubmitTableValues.DoCall( endpoint, table, i, verify );
+		SubmitTableValues.DoCall( endpoint, parameters, table, i, verify );
 	}
 	else
 	{
@@ -2206,21 +2209,21 @@ function( responseText, table, i, verify )
 
 SubmitTableValues.DoCall
 =
-function( endpoint, table, i, verify )
+function( endpoint, parameters, table, i, verify )
 {
-	var parameters = SubmitTableValues.ConvertTRToParameters( table.rows[i] );
+	var combined_parameters = SubmitTableValues.ConvertTRToParameters( parameters, table.rows[i] );
 
 	Call
 	(
 		endpoint,
-		parameters,
+		combined_parameters,
 		function ( responseText )
 		{
 			var table_copy = table;
 			var i_copy     = i;
 			var v_copy     = verify;
 	 
-			SubmitTableValues.Handler( responseText, table_copy, i_copy, v_copy );
+			SubmitTableValues.Handler( responseText, parameters, table_copy, i_copy, v_copy );
 		}
 	);
 }
@@ -2249,10 +2252,10 @@ function( json, table, i )
 
 SubmitTableValues.ConvertTRToParameters
 =
-function( tr )
+function( parameters, tr )
 {
-	var parameters = false;
-	var n          = tr.cells.length;
+	var ret = Object.assign( {}, parameters );
+	var n   = tr.cells.length;
 	
 	for ( var i=0; i < n; i++ )
 	{
@@ -2263,12 +2266,11 @@ function( tr )
 		
 			if ( key && val )
 			{
-				parameters      = parameters ? parameters : new Object();
-				parameters[key] = val;
+				ret[key] = val;
 			}
 		}
 	}
-	return parameters;
+	return ret;
 }
 
 SubmitTableValues.Finish
