@@ -3209,10 +3209,11 @@ function LinksActivate( links, href, top_level_links )
             //  unless it is a 'top_level' link.
             //
 
-            var is_prefix = LinksActivate.IsPrefix( href, link.href );
-            var is_tll    = LinksActivate.TopLevelLinksContainsPrefixOfCurrentPage( top_level_links, href );
+            var is_prefix    = LinksActivate.IsPrefix( href, link.href );
+            var is_dashboard = LinksActivate.IsDashboard( link.href );
+            var is_tll       = LinksActivate.TopLevelLinksContainsPrefixOfCurrentPage( top_level_links, href );
 
-            if ( is_prefix && !is_tll )
+            if ( is_prefix && !(is_dashboard && is_tll) )
             {
                 link.className += ("" == link.className) ? "subactive" : " subactive";
             }
@@ -3225,6 +3226,13 @@ LinksActivate.IsPrefix
 function( string, prefix )
 {
     return (0 === string.indexOf( prefix ));
+}
+
+LinksActivate.IsDashboard
+=
+function( href )
+{
+    return (href == location.protocol + "//" + location.hostname + "/dashboard/" );
 }
 
 LinksActivate.TopLevelLinksContainsPrefixOfCurrentPage
