@@ -67,7 +67,10 @@ function LinksComplete( links, tuple )
 	{
 		var link = links[i];
 
-		link.href      = Replace( link.href,      tuple );
+        if ( link.href )
+        {
+    		link.href      = Replace( link.href,      tuple );
+        }
 		link.innerHTML = Replace( link.innerHTML, tuple );
 	}
 }
