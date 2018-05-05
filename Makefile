@@ -1,4 +1,4 @@
-version=1.8
+version=1.9
 
 .PHONY: archive
 
@@ -24,9 +24,7 @@ archive/js/purejavascript/purejavascript-$(version).js:
 	cat `find _gen/js -name "*.js"` > archive/js/purejavascript/purejavascript-$(version).js
 	cp -f archive/js/purejavascript/purejavascript-$(version).js archive/js/purejavascript/purejavascript-latest.js
 
-dev_proxy: archive/js/purejavascript/purejavascript-$(version)-dev.js
-
-archive/js/purejavascript/purejavascript-$(version)-dev.js:
+dev_proxy:
 	mkdir -p archive/js/purejavascript
 	cat `find _gen/js -name "*.js"` > archive/js/purejavascript/purejavascript-$(version)-dev.js
 	cp -f archive/js/purejavascript/purejavascript-$(version)-dev.js archive/js/purejavascript/purejavascript-latest-dev.js

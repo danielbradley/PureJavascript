@@ -25,29 +25,74 @@ Links.Activate( links, pathname )
 |
 
 ~_gen/js/Links.js~
-function LinksActivate( links, href )
+function LinksActivate( links, href, top_level_links )
 {
 	var n = links.length;
+
+    if ( !top_level_links ) top_level_links = [];
 	
 	for ( var i=0; i < n; i++ )
 	{
 		var link = links[i];
 
-        if ( link.href == href )
+        if ( link.href )
         {
-            link.className += ("" == link.className) ? "active" : " active";
-        }
+            if ( link.href == href )
+            {
+                link.className += ("" == link.className) ? "active" : " active";
+            }
 
-        if ( ((location.protocol + '//') != href) && (0 === href.indexOf(link.href)) )
-        {
-            var dashboard_url = location.protocol + '//' + location.hostname + '/dashboard/';
+            //
+            //  If href       = '/dashboard/some/directory/',
+            //  and link.href = '/dashboard/some/',
+            //
+            //  then it should have the class 'subactive' added,
+            //  indicating that the link is a parent directory of the current page
+            //  unless it is a 'top_level' link.
+            //
 
-            if ( dashboard_url != link.href )
+            var is_prefix = LinksActivate.IsPrefix( href, link.href );
+            var is_tll    = LinksActivate.TopLevelLinksContainsPrefixOfCurrentPage( top_level_links, href );
+
+            if ( is_prefix && !is_tll )
             {
                 link.className += ("" == link.className) ? "subactive" : " subactive";
             }
         }
 	}
+}
+
+LinksActivate.IsPrefix
+=
+function( string, prefix )
+{
+    return (0 === string.indexOf( prefix ));
+}
+
+LinksActivate.TopLevelLinksContainsPrefixOfCurrentPage
+=
+function( top_level_links, current_page )
+{
+    var r = false;
+    var n = top_level_links.length;
+
+    for ( var i=0; i < n; i++ )
+    {
+        if ( IsPrefix( current_page, top_level_links[i] ) )
+        {
+            r = true;
+            break;
+        }
+    }
+
+    return r;
+}
+
+LinksActivate.IsRootHref
+=
+function( href )
+{
+    return ((location.protocol + '//') == href);
 }
 ~
 
