@@ -83,6 +83,9 @@ Resolve.IsRegisteredDomain
 =
 function( domain )
 {
+    //  First remove '.local' if it is on domain.
+    domain = domain.replace( ".local", "" );
+
     //  Could be:
     //
     //  1)           example            returns false

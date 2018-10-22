@@ -240,8 +240,9 @@ CSVFile.LineReader.prototype.readLine
 =
 function()
 {
-	var line = false;
-	var loop = true;
+	var line     = false;
+	var loop     = true;
+	var in_quote = false;
 
 	if ( ++this.lines < this.limit )
 	{
@@ -252,10 +253,29 @@ function()
 			while ( this.pos < this.content.length )
 			{
 				var ch = this.content[this.pos++];
-				
+
+				if ( '"' == ch )
+				{
+					in_quote = !in_quote;
+					line += ch;
+				}
+				else
 				if ( '\n' == ch )
 				{
-					break;
+					if ( in_quote ) line += ch;
+					else            break;
+				}
+				else if ( '\r' == ch )
+				{
+					if ( in_quote ) line += ch;
+					else
+					{
+						if ( '\n' == this.content[this.pos] )
+						{
+							this.pos++;
+						}
+						break;
+					}
 				}
 				else
 				{

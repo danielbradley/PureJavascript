@@ -53,6 +53,10 @@ function ( file_id, progress_handler, onload_handler, onerror_handler )
 		this.fileType = "jpg";
 		break;
 
+    case "csv":
+        this.fileType = "csv";
+        break;
+
 	default:
 		this.fileType = "";
 	}

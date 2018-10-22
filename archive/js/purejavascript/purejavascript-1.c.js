@@ -72,6 +72,9 @@ Resolve.IsRegisteredDomain
 =
 function( domain )
 {
+    //  First remove '.local' if it is on domain.
+    domain = domain.replace( ".local", "" );
+
     //  Could be:
     //
     //  1)           example            returns false
@@ -2281,7 +2284,7 @@ SubmitTableValues.ConvertTRToParameters
 =
 function( parameters, tr )
 {
-	var ret = Object.assign( {}, parameters );
+	var ret = SubmitTableValues.ConvertTRToParameters.Clone( parameters );
 	var n   = tr.cells.length;
 	
 	for ( var i=0; i < n; i++ )
@@ -2297,6 +2300,21 @@ function( parameters, tr )
 			}
 		}
 	}
+	return ret;
+}
+
+SubmitTableValues.ConvertTRToParameters.Clone
+=
+function( obj )
+{
+	var ret = {};
+
+	for ( var name in obj )
+	{
+		var value = obj[name];
+		ret[name] = obj[name];
+	}
+
 	return ret;
 }
 
@@ -4053,10 +4071,11 @@ function( id, nr_columns, path, search )
     {
         var json  = JSON.parse( responseText );
         var tbody = document.getElementById( id );
-        
+
         if ( tbody && ("OK" == json.status) )
         {
-            var htm = Setup.CreateTableSetupFn.RetrieveTemplate( tbody );
+            var htm  = Setup.CreateTableSetupFn.RetrieveTemplate( id );
+            var htm2 = Setup.CreateTableSetupFn.RetrieveTemplate( id + "-tally" );
 
             if ( ! htm )
             {
@@ -4072,6 +4091,8 @@ function( id, nr_columns, path, search )
                 }
                 else
                 {
+                    var T = { t: null };
+
                     tbody.innerHTML = "";
                     
                     for ( var i=0; i < n; i++ )
@@ -4079,6 +4100,8 @@ function( id, nr_columns, path, search )
                         var e = document.createElement( "TR" );
                         var t = json.results[i];
                             t['i'] = i + 1;
+
+                        Setup.CreateTableSetupFn.AddT( T, t );
 
                         e.innerHTML = Replace( htm, t );
                         
@@ -4105,6 +4128,14 @@ function( id, nr_columns, path, search )
 
                         tbody.appendChild( e );
                     }
+
+                    if ( htm2 && T.t )
+                    {
+                        var e = document.createElement( "TR" );
+                            e.innerHTML = Replace( htm2, T.t );
+
+                        tbody.appendChild( e );
+                    }
                 }
             }
         }
@@ -4115,10 +4146,10 @@ function( id, nr_columns, path, search )
 
 Setup.CreateTableSetupFn.RetrieveTemplate
 =
-function( tbody )
+function( id )
 {
     var htm             = "";
-    var row_template_id = tbody.id + "-template";
+    var row_template_id = id + "-template";
     var template_tr     = document.getElementById( row_template_id );
 
     if ( template_tr )
@@ -4128,6 +4159,47 @@ function( tbody )
     
     return htm;
 }
+
+Setup.CreateTableSetupFn.AddT
+=
+function( T, t )
+{
+    if ( null == T.t )
+    {
+        T.t = Setup.CreateTableSetupFn.AddT.Clone( t );
+
+        for ( var key in T.t )
+        {
+            if ( isNaN( T.t[key] ) ) T.t[key] = "";
+        }
+    }
+    else
+    {
+        for ( var key in T.t )
+        {
+            if ( !isNaN( T.t[key] ) && !isNaN( t[key] ) )
+            {
+                T.t[key] = parseInt( T.t[key] ) + parseInt( t[key] );
+            }
+        }
+    }
+}
+
+Setup.CreateTableSetupFn.AddT.Clone
+=
+function( obj )
+{
+    var ret = {};
+
+    for ( var name in obj )
+    {
+        var value = obj[name];
+        ret[name] = obj[name];
+    }
+
+    return ret;
+}
+
 
 Setup.CreateFormSetupFn
 =

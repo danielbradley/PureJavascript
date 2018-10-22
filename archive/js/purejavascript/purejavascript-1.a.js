@@ -4053,10 +4053,11 @@ function( id, nr_columns, path, search )
     {
         var json  = JSON.parse( responseText );
         var tbody = document.getElementById( id );
-        
+
         if ( tbody && ("OK" == json.status) )
         {
-            var htm = Setup.CreateTableSetupFn.RetrieveTemplate( tbody );
+            var htm  = Setup.CreateTableSetupFn.RetrieveTemplate( id );
+            var htm2 = Setup.CreateTableSetupFn.RetrieveTemplate( id + "-tally" );
 
             if ( ! htm )
             {
@@ -4072,6 +4073,8 @@ function( id, nr_columns, path, search )
                 }
                 else
                 {
+                    var T = { t: null };
+
                     tbody.innerHTML = "";
                     
                     for ( var i=0; i < n; i++ )
@@ -4079,6 +4082,8 @@ function( id, nr_columns, path, search )
                         var e = document.createElement( "TR" );
                         var t = json.results[i];
                             t['i'] = i + 1;
+
+                        Setup.CreateTableSetupFn.AddT( T, t );
 
                         e.innerHTML = Replace( htm, t );
                         
@@ -4105,6 +4110,14 @@ function( id, nr_columns, path, search )
 
                         tbody.appendChild( e );
                     }
+
+                    if ( htm2 && T.t )
+                    {
+                        var e = document.createElement( "TR" );
+                            e.innerHTML = Replace( htm2, T.t );
+
+                        tbody.appendChild( e );
+                    }
                 }
             }
         }
@@ -4115,10 +4128,10 @@ function( id, nr_columns, path, search )
 
 Setup.CreateTableSetupFn.RetrieveTemplate
 =
-function( tbody )
+function( id )
 {
     var htm             = "";
-    var row_template_id = tbody.id + "-template";
+    var row_template_id = id + "-template";
     var template_tr     = document.getElementById( row_template_id );
 
     if ( template_tr )
@@ -4127,6 +4140,31 @@ function( tbody )
     }
     
     return htm;
+}
+
+Setup.CreateTableSetupFn.AddT
+=
+function( T, t )
+{
+    if ( null == T.t )
+    {
+        T.t = Object.assign( {}, t );
+
+        for ( var key in T.t )
+        {
+            if ( isNaN( T.t[key] ) ) T.t[key] = "";
+        }
+    }
+    else
+    {
+        for ( var key in T.t )
+        {
+            if ( !isNaN( T.t[key] ) && !isNaN( t[key] ) )
+            {
+                T.t[key] = parseInt( T.t[key] ) + parseInt( t[key] );
+            }
+        }
+    }
 }
 
 Setup.CreateFormSetupFn

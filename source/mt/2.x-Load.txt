@@ -48,7 +48,7 @@ function LoadInputFromImageFileHandler( targetID, fileID, holderID )
 	var ext    = file.imageFile.fileType;
 	var url64  = "data:image/" + ext + ";base64," + base64;
 	
-	target.value = url64;
+	target.value = url64.replace( '=', '' );
 
 	if ( holder )
 	{
@@ -93,7 +93,18 @@ LoadTableFromFile.OnLoad
 =
 function()
 {
-	if ( LoadTableFromFile.file )
+	if ( ! LoadTableFromFile.file )
+	{
+		console.log( "Unexpectedly, could not find file!" );
+	}
+	//else
+	//if ( "csv" != LoadTableFromFile.file.fileType )
+	//{
+	//	alert( "Please add a CSV (Comman Seperated Value) file - file of type " + LoadTableFromFile.file.fileType + " selecteed" );
+	//
+	//	location.reload();
+	//}
+	else
 	{
 		var table     = LoadTableFromFile.table;
 		var content   = Base64.Decode( LoadTableFromFile.file.reader.resultAsBase64 );
@@ -125,10 +136,6 @@ function()
 				tbody.appendChild( tr );
 			}
 		}
-	}
-	else
-	{
-		console.log( "Unexpectedly, could not find file!" );
 	}
 }
 ~

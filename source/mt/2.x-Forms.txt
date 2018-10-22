@@ -191,7 +191,34 @@ function InsertResponseValues( formID, keyName, responseText )
 
                 if ( input.addEventListener )
                 {
-                    input.addEventListener( "change", Forms.Changed );
+                	switch ( input.tagName )
+                	{
+                	case "SELECT":
+	                    input.addEventListener( "change", Forms.Changed );
+	                    break;
+
+	                case "INPUT":
+	                	switch ( input.type )
+	                	{
+		                case "checkbox":
+		                case "radio":
+		                case "file":
+		                    input.addEventListener( "change", Forms.Changed );
+		                    break;
+
+		                default:
+		                    input.addEventListener( "change", Forms.Changed );
+		                    input.addEventListener( "keyup",  Forms.Changed );
+		                }
+		                break;
+
+	                case "TEXTAREA":
+	                	input.addEventListener( "keyup",  Forms.Changed );
+	                	break;
+
+	                default:
+	                	break;
+	                }
                 }
             }
 		}
@@ -291,6 +318,50 @@ function InsertFormValues( form, object )
 			}
 		}
 	}
+
+	for ( var index in form.elements )
+	{
+		var input = form.elements[index];
+
+		if ( input.getAttribute )
+		{
+			if ( "true" == input.getAttribute( "data-required" ) )
+			{
+				switch( input.type )
+				{
+				case "radio":
+					if ( input.checked )
+					{
+						input.className += " desired";
+					}
+					break;
+
+				default:
+					if ( "" == input.value.trim() )
+					{
+						input.className += " desired";
+					}
+				}
+			}
+
+			if ( "true" == input.getAttribute( "data-confirmation" ) )
+			{
+				if ( "No" == input.value.trim() )
+				{
+					var target_id = input.getAttribute( "data-target" );
+					if ( target_id )
+					{
+						var target = document.getElementById( target_id );
+
+						if ( target )
+						{
+							target.className += " desired";
+						}
+					}
+				}
+			}
+		}
+	}
 }
 ~
 
@@ -361,7 +432,7 @@ function Submit( event, custom_handler )
 
 	var submit     = form.elements['submit'];
 
-	if ( submit && ("delete" == submit.value.toLowerCase()) )
+	if ( submit && submit.value && ("delete" == submit.value.toLowerCase()) )
 	{
 		if ( form && form.hasAttribute( "data-delete-url" ) )
 		{
@@ -566,7 +637,7 @@ SubmitTableValues.ConvertTRToParameters
 =
 function( parameters, tr )
 {
-	var ret = Object.assign( {}, parameters );
+	var ret = SubmitTableValues.ConvertTRToParameters.Clone( parameters );
 	var n   = tr.cells.length;
 	
 	for ( var i=0; i < n; i++ )
@@ -582,6 +653,21 @@ function( parameters, tr )
 			}
 		}
 	}
+	return ret;
+}
+
+SubmitTableValues.ConvertTRToParameters.Clone
+=
+function( obj )
+{
+	var ret = {};
+
+	for ( var name in obj )
+	{
+		var value = obj[name];
+		ret[name] = obj[name];
+	}
+
 	return ret;
 }
 

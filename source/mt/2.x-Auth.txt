@@ -41,14 +41,15 @@ https://api-example.com:8443/auth/login/&username=$username&password=$password
 ~
 
 It is expected that the reply will be JSON formatted with the following fields set:
-'status', 'sessionid', 'idtype', and 'email'; and if an error has occurred, 'error'; e.g.:
+'status', 'sessionid', 'idtype', 'group_code', and 'email'; and if an error has occurred, 'error'; e.g.:
 
 ~
 {
-    "status"    : "OK",
-    "sessionid" : "xxx",
-    "idtype"    : "USER",
-    "email"     : "joe@example.com"
+    "status"     : "OK",
+    "sessionid"  : "xxx",
+    "idtype"     : "USER",
+    "group_code" : "",
+    "email"      : "joe@example.com"
 }
 ~
 
@@ -75,13 +76,20 @@ The call takes no parameters, and will delete the 'idtype', 'sessionid', and 'em
 then call the '/auth/logout/' API endpoint.
 
 ~_gen/js/Auth.js~
-function Auth_Logout( event )
+function Auth_Logout( logout_api_url )
 {
 	Auth.UnsetIDTypeCookie();
 	Auth.UnsetSessionIDTypeCookie();
 	Auth.UnsetCookie( "email" );
 
-	Call( "/auth/logout/", new Array(), Auth.Logout.Handler );
+    if ( logout_api_url )
+    {
+        Call(  logout_api_url, new Array(), Auth.Logout.Handler );
+    }
+    else
+    {
+    	Call( "/auth/logout/", new Array(), Auth.Logout.Handler );
+    }
 }
 ~
 
@@ -95,13 +103,20 @@ Auth.LogoutAndReload()
 The Auth.LogoutAndReload function, as the name suggests, is identical to the Auth.Logout function except that the handler of the '/auth/logout/' call will also reload the page.
 
 ~_gen/js/Auth.js~
-function Auth_LogoutAndReload()
+function Auth_LogoutAndReload( logout_api_url )
 {
 	Auth.UnsetIDTypeCookie();
 	Auth.UnsetSessionIDTypeCookie();
 	Auth.UnsetCookie( "email" );
 
-	Call( "/auth/logout/", new Array(), Auth.LogoutAndReload.Handler );
+    if ( logout_api_url )
+    {
+        Call(  logout_api_url, new Array(), Auth.LogoutAndReload.Handler );
+    }
+    else
+    {
+        Call( "/auth/logout/", new Array(), Auth.LogoutAndReload.Handler );
+    }
 }
 ~
 
@@ -114,6 +129,22 @@ Auth.Login.Handler
 =
 function ( responseText )
 {
+    var json = JSON.parse( responseText );
+
+    if ( json.idtype )
+    {
+        Auth.Login.Handler.Orig( responseText );
+    }
+    else
+    {
+        Auth.Login.Handler.New( responseText );
+    }
+}
+
+Auth.Login.Handler.Orig
+=
+function ( responseText )
+{
 	if ( "" != responseText )
 	{
 		var obj = JSON.parse( responseText );
@@ -123,6 +154,7 @@ function ( responseText )
 			Auth.SetIDTypeCookie( obj.idtype );
 			Auth.SetSessionIDTypeCookie( obj.sessionid );
 			Auth.SetCookie( "email", obj.email, 1 );
+            Auth.SetCookie( "group_code", obj.group_code, 1 );
 
 			Redirect( obj.idtype ); // External Call
 		}
@@ -154,6 +186,48 @@ function ( responseText )
 	{
 		Auth.Logout();
 	}
+}
+
+Auth.Login.Handler.New
+=
+function( responseText )
+{
+    if ( "" != responseText )
+    {
+        var json = JSON.parse( responseText );
+
+        if ( "ERROR" == json.status )
+        {
+            switch ( json.error )
+            {
+            case "INVALID_CREDENTIALS":
+                alert( "Invalid username or password." );
+                break;
+
+            default:
+                alert( "An unexpected error occurred, please try again later." );
+            }
+        }
+        else if ( json.results && (1 !== json.results.length) )
+        {
+            alert( "Session was not returned as expected, please try again later." );
+        }
+        else
+        {
+            var obj = json.results[0];
+
+            if ( obj && obj.idtype )
+            {
+                Auth.SetIDTypeCookie( obj.idtype );
+                Auth.SetSessionIDTypeCookie(  obj.sessionid     );
+                Auth.SetCookie( "email",      obj.email,      1 );
+                Auth.SetCookie( "given",      obj.given_name, 1 );
+                Auth.SetCookie( "group_code", obj.group_code, 1 );
+
+                location.reload();   /*  Only line different from standard Auth.Login.Handler */
+            }
+        }
+    }
 }
 
 Auth.Logout.Handler

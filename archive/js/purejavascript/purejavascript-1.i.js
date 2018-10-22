@@ -72,6 +72,9 @@ Resolve.IsRegisteredDomain
 =
 function( domain )
 {
+    //  First remove '.local' if it is on domain.
+    domain = domain.replace( ".local", "" );
+
     //  Could be:
     //
     //  1)           example            returns false
@@ -334,22 +337,31 @@ Call.Post
 =
 function ( endpoint, command, handler, timeout, timeouts )
 {
-	var httpRequest = Call.CreateXMLHttpRequest( endpoint, command, handler, timeout, timeouts );
+	var httpRequest = Call.CreateXMLHttpRequest( "POST", endpoint, command, handler, timeout, timeouts );
+		httpRequest.send( command );
+}
+
+Call.Get
+=
+function ( endpoint, command, handler, timeout, timeouts )
+{
+	var httpRequest = Call.CreateXMLHttpRequest( "GET", endpoint, command, handler, timeout, timeouts );
 		httpRequest.send( command );
 }
 
 Call.CreateXMLHttpRequest
 =
-function( endpoint, command, handler, timeout, timeouts )
+function( method, endpoint, command, handler, timeout, timeouts )
 {
 	var httpRequest = new XMLHttpRequest();
-		httpRequest.open( "POST", endpoint, true );
-		httpRequest.withCredentials   = true;
+		httpRequest.open( method, endpoint, true );
 		httpRequest.timeout           = timeout;
 		httpRequest.timeouts          = timeouts;
 		httpRequest.myEndpoint        = endpoint;
 		httpRequest.myCommand         = command;
 		httpRequest.myResponseHandler = handler;
+
+		httpRequest.withCredentials = ("GET" != method) ? true : false;
 
 		httpRequest.onreadystatechange
 		=
@@ -379,7 +391,14 @@ function( endpoint, command, handler, timeout, timeouts )
 			}
 		}
 
+	if ( "GET" != method)
+	{
 		httpRequest.setRequestHeader( "Content-type", "application/x-www-form-urlencoded" );
+	}
+	else
+	{
+		httpRequest.setRequestHeader( "Content-type", "text/css" );
+	}
 
 	return httpRequest;
 }
@@ -792,8 +811,9 @@ CSVFile.LineReader.prototype.readLine
 =
 function()
 {
-	var line = false;
-	var loop = true;
+	var line     = false;
+	var loop     = true;
+	var in_quote = false;
 
 	if ( ++this.lines < this.limit )
 	{
@@ -804,14 +824,29 @@ function()
 			while ( this.pos < this.content.length )
 			{
 				var ch = this.content[this.pos++];
-				
+
+				if ( '"' == ch )
+				{
+					in_quote = !in_quote;
+					line += ch;
+				}
+				else
 				if ( '\n' == ch )
 				{
-					break;
+					if ( in_quote ) line += ch;
+					else            break;
 				}
 				else if ( '\r' == ch )
 				{
-					break;
+					if ( in_quote ) line += ch;
+					else
+					{
+						if ( '\n' == this.content[this.pos] )
+						{
+							this.pos++;
+						}
+						break;
+					}
 				}
 				else
 				{
@@ -1936,9 +1971,14 @@ function InsertResponseValues( formID, keyName, responseText )
 		                    break;
 
 		                default:
-		                    input.addEventListener( "keyup", Forms.Changed );
+		                    input.addEventListener( "change", Forms.Changed );
+		                    input.addEventListener( "keyup",  Forms.Changed );
 		                }
 		                break;
+
+	                case "TEXTAREA":
+	                	input.addEventListener( "keyup",  Forms.Changed );
+	                	break;
 
 	                default:
 	                	break;
@@ -2032,6 +2072,50 @@ function InsertFormValues( form, object )
 			}
 		}
 	}
+
+	for ( var index in form.elements )
+	{
+		var input = form.elements[index];
+
+		if ( input.getAttribute )
+		{
+			if ( "true" == input.getAttribute( "data-required" ) )
+			{
+				switch( input.type )
+				{
+				case "radio":
+					if ( input.checked )
+					{
+						input.className += " desired";
+					}
+					break;
+
+				default:
+					if ( "" == input.value.trim() )
+					{
+						input.className += " desired";
+					}
+				}
+			}
+
+			if ( "true" == input.getAttribute( "data-confirmation" ) )
+			{
+				if ( "No" == input.value.trim() )
+				{
+					var target_id = input.getAttribute( "data-target" );
+					if ( target_id )
+					{
+						var target = document.getElementById( target_id );
+
+						if ( target )
+						{
+							target.className += " desired";
+						}
+					}
+				}
+			}
+		}
+	}
 }
 
 function Save( event, handler )
@@ -2084,7 +2168,7 @@ function Submit( event, custom_handler )
 
 	var submit     = form.elements['submit'];
 
-	if ( submit && ("delete" == submit.value.toLowerCase()) )
+	if ( submit && submit.value && ("delete" == submit.value.toLowerCase()) )
 	{
 		if ( form && form.hasAttribute( "data-delete-url" ) )
 		{
@@ -2281,7 +2365,7 @@ SubmitTableValues.ConvertTRToParameters
 =
 function( parameters, tr )
 {
-	var ret = Object.assign( {}, parameters );
+	var ret = SubmitTableValues.ConvertTRToParameters.Clone( parameters );
 	var n   = tr.cells.length;
 	
 	for ( var i=0; i < n; i++ )
@@ -2297,6 +2381,21 @@ function( parameters, tr )
 			}
 		}
 	}
+	return ret;
+}
+
+SubmitTableValues.ConvertTRToParameters.Clone
+=
+function( obj )
+{
+	var ret = {};
+
+	for ( var name in obj )
+	{
+		var value = obj[name];
+		ret[name] = obj[name];
+	}
+
 	return ret;
 }
 
@@ -3097,6 +3196,10 @@ function ( file_id, progress_handler, onload_handler, onerror_handler )
 		this.fileType = "jpg";
 		break;
 
+    case "csv":
+        this.fileType = "csv";
+        break;
+
 	default:
 		this.fileType = "";
 	}
@@ -3362,7 +3465,18 @@ LoadTableFromFile.OnLoad
 =
 function()
 {
-	if ( LoadTableFromFile.file )
+	if ( ! LoadTableFromFile.file )
+	{
+		console.log( "Unexpectedly, could not find file!" );
+	}
+	//else
+	//if ( "csv" != LoadTableFromFile.file.fileType )
+	//{
+	//	alert( "Please add a CSV (Comman Seperated Value) file - file of type " + LoadTableFromFile.file.fileType + " selecteed" );
+	//
+	//	location.reload();
+	//}
+	else
 	{
 		var table     = LoadTableFromFile.table;
 		var content   = Base64.Decode( LoadTableFromFile.file.reader.resultAsBase64 );
@@ -3394,10 +3508,6 @@ function()
 				tbody.appendChild( tr );
 			}
 		}
-	}
-	else
-	{
-		console.log( "Unexpectedly, could not find file!" );
 	}
 }
 
@@ -4053,10 +4163,11 @@ function( id, nr_columns, path, search )
     {
         var json  = JSON.parse( responseText );
         var tbody = document.getElementById( id );
-        
+
         if ( tbody && ("OK" == json.status) )
         {
-            var htm = Setup.CreateTableSetupFn.RetrieveTemplate( tbody );
+            var htm  = Setup.CreateTableSetupFn.RetrieveTemplate( id );
+            var htm2 = Setup.CreateTableSetupFn.RetrieveTemplate( id + "-tally" );
 
             if ( ! htm )
             {
@@ -4072,6 +4183,8 @@ function( id, nr_columns, path, search )
                 }
                 else
                 {
+                    var T = { t: null };
+
                     tbody.innerHTML = "";
                     
                     for ( var i=0; i < n; i++ )
@@ -4079,6 +4192,8 @@ function( id, nr_columns, path, search )
                         var e = document.createElement( "TR" );
                         var t = json.results[i];
                             t['i'] = i + 1;
+
+                        Setup.CreateTableSetupFn.AddT( T, t );
 
                         e.innerHTML = Replace( htm, t );
                         
@@ -4105,6 +4220,14 @@ function( id, nr_columns, path, search )
 
                         tbody.appendChild( e );
                     }
+
+                    if ( htm2 && T.t )
+                    {
+                        var e = document.createElement( "TR" );
+                            e.innerHTML = Replace( htm2, T.t );
+
+                        tbody.appendChild( e );
+                    }
                 }
             }
         }
@@ -4115,10 +4238,10 @@ function( id, nr_columns, path, search )
 
 Setup.CreateTableSetupFn.RetrieveTemplate
 =
-function( tbody )
+function( id )
 {
     var htm             = "";
-    var row_template_id = tbody.id + "-template";
+    var row_template_id = id + "-template";
     var template_tr     = document.getElementById( row_template_id );
 
     if ( template_tr )
@@ -4128,6 +4251,47 @@ function( tbody )
     
     return htm;
 }
+
+Setup.CreateTableSetupFn.AddT
+=
+function( T, t )
+{
+    if ( null == T.t )
+    {
+        T.t = Setup.CreateTableSetupFn.AddT.Clone( t );
+
+        for ( var key in T.t )
+        {
+            if ( isNaN( T.t[key] ) ) T.t[key] = "";
+        }
+    }
+    else
+    {
+        for ( var key in T.t )
+        {
+            if ( !isNaN( T.t[key] ) && !isNaN( t[key] ) )
+            {
+                T.t[key] = parseInt( T.t[key] ) + parseInt( t[key] );
+            }
+        }
+    }
+}
+
+Setup.CreateTableSetupFn.AddT.Clone
+=
+function( obj )
+{
+    var ret = {};
+
+    for ( var name in obj )
+    {
+        var value = obj[name];
+        ret[name] = obj[name];
+    }
+
+    return ret;
+}
+
 
 Setup.CreateFormSetupFn
 =

@@ -25,7 +25,7 @@ function Session( Redirect )
 {
 	Session.Redirect = Redirect;
 
-	Call( "/auth/session/", new Array(), Session.Switch );
+	Call( "/api/auth/session/", new Array(), Session.Switch );
 }
 ~
 
@@ -68,6 +68,23 @@ function ( responseText )
 		var obj = JSON.parse( responseText );
 		if ( obj && obj.sessionid )
 		{
+			Session.USER        = obj.USER;
+			Session.email       = obj.email;
+			Session.sessionid   = obj.sessionid;
+			Session.idtype      = obj.idtype;
+			Session.given_name  = obj.given_name;
+			Session.family_name = obj.family_name;
+			Session.user_hash   = obj.user_hash;
+			Session.read_only   = obj.read_only;
+			Session.status      = "AUTHENTICATED";
+
+			idtype = Session.idtype;
+		}
+		else
+		if ( obj && obj.results && (1 == obj.results.length) && obj.results[0].sessionid )
+		{
+			var obj = obj.results[0];
+
 			Session.USER        = obj.USER;
 			Session.email       = obj.email;
 			Session.sessionid   = obj.sessionid;

@@ -51,22 +51,31 @@ Call.Post
 =
 function ( endpoint, command, handler, timeout, timeouts )
 {
-	var httpRequest = Call.CreateXMLHttpRequest( endpoint, command, handler, timeout, timeouts );
+	var httpRequest = Call.CreateXMLHttpRequest( "POST", endpoint, command, handler, timeout, timeouts );
+		httpRequest.send( command );
+}
+
+Call.Get
+=
+function ( endpoint, command, handler, timeout, timeouts )
+{
+	var httpRequest = Call.CreateXMLHttpRequest( "GET", endpoint, command, handler, timeout, timeouts );
 		httpRequest.send( command );
 }
 
 Call.CreateXMLHttpRequest
 =
-function( endpoint, command, handler, timeout, timeouts )
+function( method, endpoint, command, handler, timeout, timeouts )
 {
 	var httpRequest = new XMLHttpRequest();
-		httpRequest.open( "POST", endpoint, true );
-		httpRequest.withCredentials   = true;
+		httpRequest.open( method, endpoint, true );
 		httpRequest.timeout           = timeout;
 		httpRequest.timeouts          = timeouts;
 		httpRequest.myEndpoint        = endpoint;
 		httpRequest.myCommand         = command;
 		httpRequest.myResponseHandler = handler;
+
+		httpRequest.withCredentials = ("GET" != method) ? true : false;
 
 		httpRequest.onreadystatechange
 		=
@@ -96,7 +105,14 @@ function( endpoint, command, handler, timeout, timeouts )
 			}
 		}
 
+	if ( "GET" != method)
+	{
 		httpRequest.setRequestHeader( "Content-type", "application/x-www-form-urlencoded" );
+	}
+	else
+	{
+		httpRequest.setRequestHeader( "Content-type", "text/css" );
+	}
 
 	return httpRequest;
 }
