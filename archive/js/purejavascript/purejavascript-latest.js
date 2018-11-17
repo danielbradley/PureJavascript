@@ -277,6 +277,10 @@ function( responseText )
                 alert( "Invalid username or password." );
                 break;
 
+            case "INVALID_LOGINS":
+                alert( "Too many invalid logins have occurred. To reset your invalid login count, please reset your password." );
+                break;
+
             default:
                 alert( "An unexpected error occurred, please try again later." );
             }
@@ -394,6 +398,8 @@ function Base64Decode( base64 )
 
 function Call( endpoint, parameters, custom_handler )
 {
+	parameters['wab_requesting_url'] = location.protocol + "//" + location.host + location.pathname;
+
 	var command = Call.EncodeToString( parameters );
 	var handler = (custom_handler) ? custom_handler : Call.DoNothing;
 
@@ -946,9 +952,9 @@ function Datalist( elements )
 		var e = elements[i];
 	
 		if ( Class.Contains( e, "datalist" ) ) Datalist.Setup( e );
-	}
 
-	e.addEventListener( "keydown", Datalist.KeyHandler );
+		e.addEventListener( "keydown", Datalist.KeyHandler );
+	}
 }
 
 Datalist.Setup
@@ -985,53 +991,59 @@ function( datalist, responseText )
 	var json = JSON.parse( responseText );
 	var kind = datalist.getAttribute( "data-kind" );
 
-	var id = datalist.getAttribute( "id" );
-	var ul = document.createElement( "UL" );
-		ul.className = "datalist_list";
-		ul.setAttribute( "id", id + "-div" );
-		ul.style.display = "none";
-
-	datalist.parentNode.insertBefore( ul, datalist.nextSibling );
-	datalist.sublist  = ul;
-	//datalist.cascade  = onchange;
-	datalist.onchange = null;
-	
-	if ( "OK" == json.status )
+	if ( "" != kind )
 	{
-		var n = json.results.length;
+		datalist.setAttribute( "data-kind", "" );
 
-		for ( var i=0; i < n; i++ )
+		var id = datalist.getAttribute( "id" );
+		var ul = document.createElement( "UL" );
+			ul.className = "datalist_list";
+			ul.setAttribute( "id", id + "-div" );
+			ul.style.display = "none";
+
+		datalist.parentNode.insertBefore( ul, datalist.nextSibling );
+		datalist.sublist  = ul;
+		//datalist.cascade  = onchange;
+		datalist.onchange = null;
+		
+		if ( "OK" == json.status )
 		{
-			var tuple = json.results[i];
-			
-			if ( tuple.name == kind )
+			var n = json.results.length;
+
+			for ( var i=0; i < n; i++ )
 			{
-				var m = tuple.tuples.length;
+				var tuple = json.results[i];
 				
-				for ( var j=0; j < m; j++ )
+				if ( tuple.name == kind )
 				{
-					var li = document.createElement( "LI" );
-						li.innerHTML = tuple.tuples[j].text;
-						li.dataListItemType = "prefixed";
+					var m = tuple.tuples.length;
+					
+					/* Uncomment for a list of options that the search term is a prefix of.
+					for ( var j=0; j < m; j++ )
+					{
+						var li = document.createElement( "LI" );
+							li.innerHTML = tuple.tuples[j].text;
+							li.dataListItemType = "prefixed";
 
-					ul.appendChild( li );
+						ul.appendChild( li );
+					}
+					*/
+
+					for ( var j=0; j < m; j++ )
+					{
+						var li = document.createElement( "LI" );
+							li.innerHTML = tuple.tuples[j].text;
+							li.dataListItemType = "contains";
+
+						ul.appendChild( li );
+					}
+					break;
 				}
-
-				for ( var j=0; j < m; j++ )
-				{
-					var li = document.createElement( "LI" );
-						li.innerHTML = tuple.tuples[j].text;
-						li.dataListItemType = "contains";
-
-					ul.appendChild( li );
-				}
-
-				break;
 			}
 		}
+		
+		Datalist.SetupFunctions( datalist );
 	}
-	
-	Datalist.SetupFunctions( datalist );
 }
 
 Datalist.SetupFunctions
@@ -1144,6 +1156,7 @@ function( event )
 	if ( datalist )
 	{
 		datalist.value = li.innerHTML.trim().replace( "&amp;", "&" );
+		datalist.setCustomValidity( "" );
 
 		datalist_list.style.display = "none";
 		datalist_list.ignoreFocus   = true;
@@ -1913,7 +1926,11 @@ function( tbody_id, form )
     for ( var i=0; i < n; i++ )
     {
         var tr = rows[i];
+
+        if ( -1 == tr.className.indexOf( "hidden" ) )
+        {
             tr.style.display = Filter.TableBody.ContainsAll( tr, values ) ? "table-row" : "none";
+        }
     }
 }
 
@@ -2105,7 +2122,11 @@ function InsertResponseValues( formID, keyName, responseText )
 
 		if ( json && form && ("OK" == json.status) && (1 == json.results.length) )
 		{
-			InsertFormValues( form, json.results[0] );
+			var tuple = json.results[0];
+
+			form.disabled = ("1" === tuple["form_disabled"]);
+
+			InsertFormValues( form, tuple );
 
 			status = true;
 
@@ -2149,6 +2170,16 @@ function InsertResponseValues( formID, keyName, responseText )
 	                default:
 	                	break;
 	                }
+                }
+
+                if ( ! input.disabled ) input.disabled = form.disabled;
+
+                if ( input.className )
+                {
+                	if ( -1 !== input.className.indexOf( "do_not_disable" ) )
+                	{
+                		input.disabled = false;
+                	}
                 }
             }
 		}
@@ -4368,7 +4399,25 @@ function( id, nr_columns, path, search )
                 {
                     var T = { t: null };
 
-                    tbody.innerHTML = "";
+                    var loading = tbody.querySelector( "TR.loading" );
+                    if ( loading )
+                    {
+                        tbody.removeChild( loading )
+                    }
+                    else
+                    {
+                        var rows = tbody.querySelectorAll( "TR" );
+
+                        if ( 0 < rows.length )
+                        {
+                            var tds = rows[0].querySelectorAll( "TD" );
+
+                            if ( (0 < tds.length) && (-1 != tds[0].innerHTML.toLowerCase().indexOf( "loading" ) ) )
+                            {
+                                tbody.removeChild( rows[0] );
+                            }
+                        } 
+                    }
                     
                     for ( var i=0; i < n; i++ )
                     {
@@ -4513,6 +4562,29 @@ function( id )
             {
                 alert( "An unexpected error occurred while retrieving data" )
             }
+        }
+    }
+    
+    return fn;
+}
+
+Setup.CreateFormHandlerFn
+=
+function( id, handler, parameter )
+{
+    var fn
+    =
+    function( responseText )
+    {
+        var json = JSON.parse( responseText );
+
+        if ( "ERROR" == json.status )
+        {
+            alert( json.error );
+        }
+        else
+        {
+            handler( parameter );
         }
     }
     

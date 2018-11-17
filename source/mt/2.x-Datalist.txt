@@ -240,6 +240,7 @@ function( event )
 	if ( datalist )
 	{
 		datalist.value = li.innerHTML.trim().replace( "&amp;", "&" );
+		datalist.setCustomValidity( "" );
 
 		datalist_list.style.display = "none";
 		datalist_list.ignoreFocus   = true;

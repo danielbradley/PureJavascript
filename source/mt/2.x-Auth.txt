@@ -204,6 +204,10 @@ function( responseText )
                 alert( "Invalid username or password." );
                 break;
 
+            case "INVALID_LOGINS":
+                alert( "Too many invalid logins have occurred. To reset your invalid login count, please reset your password." );
+                break;
+
             default:
                 alert( "An unexpected error occurred, please try again later." );
             }

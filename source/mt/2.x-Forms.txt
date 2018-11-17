@@ -175,7 +175,11 @@ function InsertResponseValues( formID, keyName, responseText )
 
 		if ( json && form && ("OK" == json.status) && (1 == json.results.length) )
 		{
-			InsertFormValues( form, json.results[0] );
+			var tuple = json.results[0];
+
+			form.disabled = ("1" === tuple["form_disabled"]);
+
+			InsertFormValues( form, tuple );
 
 			status = true;
 
@@ -219,6 +223,16 @@ function InsertResponseValues( formID, keyName, responseText )
 	                default:
 	                	break;
 	                }
+                }
+
+                if ( ! input.disabled ) input.disabled = form.disabled;
+
+                if ( input.className )
+                {
+                	if ( -1 !== input.className.indexOf( "do_not_disable" ) )
+                	{
+                		input.disabled = false;
+                	}
                 }
             }
 		}

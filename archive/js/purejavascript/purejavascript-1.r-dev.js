@@ -277,10 +277,6 @@ function( responseText )
                 alert( "Invalid username or password." );
                 break;
 
-            case "INVALID_LOGINS":
-                alert( "Too many invalid logins have occurred. To reset your invalid login count, please reset your password." );
-                break;
-
             default:
                 alert( "An unexpected error occurred, please try again later." );
             }
@@ -1156,7 +1152,6 @@ function( event )
 	if ( datalist )
 	{
 		datalist.value = li.innerHTML.trim().replace( "&amp;", "&" );
-		datalist.setCustomValidity( "" );
 
 		datalist_list.style.display = "none";
 		datalist_list.ignoreFocus   = true;
@@ -4562,29 +4557,6 @@ function( id )
             {
                 alert( "An unexpected error occurred while retrieving data" )
             }
-        }
-    }
-    
-    return fn;
-}
-
-Setup.CreateFormHandlerFn
-=
-function( id, handler, parameter )
-{
-    var fn
-    =
-    function( responseText )
-    {
-        var json = JSON.parse( responseText );
-
-        if ( "ERROR" == json.status )
-        {
-            alert( json.error );
-        }
-        else
-        {
-            handler( parameter );
         }
     }
     

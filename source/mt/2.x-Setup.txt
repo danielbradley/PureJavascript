@@ -250,6 +250,31 @@ function( id )
 }
 ~
 
+~_gen/js/Setup.js~
+Setup.CreateFormHandlerFn
+=
+function( id, handler, parameter )
+{
+    var fn
+    =
+    function( responseText )
+    {
+        var json = JSON.parse( responseText );
+
+        if ( "ERROR" == json.status )
+        {
+            alert( json.error );
+        }
+        else
+        {
+            handler( parameter );
+        }
+    }
+    
+    return fn;
+}
+~
+
 ... Helper functions
 
 ~_gen/js/Setup.js~

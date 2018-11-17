@@ -1,4 +1,4 @@
-version=1.p
+version=1.u
 
 .PHONY: archive
 
@@ -28,7 +28,6 @@ dev_proxy:
 	mkdir -p archive/js/purejavascript
 	cat `find _gen/js -name "*.js"` > archive/js/purejavascript/purejavascript-$(version)-dev.js
 	cp -f archive/js/purejavascript/purejavascript-$(version)-dev.js archive/js/purejavascript/purejavascript-latest-dev.js
-
 
 artifacts: doc quasi content
 
