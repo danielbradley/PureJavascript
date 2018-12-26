@@ -29,24 +29,39 @@ Locations.SearchValues( parameter_names )
 ~_gen/js/Locations.js~
 function GetSearchValues()
 {
-	var object = new Object;
-	
-	var bits = window.location.search.substring( 1 ).split( "&" );
-	var n    = bits.length;
-	
-	for ( var i=0; i < n; i++ )
-	{
-		var keyvalue = bits[i].split( "=" );
+    return GetSearchValues.CreateDictionary( window.location.search );
+}
+
+GetSearchValues.CreateDictionary
+=
+function( url_search_parameters )
+{
+    var object = new Object;
+    
+    var bits = url_search_parameters.substring( 1 ).split( "&" );
+    var n    = bits.length;
+    
+    for ( var i=0; i < n; i++ )
+    {
+        var keyvalue = bits[i].split( "=" );
 
         if ( 2 == keyvalue.length )
         {
-            var key      = decodeURIComponent( keyvalue[0] );
-            var value    = decodeURIComponent( keyvalue[1] );
+            var key = "";
+            var val = "";
 
-            object[key] = value;
+            try
+            {
+                key = decodeURIComponent( keyvalue[0] );
+                val = decodeURIComponent( keyvalue[1] );
+            }
+            catch ( err )
+            {}
+
+            if ( key && val ) object[key] = val;
         }
-	}
-	return object;
+    }
+    return object;
 }
 ~
 

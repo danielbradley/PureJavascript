@@ -1,4 +1,4 @@
-version=1.u
+version=1.w
 
 .PHONY: archive
 

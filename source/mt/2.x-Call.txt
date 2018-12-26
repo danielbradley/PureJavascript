@@ -34,6 +34,16 @@ function Call( endpoint, parameters, custom_handler )
 {
 	parameters['wab_requesting_url'] = location.protocol + "//" + location.host + location.pathname;
 
+	var search = endpoint.indexOf( "?" );
+	if ( -1 !== search )
+	{
+		var override_parameters = GetSearchValues.CreateDictionary( endpoint.substring( search ) );
+		for ( index in override_parameters )
+		{
+			parameters[index] = override_parameters[index];
+		}
+	}
+
 	var command = Call.EncodeToString( parameters );
 	var handler = (custom_handler) ? custom_handler : Call.DoNothing;
 
@@ -179,9 +189,9 @@ function( parameters )
 		if ( "" != member )
 		{
 			string += sep;
-			string += member;
+			string += encodeURIComponent( member );
 			string += "=";
-			string += parameters[member];
+			string += encodeURIComponent( parameters[member] );
 
 			sep = "&";
 		}

@@ -1,151 +1,832 @@
 /*
- *  PureJavacript, APIServer.js
+ *  PureJavacript, Geocode.js
  *
  *  Copyright 2014 - 2017, CrossAdaptive
- *
- *  License LGPL v2
  */
 
-APIServer = Resolve;
-
-function Resolve()
+function Geocode( latitude, longitude, handler )
 {
-    var base_domain = Resolve.ExtractBaseDomain( location.hostname );
-	var dom         = "";
-    var http_port   = Resolve.httpPort  ? Resolve.httpPort  : "80";
-    var https_port  = Resolve.httpsPort ? Resolve.httpsPort : "443";
-        https_port  = Resolve.IsLocalAPIServer() ? "8443" : https_port;
-
-	switch ( location.protocol )
-	{
-	case "http:":
-		dom = location.protocol + "//api" + base_domain + ":" + http_port;
-		break;
-
-	case "https:":
-        dom = location.protocol + "//api" + base_domain + ":" + https_port;
-		break;
-	}
-
-	return dom;
-}
-
-Resolve.ExtractBaseDomain
-=
-function( domain )
-{
-	var base_domain = "";
-	var bits = domain.split( "-" );
+	var GOOGLE_URL = "https://maps.googleapis.com";
 	
-	if ( 1 == bits.length )
+	var parameters = new Object();
+		parameters.latlng = latitude + "," + longitude;
+
+    /*
+     *  https://maps.googleapis.com/maps/api/geocode/json?latlng=40.714224,-73.961452&key=API_KEY
+     */
+
+	Call( GOOGLE_URL, "/maps/api/geocode/json/", parameters, handler );
+}
+
+/*
+ *  PureJavacript, Element.js
+ *
+ *  Copyright 2014 - 2017, CrossAdaptive
+ */
+
+Elements          = {}
+Elements.Toggle   = Toggle
+Elements.Show     = Toggle.Show
+Elements.Hide     = Toggle.Hide
+Elements.ShowHide = ShowHide;
+Elements.HideShow = null;
+
+function Toggle( id )
+{
+	var ret = null;
+	var e = document.getElementById( id );
+	
+	if ( e )
 	{
-		base_domain = bits[0];
+		if ( null === e.offsetParent )
+		{
+			ret = Toggle.Show( e );
+		}
+		else
+		{
+			ret = Toggle.Hide( e );
+		}
 	}
-	else
-	{
-		base_domain = bits[1];
-	}
-
-    //  If base_domain == 'example.com'
-    if ( Resolve.IsRegisteredDomain( base_domain ) )
-    {
-        //  Then return '.example.com'
-        base_domain = "." + base_domain;
-    }
-    else    // If base_domain == 'myapp.example.com'
-    {
-        //  Then return '-myapp.example.com'
-        base_domain = "-" + base_domain;
-    }
-
-	return base_domain;
+	
+	return ret;
 }
 
-Resolve.IsLocalAPIServer
+Toggle.Show
 =
-function()
+function ( e )
 {
-    return (-1 !== location.hostname.indexOf( ".local" ));
-}
-
-Resolve.IsRegisteredDomain
-=
-function( domain )
-{
-    //  First remove '.local' if it is on domain.
-    domain = domain.replace( ".local", "" );
-
-    //  Could be:
-    //
-    //  1)           example            returns false
-    //  2)           example.com        returns true
-    //  3)           example.com.au     returns true
-    //  4)  mydomain.example.com        returns false
-    //  5)  mydomain.example.com.au     returns false
-
-    var bits = domain.split( "." );
-
-    switch ( bits.length )
+    switch ( e.tagName )
     {
-    case 1:
-        //  Is an invalid domain so return false.
-        return false;
+    case "TABLE":
+        e.style.display    = "table";
+        break;
 
-    case 2:
-        //  Is a registered domain if last bit is a TLD.
-        return Resolve.IsTopLevelDomain( bits[1] );
+    case "TR":
+        e.style.display    = "table-row-group";
+        break;
 
-    case 3:
-        //  Is a registered domain if last bit is a TLD.
-        return Resolve.IsSecondLevelDomainOf( bits[1], bits[2] );
+    case "TH":
+        e.style.display    = "table-cell";
+        break;
 
-    default:
-        //  Any with more will not be registered domain.
-        return false;
-    }
-}
-
-Resolve.IsTopLevelDomain
-=
-function( tld )
-{
-    switch( tld )
-    {
-    case "com":
-    case "net":
-    case "online":
-    case "org":
-    case "xyz":
-        return true;
-
-    default:
-        return false;
-    }
-}
-
-Resolve.IsSecondLevelDomainOf
-=
-function( sld, tld )
-{
-    switch( tld )
-    {
-    case "au":
-        switch ( sld )
-        {
-        case "com":
-        case "net":
-        case "org":
-        case "info":
-            return true;
-
-        default:
-            return false;
-        }
+    case "TD":
+        e.style.display    = "table-cell";
         break;
 
     default:
-        return false;
+        e.style.display    = "block";
     }
+
+	e.style.visibility = "visible";
+
+	return true;
+}
+
+Toggle.Hide
+=
+function ( e )
+{
+	e.style.display    = "none";
+	e.style.visibility = "hidden";
+
+	return false;
+}
+
+Elements.HideShow
+=
+function ( cls, id )
+{
+    var elements = document.getElementsByClassName( cls );
+    var e        = document.getElementById( id );
+    var n        = elements.length;
+
+    for ( var i=0; i < n; i++ )
+    {
+        Toggle.Hide( elements[i] );
+
+        Class.RemoveClass( elements[i], "active" );
+    }
+
+    if ( e )
+    {
+        Toggle.Show( e );
+        Class.AddClass( e, "active" );
+    }
+
+    return false;
+}
+
+function ShowHide( id, show_id, hide_id )
+{
+	var self   = document.getElementById( id );
+	var show_e = document.getElementById( show_id );
+	var hide_e = document.getElementById( hide_id );
+	
+	if ( show_e && hide_e )
+	{
+		Toggle.Hide( hide_e );
+		Toggle.Show( show_e );
+	}
+
+	if ( self )
+	{
+		ShowHide.MakePeersInactive( self );
+		ShowHide.MakeActive( self );
+	}
+}
+
+ShowHide.MakePeersInactive
+=
+function( e )
+{
+	if ( e.parentNode && e.parentNode.parentNode )
+	{
+		var children = e.parentNode.parentNode.getElementsByTagName( "A" );
+		var n        = children.length;
+		
+		for ( var i=0; i < n; i++ )
+		{
+			var child = children[i];
+		
+			ShowHide.MakeInactive( child );
+		}
+	}
+}
+
+ShowHide.MakeActive
+=
+function( e )
+{
+	Class.AddClass( e, "active" );
+}
+
+ShowHide.MakeInactive
+=
+function( e )
+{
+	Class.RemoveClass( e, "active" );
+}
+
+/*
+ *  PureJavacript, InputFile.js
+ *
+ *  Copyright 2014 - 2017, CrossAdaptive
+ */
+
+function InputFile( file_id, progress_handler, onload_handler, onerror_handler )
+{
+	return new InputFile.Class( file_id, progress_handler, onload_handler, onerror_handler );
+}
+
+InputFile.Class
+=
+function ( file_id, progress_handler, onload_handler, onerror_handler )
+{
+	this.reader            = new FileReader();
+	this.reader.onprogress = progress_handler ? progress_handler : InputFile.OnProgress;
+	this.reader.onloadend  =  onload_handler ?   onload_handler : InputFile.OnLoad;
+	this.reader.onerror    =  onerror_handler ?  onerror_handler : InputFile.OnError;
+	this.count             = 0;
+
+	var input = document.getElementById( file_id );
+	var file  = input.files[0];
+
+	switch ( input.files[0].type.split( "/" )[1] )
+	{
+	case "png":
+		this.fileType = "png";
+		break;
+		
+	case "jpg":
+	case "jpeg":
+		this.fileType = "jpg";
+		break;
+
+    case "csv":
+        this.fileType = "csv";
+        break;
+
+	default:
+		this.fileType = "";
+	}
+
+    /*
+     *  Kludge to allow IE browsers to call 'readAsBinaryString', see:
+     *  https://stackoverflow.com/questions/31391207/javascript-readasbinarystring-function-on-e11
+     */
+
+    if ( FileReader.prototype.readAsBase64 === undefined )
+    {
+        FileReader.prototype.readAsBase64
+        =
+        function( file_input )
+        {
+            this.readAsArrayBuffer( file_input );
+        }
+
+        this.reader.onload
+        =
+        function( e )
+        {
+            var binary = "";
+            var bytes  = new Uint8Array( this.result );
+            var length = bytes.byteLength;
+
+            for ( var i=0; i < length; i++ )
+            {
+                binary += String.fromCharCode( bytes[i] )
+            }
+
+            this.resultAsBase64 = Base64.Encode( binary );
+        }
+    }
+
+    this.reader.readAsBase64( file );
+}
+
+InputFile.Class.prototype.getCount
+=
+function()
+{
+	return this.count;
+}
+
+InputFile.OnProgress
+=
+function()
+{
+	console.log( "InputFile: default onprogress handler" );
+}
+
+InputFile.OnLoad
+=
+function()
+{
+	console.log( "InputFile: default onload handler" );
+}
+
+InputFile.OnError
+=
+function()
+{
+	console.log( "InputFile: default onerror handler" );
+}
+
+/*
+ *  PureJavacript, Is.js
+ *
+ *  Copyright 2014 - 2017, CrossAdaptive
+ */
+
+Is        = {}
+Is.Date   = IsDate
+Is.Prefix = IsPrefix
+
+function IsDate( $datetime )
+{
+	var is_date = false;
+
+	switch ( $datetime )
+	{
+	case null:
+	case "NULL":
+	case "null":
+	case "":
+	case "0":
+	case "0000-00-00":
+	case "0000-00-00 00:00:00":
+		break;
+		
+	default:
+		is_date = true;
+	}
+
+	return is_date;
+}
+
+function IsPrefix( string, prefix )
+{
+	return (0 == string.indexOf( prefix ));
+}
+
+/*
+ *  PureJavacript, HTMLEntities.js
+ *
+ *  Copyright 2014 - 2017, CrossAdaptive
+ */
+
+HTMLEntities        = {}
+HTMLEntities.Encode = HTMLEntitiesEncode
+HTMLEntities.Decode = DecodeHTMLEntities
+
+/*
+ *	The following implementations were copied from the following opensource implementations:
+ *	
+ *	http://locutus.io/php/strings/htmlentities/
+ *	http://locutus.io/php/strings/get_html_translation_table/index.html
+ */
+
+function HTMLEntitiesEncode( string, quoteStyle, charset, doubleEncode )
+{
+	//  discuss at: http://locutus.io/php/htmlentities/
+	// original by: Kevin van Zonneveld (http://kvz.io)
+	//  revised by: Kevin van Zonneveld (http://kvz.io)
+	//  revised by: Kevin van Zonneveld (http://kvz.io)
+	// improved by: nobbler
+	// improved by: Jack
+	// improved by: Rafał Kukawski (http://blog.kukawski.pl)
+	// improved by: Dj (http://locutus.io/php/htmlentities:425#comment_134018)
+	// bugfixed by: Onno Marsman (https://twitter.com/onnomarsman)
+	// bugfixed by: Brett Zamir (http://brett-zamir.me)
+	//    input by: Ratheous
+	//      note 1: function is compatible with PHP 5.2 and older
+	//   example 1: htmlentities('Kevin & van Zonneveld')
+	//   returns 1: 'Kevin &amp; van Zonneveld'
+	//   example 2: htmlentities("foo'bar","ENT_QUOTES")
+	//   returns 2: 'foo&#039;bar'
+
+	var hashMap = HTMLEntitiesEncode.GetHTMLTranslationTable( 'HTML_ENTITIES', quoteStyle )
+
+	string = string === null ? '' : string + ''
+
+	if ( !hashMap )
+	{
+		return false
+	}
+
+	if ( quoteStyle && quoteStyle === 'ENT_QUOTES' )
+	{
+		hashMap["'"] = '&#039;'
+	}
+
+	doubleEncode = doubleEncode === null || !!doubleEncode
+
+	var regex = new RegExp('&(?:#\\d+|#x[\\da-f]+|[a-zA-Z][\\da-z]*);|[' + Object.keys(hashMap).join('').replace(/([()[\]{}\-.*+?^$|\/\\])/g, '\\$1') + ']','g')
+
+	return string.replace( regex,
+		function ( ent )
+		{
+			if ( ent.length > 1 )
+			{
+				return doubleEncode ? hashMap['&'] + ent.substr(1) : ent
+			}
+
+			return hashMap[ent]
+		}
+	)
+}
+
+function DecodeHTMLEntities( htmlEncodedString )
+{
+	var ret = htmlEncodedString;
+
+	if ( "string" == typeof htmlEncodedString )
+	{
+		var bits = htmlEncodedString.split( '&' );
+		var n    = bits.length;
+
+		if ( 1 < n )
+		{
+			for ( var i=0; i < n; i++ )
+			{
+				var s = bits[i].indexOf( ";" );
+
+				if ( -1 != s )
+				{
+					var bit = bits[i];
+					var bob = bit.substring( 0, s + 1 );
+
+					switch ( bob )
+					{
+					case "amp;":
+						bits[i] = "&"  + bit.substring( s + 1, bit.length );
+						break;
+						
+					case "quot;":
+						bits[i] = "\"" + bit.substring( s + 1, bit.length );
+						break;
+						
+					case "apos;":
+						bits[i] = "\'" + bit.substring( s + 1, bit.length );
+						break;
+						
+					case "lt;":
+						bits[i] = "<"  + bit.substring( s + 1, bit.length );
+						break;
+						
+					case "gt;":
+						bits[i] = ">"  + bit.substring( s + 1, bit.length );
+						break;
+
+					default:
+						bits[i] = DecodeHTMLEntities.DecodeEntity( bob ) + bit.substring( s + 1, bit.length );
+					}
+				}
+			}
+			ret = bits.join( "" );
+		}
+	}
+
+	return ret;
+}
+
+HTMLEntitiesEncode.GetHTMLTranslationTable
+=
+function( table, quoteStyle )
+{
+	// eslint-disable-line camelcase
+	//  discuss at: http://locutus.io/php/get_html_translation_table/
+	// original by: Philip Peterson
+	//  revised by: Kevin van Zonneveld (http://kvz.io)
+	// bugfixed by: noname
+	// bugfixed by: Alex
+	// bugfixed by: Marco
+	// bugfixed by: madipta
+	// bugfixed by: Brett Zamir (http://brett-zamir.me)
+	// bugfixed by: T.Wild
+	// improved by: KELAN
+	// improved by: Brett Zamir (http://brett-zamir.me)
+	//    input by: Frank Forte
+	//    input by: Ratheous
+	//      note 1: It has been decided that we're not going to add global
+	//      note 1: dependencies to Locutus, meaning the constants are not
+	//      note 1: real constants, but strings instead. Integers are also supported if someone
+	//      note 1: chooses to create the constants themselves.
+	//   example 1: get_html_translation_table('HTML_SPECIALCHARS')
+	//   returns 1: {'"': '&quot;', '&': '&amp;', '<': '&lt;', '>': '&gt;'}
+
+	var entities = {}
+	var hashMap = {}
+	var decimal
+	var constMappingTable = {}
+	var constMappingQuoteStyle = {}
+	var useTable = {}
+	var useQuoteStyle = {}
+
+	// Translate arguments
+	constMappingTable[0] = 'HTML_SPECIALCHARS'
+	constMappingTable[1] = 'HTML_ENTITIES'
+	constMappingQuoteStyle[0] = 'ENT_NOQUOTES'
+	constMappingQuoteStyle[2] = 'ENT_COMPAT'
+	constMappingQuoteStyle[3] = 'ENT_QUOTES'
+
+	useTable = !isNaN(table)
+	? constMappingTable[table]
+	: table
+	  ? table.toUpperCase()
+	  : 'HTML_SPECIALCHARS'
+
+	useQuoteStyle = !isNaN(quoteStyle)
+	? constMappingQuoteStyle[quoteStyle]
+	: quoteStyle
+	  ? quoteStyle.toUpperCase()
+	  : 'ENT_COMPAT'
+
+	if (useTable !== 'HTML_SPECIALCHARS' && useTable !== 'HTML_ENTITIES') {
+	throw new Error('Table: ' + useTable + ' not supported')
+	}
+
+	entities['38'] = '&amp;'
+	if (useTable === 'HTML_ENTITIES')
+	{
+		entities['160'] = '&nbsp;'
+		entities['161'] = '&iexcl;'
+		entities['162'] = '&cent;'
+		entities['163'] = '&pound;'
+		entities['164'] = '&curren;'
+		entities['165'] = '&yen;'
+		entities['166'] = '&brvbar;'
+		entities['167'] = '&sect;'
+		entities['168'] = '&uml;'
+		entities['169'] = '&copy;'
+		entities['170'] = '&ordf;'
+		entities['171'] = '&laquo;'
+		entities['172'] = '&not;'
+		entities['173'] = '&shy;'
+		entities['174'] = '&reg;'
+		entities['175'] = '&macr;'
+		entities['176'] = '&deg;'
+		entities['177'] = '&plusmn;'
+		entities['178'] = '&sup2;'
+		entities['179'] = '&sup3;'
+		entities['180'] = '&acute;'
+		entities['181'] = '&micro;'
+		entities['182'] = '&para;'
+		entities['183'] = '&middot;'
+		entities['184'] = '&cedil;'
+		entities['185'] = '&sup1;'
+		entities['186'] = '&ordm;'
+		entities['187'] = '&raquo;'
+		entities['188'] = '&frac14;'
+		entities['189'] = '&frac12;'
+		entities['190'] = '&frac34;'
+		entities['191'] = '&iquest;'
+		entities['192'] = '&Agrave;'
+		entities['193'] = '&Aacute;'
+		entities['194'] = '&Acirc;'
+		entities['195'] = '&Atilde;'
+		entities['196'] = '&Auml;'
+		entities['197'] = '&Aring;'
+		entities['198'] = '&AElig;'
+		entities['199'] = '&Ccedil;'
+		entities['200'] = '&Egrave;'
+		entities['201'] = '&Eacute;'
+		entities['202'] = '&Ecirc;'
+		entities['203'] = '&Euml;'
+		entities['204'] = '&Igrave;'
+		entities['205'] = '&Iacute;'
+		entities['206'] = '&Icirc;'
+		entities['207'] = '&Iuml;'
+		entities['208'] = '&ETH;'
+		entities['209'] = '&Ntilde;'
+		entities['210'] = '&Ograve;'
+		entities['211'] = '&Oacute;'
+		entities['212'] = '&Ocirc;'
+		entities['213'] = '&Otilde;'
+		entities['214'] = '&Ouml;'
+		entities['215'] = '&times;'
+		entities['216'] = '&Oslash;'
+		entities['217'] = '&Ugrave;'
+		entities['218'] = '&Uacute;'
+		entities['219'] = '&Ucirc;'
+		entities['220'] = '&Uuml;'
+		entities['221'] = '&Yacute;'
+		entities['222'] = '&THORN;'
+		entities['223'] = '&szlig;'
+		entities['224'] = '&agrave;'
+		entities['225'] = '&aacute;'
+		entities['226'] = '&acirc;'
+		entities['227'] = '&atilde;'
+		entities['228'] = '&auml;'
+		entities['229'] = '&aring;'
+		entities['230'] = '&aelig;'
+		entities['231'] = '&ccedil;'
+		entities['232'] = '&egrave;'
+		entities['233'] = '&eacute;'
+		entities['234'] = '&ecirc;'
+		entities['235'] = '&euml;'
+		entities['236'] = '&igrave;'
+		entities['237'] = '&iacute;'
+		entities['238'] = '&icirc;'
+		entities['239'] = '&iuml;'
+		entities['240'] = '&eth;'
+		entities['241'] = '&ntilde;'
+		entities['242'] = '&ograve;'
+		entities['243'] = '&oacute;'
+		entities['244'] = '&ocirc;'
+		entities['245'] = '&otilde;'
+		entities['246'] = '&ouml;'
+		entities['247'] = '&divide;'
+		entities['248'] = '&oslash;'
+		entities['249'] = '&ugrave;'
+		entities['250'] = '&uacute;'
+		entities['251'] = '&ucirc;'
+		entities['252'] = '&uuml;'
+		entities['253'] = '&yacute;'
+		entities['254'] = '&thorn;'
+		entities['255'] = '&yuml;'
+	}
+
+	if (useQuoteStyle !== 'ENT_NOQUOTES')
+	{
+		entities['34'] = '&quot;'
+	}
+
+	if (useQuoteStyle === 'ENT_QUOTES')
+	{
+		entities['39'] = '&#39;'
+	}
+	entities['60'] = '&lt;'
+	entities['62'] = '&gt;'
+
+	// ascii decimals to real symbols
+	for (decimal in entities)
+	{
+		if (entities.hasOwnProperty(decimal))
+		{
+			hashMap[String.fromCharCode(decimal)] = entities[decimal]
+		}
+	}
+
+	return hashMap
+}
+
+DecodeHTMLEntities.DecodeEntity
+=
+function( entity )
+{
+	var ret = entity;
+
+	if ( 0 == entity.indexOf( "#" ) )
+	{
+		var entity2 = entity.substring( 1, entity.length );
+		var e       = entity2.indexOf( ";" );
+	
+		if ( (entity2.length - 1) == e )
+		{
+			var entity3 = entity2.substring( 0, entity2.length - 1 );
+			
+			var dec = parseInt( entity3 );
+			
+			if ( NaN !== dec )
+			{
+				ret = String.fromCharCode( dec );
+			}
+		}
+	}
+	
+	return ret;
+}
+
+/*
+ *  PureJavacript, Links.js
+ *
+ *  Copyright 2014 - 2017, CrossAdaptive
+ */
+
+Links          = {}
+Links.Activate = LinksActivate
+Links.Complete = LinksComplete
+
+function LinksActivate( links, href, top_level_links )
+{
+	var n = links.length;
+
+    if ( !top_level_links ) top_level_links = [];
+	
+	for ( var i=0; i < n; i++ )
+	{
+		var link = links[i];
+
+        if ( link.href )
+        {
+            if ( link.href == href )
+            {
+                link.className += ("" == link.className) ? "active" : " active";
+            }
+
+            //
+            //  If href       = '/dashboard/some/directory/',
+            //  and link.href = '/dashboard/some/',
+            //
+            //  then it should have the class 'subactive' added,
+            //  indicating that the link is a parent directory of the current page
+            //  unless it is a 'top_level' link.
+            //
+
+            var is_prefix    = LinksActivate.IsPrefix( href, link.href );
+            var is_dashboard = LinksActivate.IsDashboard( link.href );
+            var is_tll       = LinksActivate.TopLevelLinksContainsPrefixOfCurrentPage( top_level_links, href );
+
+            if ( is_prefix && !(is_dashboard && is_tll) )
+            {
+                link.className += ("" == link.className) ? "subactive" : " subactive";
+            }
+        }
+	}
+}
+
+LinksActivate.IsPrefix
+=
+function( string, prefix )
+{
+    return (0 === string.indexOf( prefix ));
+}
+
+LinksActivate.IsDashboard
+=
+function( href )
+{
+    return (href == location.protocol + "//" + location.hostname + "/dashboard/" );
+}
+
+LinksActivate.TopLevelLinksContainsPrefixOfCurrentPage
+=
+function( top_level_links, current_page )
+{
+    var r = false;
+    var n = top_level_links.length;
+
+    for ( var i=0; i < n; i++ )
+    {
+        if ( IsPrefix( current_page, top_level_links[i] ) )
+        {
+            r = true;
+            break;
+        }
+    }
+
+    return r;
+}
+
+LinksActivate.IsRootHref
+=
+function( href )
+{
+    return ((location.protocol + '//') == href);
+}
+
+function LinksComplete( links, tuple )
+{
+	var n = links.length;
+	
+	for ( var i=0; i < n; i++ )
+	{
+		var link = links[i];
+
+        if ( link.href )
+        {
+    		link.href      = Replace( link.href,      tuple );
+        }
+		link.innerHTML = Replace( link.innerHTML, tuple );
+	}
+}
+
+/*
+ *  PureJavacript, Session.js
+ *
+ *  Copyright 2014 - 2017, CrossAdaptive
+ */
+
+function Session( Redirect )
+{
+	Session.Redirect = Redirect;
+
+	Call( "/api/auth/session/", new Array(), Session.Switch );
+}
+
+Session.Switch
+=
+function( responseText )
+{
+	Session.Handler( responseText );
+
+	if ( Session.Redirect )
+	{
+		Session.Redirect( Session.idtype );
+	}
+}
+
+Session.Handler
+=
+function ( responseText )
+{
+	var idtype = "";
+
+	Session.idtype = "";
+
+	if ( -1 != responseText.indexOf( "UNAUTHENTICATED" ) )
+	{
+		Session.status = "UNAUTHENTICATED";
+	}
+	else
+	if ( -1 != responseText.indexOf( "INVALID_SESSION" ) )
+	{
+		Session.status = "INVALID_SESSION";
+	}
+	else
+	if ( "" != responseText )
+	{
+		var obj = JSON.parse( responseText );
+		if ( obj && obj.sessionid )
+		{
+			Session.USER        = obj.USER;
+			Session.email       = obj.email;
+			Session.sessionid   = obj.sessionid;
+			Session.idtype      = obj.idtype;
+			Session.given_name  = obj.given_name;
+			Session.family_name = obj.family_name;
+			Session.user_hash   = obj.user_hash;
+			Session.read_only   = obj.read_only;
+			Session.status      = "AUTHENTICATED";
+
+			idtype = Session.idtype;
+		}
+		else
+		if ( obj && obj.results && (1 == obj.results.length) && obj.results[0].sessionid )
+		{
+			var obj = obj.results[0];
+
+			Session.USER        = obj.USER;
+			Session.email       = obj.email;
+			Session.sessionid   = obj.sessionid;
+			Session.idtype      = obj.idtype;
+			Session.given_name  = obj.given_name;
+			Session.family_name = obj.family_name;
+			Session.user_hash   = obj.user_hash;
+			Session.read_only   = obj.read_only;
+			Session.status      = "AUTHENTICATED";
+
+			idtype = Session.idtype;
+		}
+		else
+		if ( obj && obj.error )
+		{
+			Session.status = obj["error"];
+		}
+	}
+
+	//Redirect( idtype );
 }
 
 /*
@@ -367,6 +1048,156 @@ function( cname, cvalue, exdays )
 }
 
 /*
+ *  PureJavacript, APIServer.js
+ *
+ *  Copyright 2014 - 2017, CrossAdaptive
+ *
+ *  License LGPL v2
+ */
+
+APIServer = Resolve;
+
+function Resolve()
+{
+    var base_domain = Resolve.ExtractBaseDomain( location.hostname );
+	var dom         = "";
+    var http_port   = Resolve.httpPort  ? Resolve.httpPort  : "80";
+    var https_port  = Resolve.httpsPort ? Resolve.httpsPort : "443";
+        https_port  = Resolve.IsLocalAPIServer() ? "8443" : https_port;
+
+	switch ( location.protocol )
+	{
+	case "http:":
+		dom = location.protocol + "//api" + base_domain + ":" + http_port;
+		break;
+
+	case "https:":
+        dom = location.protocol + "//api" + base_domain + ":" + https_port;
+		break;
+	}
+
+	return dom;
+}
+
+Resolve.ExtractBaseDomain
+=
+function( domain )
+{
+	var base_domain = "";
+	var bits = domain.split( "-" );
+	
+	if ( 1 == bits.length )
+	{
+		base_domain = bits[0];
+	}
+	else
+	{
+		base_domain = bits[1];
+	}
+
+    //  If base_domain == 'example.com'
+    if ( Resolve.IsRegisteredDomain( base_domain ) )
+    {
+        //  Then return '.example.com'
+        base_domain = "." + base_domain;
+    }
+    else    // If base_domain == 'myapp.example.com'
+    {
+        //  Then return '-myapp.example.com'
+        base_domain = "-" + base_domain;
+    }
+
+	return base_domain;
+}
+
+Resolve.IsLocalAPIServer
+=
+function()
+{
+    return (-1 !== location.hostname.indexOf( ".local" ));
+}
+
+Resolve.IsRegisteredDomain
+=
+function( domain )
+{
+    //  First remove '.local' if it is on domain.
+    domain = domain.replace( ".local", "" );
+
+    //  Could be:
+    //
+    //  1)           example            returns false
+    //  2)           example.com        returns true
+    //  3)           example.com.au     returns true
+    //  4)  mydomain.example.com        returns false
+    //  5)  mydomain.example.com.au     returns false
+
+    var bits = domain.split( "." );
+
+    switch ( bits.length )
+    {
+    case 1:
+        //  Is an invalid domain so return false.
+        return false;
+
+    case 2:
+        //  Is a registered domain if last bit is a TLD.
+        return Resolve.IsTopLevelDomain( bits[1] );
+
+    case 3:
+        //  Is a registered domain if last bit is a TLD.
+        return Resolve.IsSecondLevelDomainOf( bits[1], bits[2] );
+
+    default:
+        //  Any with more will not be registered domain.
+        return false;
+    }
+}
+
+Resolve.IsTopLevelDomain
+=
+function( tld )
+{
+    switch( tld )
+    {
+    case "com":
+    case "net":
+    case "online":
+    case "org":
+    case "xyz":
+        return true;
+
+    default:
+        return false;
+    }
+}
+
+Resolve.IsSecondLevelDomainOf
+=
+function( sld, tld )
+{
+    switch( tld )
+    {
+    case "au":
+        switch ( sld )
+        {
+        case "com":
+        case "net":
+        case "org":
+        case "info":
+            return true;
+
+        default:
+            return false;
+        }
+        break;
+
+    default:
+        return false;
+    }
+}
+
+/*
  *  PureJavacript, Base64.js
  *
  *  Copyright 2014 - 2017, CrossAdaptive
@@ -389,6 +1220,123 @@ function Base64Decode( base64 )
 }
 
 /*
+ *  PureJavacript, Datetime.js
+ *
+ *  Copyright 2014 - 2017, CrossAdaptive
+ */
+
+Datetime         = {}
+Datetime.IsValid = DateIsValid
+Datetime.ToYMD   = YMDDate
+
+function DateIsValid( $datetime )
+{
+	var is_date = false;
+
+	switch ( $datetime )
+	{
+	case null:
+	case "NULL":
+	case "null":
+	case "":
+	case "0":
+	case "0000-00-00":
+	case "0000-00-00 00:00:00":
+		break;
+		
+	default:
+		is_date = true;
+	}
+
+	return is_date;
+}
+
+function YMDDate( date_string )
+{
+	var ymd_date = null;
+	var ymd      = new Array();
+
+	date_string = date_string.replace( /%2F/g, "/" );
+	
+	if ( -1 !== date_string.indexOf( "/" ) )
+	{
+		var parts = date_string.split( "/" );
+		
+		switch ( parts.length )
+		{
+		case 3:
+			ymd[0] = (2 == parts[2].length) ? "20" + parts[2] : parts[2];
+			ymd[1] = parts[1];
+			ymd[2] = parts[0];
+			break;
+			
+		case 2:
+			ymd[0] = new Date().getFullYear();
+			ymd[1] = parts[1];
+			ymd[2] = parts[0];
+		}
+	}
+	else
+	if ( -1 !== date_string.indexOf( "-" ) )
+	{
+		ymd = date_string.split( "-" );
+	}
+	
+	if ( 3 == ymd.length )
+	{
+		if ( (3 == ymd.length) && (4 == ymd[0].length) && (2 == ymd[1].length) && (2 == ymd[2].length) )
+		{
+			var year  = parseInt( ymd[0] );
+			var month = parseInt( ymd[1] );
+			var day   = parseInt( ymd[2] );
+
+			if ( YMDDate.IsMonth( month ) && YMDDate.IsDayOfMonth( day, month ) )
+			{
+				ymd_date = ymd.join( '-' );
+			}
+		}
+	}
+	
+	return ymd_date;
+}
+
+YMDDate.IsMonth
+=
+function( month )
+{
+	return (1 <= month) && (month <= 12);
+}
+
+YMDDate.IsDayOfMonth
+=
+function( day, month )
+{
+	switch ( month )
+	{
+	case 1:
+	case 3:
+	case 5:
+	case 7:
+	case 8:
+	case 10:
+	case 12:
+		return (1 <= day) && (day <= 31);
+
+	case 4:
+	case 6:
+	case 9:
+	case 11:
+		return (1 <= day) && (day <= 30);
+
+	case 2:
+		return (1 <= day) && (day <= 29);
+
+	default:
+		return false;
+	}
+}
+
+/*
  *  PureJavacript, Call.js
  *
  *  Copyright 2014 - 2017, CrossAdaptive
@@ -399,6 +1347,16 @@ function Base64Decode( base64 )
 function Call( endpoint, parameters, custom_handler )
 {
 	parameters['wab_requesting_url'] = location.protocol + "//" + location.host + location.pathname;
+
+	var search = endpoint.indexOf( "?" );
+	if ( -1 !== search )
+	{
+		var override_parameters = GetSearchValues.CreateDictionary( endpoint.substring( search ) );
+		for ( index in override_parameters )
+		{
+			parameters[index] = override_parameters[index];
+		}
+	}
 
 	var command = Call.EncodeToString( parameters );
 	var handler = (custom_handler) ? custom_handler : Call.DoNothing;
@@ -541,9 +1499,9 @@ function( parameters )
 		if ( "" != member )
 		{
 			string += sep;
-			string += member;
+			string += encodeURIComponent( member );
 			string += "=";
-			string += parameters[member];
+			string += encodeURIComponent( parameters[member] );
 
 			sep = "&";
 		}
@@ -557,384 +1515,993 @@ function ()
 {}
 
 /*
- *  PureJavacript, Class.js
+ *  PureJavacript, Load.js
  *
  *  Copyright 2014 - 2017, CrossAdaptive
  */
 
-Class             = {}
-Class.AddClass    = AddClass;
-Class.RemoveClass = RemoveClass;
+Load           = {}
+Load.ImageFile = LoadInputFromImageFile
+Load.Table     = LoadTableFromFile
 
-function AddClass( e, className )
+function LoadInputFromImageFile( targetID, fileID, holderID )
 {
-	if ( ! Class.Contains( e, className ) )
-	{
-		if ( "" == e.className )
-		{
-			e.className = className;
-		}
-		else
-		{
-			e.className += " " + className;
-		}
-	}
-}
-
-function RemoveClass( e, className )
-{
-	if ( Class.Contains( e, className ) )
-	{
-		e.className = Class.Remove( e.className, className );
-	}
-}
-
-Class.Remove
-=
-function( hay, needle )
-{
-	var ret = hay.replace( needle, "" ).trim();
-
-	while ( -1 != ret.indexOf( "  " ) )
-	{
-		ret = ret.replace( "  ", " " );
-	}
+	var target = document.getElementById( targetID );
+	var file   = document.getElementById( fileID  );
 	
-	return ret;
+	if ( target && file )
+	{
+		file.imageFile = new InputFile( fileID, null, function() { LoadInputFromImageFileHandler( targetID, fileID, holderID ); }, null );
+	}
 }
 
-Class.Contains
-=
-function( e, className )
+function LoadInputFromImageFileHandler( targetID, fileID, holderID )
 {
-	//
-	//	AddClass.Contains( { className="cls active" }, "active' );
-	//
-	//	var st = 10 - 6;
-	//
-	//	0123456789
-	//	cls active
-	//	01234
+	var target = document.getElementById( targetID  );
+	var file   = document.getElementById( fileID   );
+	var holder = document.getElementById( holderID );
 
-	var contains = false;
+	var base64 = file.imageFile.reader.resultAsBase64;
+	var ext    = file.imageFile.fileType;
+	var url64  = "data:image/" + ext + ";base64," + base64;
+	
+	target.value = url64.replace( '=', '' );
 
-	if ( e.className && className )
+	if ( holder )
 	{
-		var st = (e.className.length - className.length) - 1;
+		holder.style.background     = "white url(" + url64 + ") no-repeat center center";
+		holder.style.backgroundSize = "cover";
+	}
+}
 
-		if ( className == e.className )
+function LoadTableFromFile( event )
+{
+	var table_id = event.target.getAttribute( "data-target-id" );
+	var table    = document.getElementById( table_id );
+	
+	if ( table )
+	{
+		var id = event.target.id;
+		
+		LoadTableFromFile.table = table;
+		LoadTableFromFile.file  = InputFile( id, null, LoadTableFromFile.OnLoad, null );
+	}
+}
+
+LoadTableFromFile.OnLoad
+=
+function()
+{
+	if ( ! LoadTableFromFile.file )
+	{
+		console.log( "Unexpectedly, could not find file!" );
+	}
+	//else
+	//if ( "csv" != LoadTableFromFile.file.fileType )
+	//{
+	//	alert( "Please add a CSV (Comman Seperated Value) file - file of type " + LoadTableFromFile.file.fileType + " selecteed" );
+	//
+	//	location.reload();
+	//}
+	else
+	{
+		var table     = LoadTableFromFile.table;
+		var content   = Base64.Decode( LoadTableFromFile.file.reader.resultAsBase64 );
+		var csv_file  = new CSVFile( content );
+		var col_specs = LoadTableFromFile.ExtractColumnSpecs( LoadTableFromFile.table );
+		var tbody     = table.tBodies[0];
+
+		var rows      = csv_file.getNrOfRows();
+
+		if ( 0 < rows )
 		{
-			contains = true;
-		}
-		else
-		if ( 0 <= st )
-		{
-			if ( -1 != e.className.indexOf( " " + className + " " ) )
+			tbody.innerHTML = "";
+		
+			for ( var row=0; row < rows; row++ )
 			{
-				contains = true;
-			}
-			else
-			if ( 0 == e.className.indexOf( className + " " ) )
-			{
-				contains = true;
-			}
-			else
-			if ( st == e.className.indexOf( " " + className ) )
-			{
-				contains = true;
+				var tr = document.createElement( "TR" );
+				var n  = col_specs.length;
+				
+				for ( var i=0; i < n; i++ )
+				{
+					var spec           = col_specs[i];
+					var td             = document.createElement( "TD" );
+						td.innerHTML   = HTMLEntitiesEncode( csv_file.getValueFor( row, spec.source_names ), 'ENT_QUOTES', 'UTF8', true );
+						td.setAttribute( "data-name", spec.field );
+
+					tr.appendChild( td );
+				}
+			
+				tbody.appendChild( tr );
 			}
 		}
 	}
-	return contains;
+}
+
+LoadTableFromFile.ExtractColumnSpecs
+=
+function( table )
+{
+	var col_specs   = new Array();
+	var th_elements = table.getElementsByTagName( "TH" );
+	var n           = th_elements.length;
+	
+	for ( var i=0; i < n; i++ )
+	{
+		var th           = th_elements[i];
+		var field        = th.getAttribute( "data-field" );
+		var source_names = th.getAttribute( "data-source-names" );
+
+		var col_spec                 = new Object();
+			col_spec['field']        = field;
+			col_spec['source_names'] = source_names.split( "," );
+
+		col_specs.push( col_spec );
+	}
+	return col_specs;
 }
 
 /*
- *  PureJavacript, Cookie.js
+ *  PureJavacript, Enum.js
+ *
+ *  Copyright 2017, CrossAdaptive
+ */
+
+function Enum( values )
+{
+    var e = {}
+    var n = values.length;
+
+    for ( var i=0; i < n; i++ )
+    {
+        var name = values[i]
+
+        e[name] = name;
+    }
+
+    return e;
+}
+
+/*
+ *  PureJavacript, String.js
  *
  *  Copyright 2014 - 2017, CrossAdaptive
  */
 
-Cookie            = {}
-Cookie.Get        = GetCookie
-Cookie.Set        = SetCookie
-Cookie.Unset      = UnsetCookie
+Strings = {}
+Strings.EndsWith     = StringEndsWith
+Strings.StartsWith   = StringStartsWith
+Strings.StripUnicode = StringStripUnicode
+Strings.Truncate     = StringTruncate
 
-function GetCookie( search )
+function StringEndsWith( string, suffix )
 {
-    var key = "";
-    var val = "";
+	var n = string.length;
+	var s = suffix.length;
+	var i = string.indexOf( suffix );
 
-    if ( "" != search )
+	return (i == (n - s));
+}
+
+function StringStartsWith( string, prefix )
+{
+    return (0 === string.indexOf( prefix ));
+}
+
+function StringStripUnicode( s )
+{
+	var r = "";
+	var l = "";
+	var n = s.length;
+	
+	for ( var i=0; i < n; i++ )
+	{
+		try {
+			if ( s.charCodeAt( i ) <= 255 )
+			{
+				r += s.charAt( i );
+				l += "#";
+			}
+			else
+			{
+				l += "U";
+			}
+		}
+		catch (err)
+		{}
+	}
+	
+	console.log( l );
+	
+	return r;
+}
+
+function StringTruncate( text, max_length )
+{
+	if ( text && (text.length > max_length) )
+	{
+		text = text.substring( 0, max_length - 3 ) + "...";
+	}
+	return text;
+}
+
+/*
+ *  PureJavacript, Locations.js
+ *
+ *  Copyright 2014 - 2017, CrossAdaptive
+ */
+
+Locations              = {}
+Locations.SearchValues = GetSearchValues
+Locations.SearchValue  = GetSearchValue
+Locations.Up           = Up
+Locations.CreateDownFn = CreateDownFn
+Locations.Down         = Down
+
+function GetSearchValues()
+{
+    return GetSearchValues.CreateDictionary( window.location.search );
+}
+
+GetSearchValues.CreateDictionary
+=
+function( url_search_parameters )
+{
+    var object = new Object;
+    
+    var bits = url_search_parameters.substring( 1 ).split( "&" );
+    var n    = bits.length;
+    
+    for ( var i=0; i < n; i++ )
     {
-        var bits = document.cookie.split( ";" );
-        var n    = bits.length;
+        var keyvalue = bits[i].split( "=" );
 
-        for ( var i=0; i < n; i++ )
+        if ( 2 == keyvalue.length )
         {
-            var keyval = bits[i].split( "=" );
+            var key = "";
+            var val = "";
 
-            if ( (2 == keyval.length) && (keyval[0].trim() == search) )
+            try
             {
-                val = keyval[1].trim();
-                break;
+                key = decodeURIComponent( keyvalue[0] );
+                val = decodeURIComponent( keyvalue[1] );
+            }
+            catch ( err )
+            {}
+
+            if ( key && val ) object[key] = val;
+        }
+    }
+    return object;
+}
+
+function GetSearchValue( name )
+{
+	var parameters = GetSearchValues();
+	
+	return parameters[name] ? parameters[name] : "";
+}
+
+function Up( search_parameters )
+{
+	var loc  = location.protocol + "//" + location.host;
+	var bits = location.pathname.split( "/" );
+	var path = "";
+
+	switch ( bits.length )
+	{
+	case 0: // ""
+	case 1: // Can't happen
+		path = "/";
+		break;
+	
+	case 2: // "/"
+		path = "/";
+		break;
+	
+	default:
+		bits = ("" == bits[bits.length - 1]) ? bits.slice( 0, -2 ) : bits.slice( 0, -1 );
+		path = bits.join( "/" ) + "/";
+	}
+
+	loc += path;
+
+    if ( null == search_parameters )
+    {
+        loc += location.search;
+    }
+    else
+    {
+        loc += "?";
+
+        for ( key in search_parameters )
+        {
+            loc += search_parameters[key] + "=" + GetSearchValue( search_parameters[key] ) + "&";
+        }
+        loc = loc.substring( 0, loc.length - 1 );
+    }
+
+	location.replace( loc );
+}
+
+function CreateDownFn( pathname, search )
+{
+    return function()
+    {
+        Down( pathname, search );
+    }
+}
+
+function Down( pathname, search )
+{
+    var loc  = location.protocol + "//" + location.host + location.pathname + pathname + search;
+
+    if ( -1 !== loc.indexOf( '%' ) )
+    {
+        var parameters = Locations.SearchValues();
+
+        loc = Replace( loc, parameters );
+    }
+
+    location.replace( loc );
+}
+
+/*
+ *  PureJavacript, Selects.js
+ *
+ *  Copyright 2014 - 2017, CrossAdaptive
+ */
+
+function Selects( resolver )
+{
+	Selects.resolver = resolver;
+	Selects.setup();
+}
+
+Selects.setup
+=
+function()
+{
+	var kinds = Array();
+	var selects = document.getElementsByTagName( "SELECT" );
+	if ( selects )
+	{
+		var n = selects.length;
+		
+		for ( var i=0; i < n; i++ )
+		{
+			var select = selects[i];
+				select.setValue = Selects.setValue;
+
+			var id   = select.hasAttribute( "id" ) ? select.getAttribute( "id" ) + ":" : "";
+			var kind = select.getAttribute( "data-kind" );
+
+			if ( kind )
+			{
+				var cupid = id + kind;
+
+				kinds.push( cupid );
+			}
+		}
+	}
+
+	if ( kinds.length )
+	{
+		Selects.Multiselect( Selects.ArrayToString( kinds ), "", Selects.setup.handler );
+	}
+}
+
+Selects.setup.handler
+=
+function( responseText )
+{
+	var obj = JSON.parse( responseText );
+	if ( obj && obj.results )
+	{
+		var lists = Array();
+		var n = obj.results.length;
+			
+		for ( var i=0; i < n; i++ )
+		{
+			var list   = obj.results[i];
+			var name   = list.name;
+			var tuples = list.tuples;
+			
+			lists[name] = tuples;
+		}
+		Selects.setup.init( lists );
+	}
+}
+
+Selects.setup.init
+=
+function( lists )
+{
+	var selects = document.getElementsByTagName( "SELECT" );
+
+	if ( selects )
+	{
+		var n = selects.length;
+		
+		for ( var i=0; i < n; i++ )
+		{
+			var select = selects[i];
+			var id     = select.hasAttribute( "id" ) ? select.getAttribute( "id" ) + ":" : "";
+			var kind   = select.getAttribute( "data-kind" );
+			
+			if ( kind && lists.hasOwnProperty( id + kind ) )
+			{
+				Selects.setup.addOptions( select, lists );
+			}
+		}
+
+		for ( var i=0; i < n; i++ )
+		{
+			var select = selects[i];
+			var id     = select.hasAttribute( "id" ) ? select.getAttribute( "id" ) + ":" : "";
+			var kind   = select.getAttribute( "data-kind" );
+			
+			if ( kind && lists.hasOwnProperty( id + kind ) )
+			{
+				if ( select.hasAttribute( "data-cascade" ) )
+				{
+					select.addEventListener( "change", Selects.Cascade );
+
+					if ( select.hasAttribute( "data-value" ) )
+					{
+						Selects.DoCascade( select );
+					}
+				}
+			}
+		}
+	}
+}
+
+Selects.setup.addOptions
+=
+function( select, lists )
+{
+	var id           = select.hasAttribute( "id" ) ? select.getAttribute( "id" ) + ":" : "";
+	var kind         = select.getAttribute( "data-kind" );
+	var type         = select.getAttribute( "data-select-type" );
+	var tuples       = lists[id + kind];
+	
+	if ( tuples )
+	{
+		select.options.length = 0;
+
+		var offset   = 0;
+		var selected = 0;
+		var label    = select.getAttribute( "data-label"  ) ? select.getAttribute( "data-label"  ) : select.getAttribute( "placeholder" );
+		if ( label )
+		{
+			select.options[0] = new Option( label, '' );
+			offset++;
+		}
+
+		//if ( ! select.disabled )
+		{
+			var data_value = select.getAttribute( "data-value" );
+			var data_text  = select.getAttribute( "data-text"  );
+
+			var n = tuples.length;
+			for ( var i=0; i < n; i++ )
+			{
+				var disabled = false;
+				var name     = tuples[i].name;
+				var text     = DecodeHTMLEntities( tuples[i].text );
+					text     = text ? text : "";
+
+				if ( 0 == name.indexOf( "!" ) )
+				{
+					disabled = true;
+					name = name.substring( 1 );
+				}
+
+				if ( name == data_value               ) selected = i+offset;
+				if ( -1 !== text.indexOf( data_text ) ) selected = i+offset;
+
+				if ( name != text )
+				{
+					select.options[i+offset] = new Option( text, name );
+				}
+				else
+				{
+					select.options[i+offset] = new Option( text );
+				}
+				select.options[i+offset].disabled = disabled;
+			}
+
+			select.selectedIndex = selected;
+		}
+		
+		if ( ("progressive" == type) && (0 < selected) )
+		{
+			for ( var i=selected - 1; i >= 0; i-- )
+			{
+				select.options[i].disabled = true;
+			}
+		}
+	}
+}
+
+Selects.lookupOptions
+=
+function( id, kind, value )
+{
+	var select = document.getElementById( id );
+	
+	if ( select )
+	{
+		var n = select.length;
+
+		if ( 0 < n )
+		{
+			for ( var i=0; i < n; i++ )
+			{
+				if ( select.options[i].value == value )
+				{
+					select.selectedIndex = i;
+					break;
+				}
+			}
+		}
+		else
+		{
+			select.setAttribute( "data-value", value );
+		}
+	}
+}
+
+Selects.Cascade
+=
+function( event )
+{
+	Selects.DoCascade( event.target );
+}
+
+Selects.DoCascade
+=
+function( select )
+{
+	var value   = select.value;
+	var targets = select.getAttribute( "data-cascade" );
+
+	if ( targets )
+	{
+		var bits    = targets.split( "," );
+		var n       = bits.length;
+		
+		for ( var i=0; i < n; i++ )
+		{
+			var target = bits[i];
+			
+			if ( target )
+			{
+				Selects.Reload( target, value );
+			}
+		}
+		
+		select.addEventListener( "change", Selects.Cascade );
+		//select.onchange = Selects.Cascade;
+	}
+}
+
+Selects.Reload
+=
+function( target, value )
+{
+	var select = document.getElementById( target );
+	if ( select )
+	{
+		if ( "SELECT" == select.tagName )
+		{
+			var kind = select.getAttribute( "data-kind" );
+			
+			Selects.Multiselect( target + ":" + kind, value, Selects.setup.handler );
+
+			//if ( value ) select.disabled = false;
+		}
+		else
+		{
+			if ( select.reload )
+			{
+				select.reload( value );
+			}
+		}
+	}
+}
+
+Selects.Multiselect
+=
+function( kinds, value, handler )
+{
+	var search            = GetSearchValues();
+    var parameters        = new Object();
+    	parameters.kinds  = kinds;
+        parameters.filter = value ? value : search.filter ? search.filter : "";
+
+	var api_host = Selects.resolver();
+
+	Call( api_host + "/api/multiselect/", parameters, handler );
+}
+
+Selects.SetValue
+=
+function( id, value )
+{
+	var select = document.getElementById( id );
+
+	select.setValue( value );
+	
+//	if ( select )
+//	{
+//		var n = select.length;
+//
+//		if ( 0 < n )
+//		{
+//			for ( var i=0; i < n; i++ )
+//			{
+//				if ( select.options[i].value == value )
+//				{
+//					select.selectedIndex = i;
+//					break;
+//				}
+//			}
+//		}
+//		else
+//		{
+//			select.setAttribute( "data-value", value );
+//		}
+//	}
+}
+
+Selects.setValue
+=
+function( value )
+{
+	if ( this )
+	{
+		var n = this.length;
+
+		if ( 0 < n )
+		{
+			for ( var i=0; i < n; i++ )
+			{
+				if ( this.options[i].value == value )
+				{
+					this.selectedIndex = i;
+					break;
+				}
+			}
+
+			Selects.DoCascade( this );
+		}
+		else
+		{
+			this.setAttribute( "data-value", value );
+		}
+	}
+}
+
+Selects.ArrayToString
+=
+function( array )
+{
+	var string = "";
+	var sep    = "";
+
+	for ( var i in array )
+	{
+		string += sep + array[i];
+		sep = ",";
+	}
+	
+	return string;
+}
+
+/*
+ *  PureJavacript, Setup.js
+ *
+ *  Copyright 2014 - 2017, CrossAdaptive
+ */
+
+function Setup()
+{
+	Setup.Elements( document.getElementsByTagName( "DIV"   ) );
+	Setup.Elements( document.getElementsByTagName( "FORM"  ) );
+	Setup.Elements( document.getElementsByTagName( "TBODY" ) );
+}
+
+Setup.CreateTableSetupFn
+=
+function( id, nr_columns )
+{
+    var path   = "";
+    var search = "";
+
+    return Setup.CreateTableSetupWithDownFn( id, nr_columns, path, search );
+}
+
+Setup.CreateTableSetupWithDownFn
+=
+function( id, nr_columns, path, search )
+{
+    /*
+     *  The returned function parses the JSON formatted response text and creates a table row template for each result tuple.
+     *  These are added to the tbody corresponding to 'id' - 'nr_of_columns' is used if no result tuples are returned.
+     */
+
+    var fn
+    =
+    function( responseText )
+    {
+        var json  = JSON.parse( responseText );
+        var tbody = document.getElementById( id );
+
+        if ( tbody && ("OK" == json.status) )
+        {
+            var htm  = Setup.CreateTableSetupFn.RetrieveTemplate( id );
+            var htm2 = Setup.CreateTableSetupFn.RetrieveTemplate( id + "-tally" );
+
+            if ( ! htm )
+            {
+                alert( "Table '" + id + "' is missing a row template with the id: '" + id + "-template'" );
+            }
+            else
+            {
+                var n = json.results.length;
+                
+                if ( 0 == n )
+                {
+                    tbody.innerHTML = "<tr><td colspan='" + nr_columns + "'>No entries added.</td></tr>";
+                }
+                else
+                {
+                    var T = { t: null };
+
+                    var loading = tbody.querySelector( "TR.loading" );
+                    if ( loading )
+                    {
+                        tbody.removeChild( loading )
+                    }
+                    else
+                    {
+                        var rows = tbody.querySelectorAll( "TR" );
+
+                        if ( 0 < rows.length )
+                        {
+                            var tds = rows[0].querySelectorAll( "TD" );
+
+                            if ( (0 < tds.length) && (-1 != tds[0].innerHTML.toLowerCase().indexOf( "loading" ) ) )
+                            {
+                                tbody.removeChild( rows[0] );
+                            }
+                        } 
+                    }
+                    
+                    for ( var i=0; i < n; i++ )
+                    {
+                        var e = document.createElement( "TR" );
+                        var t = json.results[i];
+                            t['i'] = i + 1;
+
+                        Setup.CreateTableSetupFn.AddT( T, t );
+
+                        e.innerHTML = Replace( htm, t );
+                        
+                        if ( "" != path )
+                        {
+                            e.style.cursor = "pointer";
+                            e.onclick = Locations.CreateDownFn( path, Replace( search, t ) );
+                        }
+
+                        if ( path && search )
+                        {
+                            e.className = "clickable"
+                        }
+                        
+                        if ( 0 == (i % 2) )
+                        {
+                            e.className += " alternate"
+                        }
+
+                        if ( "css_class" in t )
+                        {
+                            e.className += " " + t['css_class'];
+                        }
+
+                        tbody.appendChild( e );
+                    }
+
+                    if ( htm2 && T.t )
+                    {
+                        var e = document.createElement( "TR" );
+                            e.innerHTML = Replace( htm2, T.t );
+
+                        tbody.appendChild( e );
+                    }
+                }
             }
         }
     }
-
-    return val;
+    
+    return fn;
 }
 
-function SetCookie( path, cname, cvalue, exdays )
-{
-    var d       = new Date(); d.setTime(d.getTime() + (exdays*24*60*60*1000));
-    var expires = (0 != exdays) ? "expires="+d.toUTCString() + ";" : "";
-	var cookie  = cname + "=" + cvalue + "; " + expires + " " + "path=/" + ";";
-	
-    document.cookie = cookie;
-}
-
-function UnsetCookie( name )
-{
-	document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=/";
-}
-
-function SetIDTypeCookie( idtype )
-{
-	SetCookie( "/", "idtype", idtype, 1 );
-}
-
-function SetSessionIDTypeCookie( sid )
-{
-	SetCookie( "/", "sessionid", sid, 1 );
-}
-
-function UnsetIDTypeCookie()
-{
-	document.cookie = "idtype=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=/";
-}
-
-function UnsetSessionIDTypeCookie()
-{
-	document.cookie = "sessionid=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=/";
-}
-
-/*
- *  PureJavacript, CSVFile.js
- *
- *  Copyright 2014 - 2017, CrossAdaptive
- */
-
-function CSVFile( file_content )
-{
-	this.headers = new Array();
-	this.rows    = new Array();
-
-	this.parseContent( file_content );
-}
-
-CSVFile.prototype.getValueFor
+Setup.CreateTableSetupFn.RetrieveTemplate
 =
-function( row, labels )
+function( id )
 {
-	var value = "";
-	var n     = labels.length;
+    var htm             = "";
+    var row_template_id = id + "-template";
+    var template_tr     = document.getElementById( row_template_id );
 
-	for ( var i=0; i < n; i++ )
-	{
-		var value = this.getValue( row, labels[i] );
-		
-		if ( "" != value ) break;
-	}
-
-	return value;
+    if ( template_tr )
+    {
+        htm = template_tr.innerHTML;
+    }
+    
+    return htm;
 }
 
-CSVFile.prototype.getValue
+Setup.CreateTableSetupFn.AddT
 =
-function( row, label )
+function( T, t )
 {
-	var value  = "";
-	var column = -1;
-	var n      = this.headers.length;
-	
-	for ( var i=0; i < n; i++ )
-	{
-		var text1 = label.toLowerCase().trim();
-		var text2 = this.headers[i].toLowerCase().trim();
-	
-		if ( text1 == text2 )
-		{
-			column = i; break;
-		}
-	}
+    if ( null == T.t )
+    {
+        T.t = Setup.CreateTableSetupFn.AddT.Clone( t );
 
-	if ( -1 != column )
-	{
-		var array = this.rows[row];
-			value = array[column];
-	}
-	
-	return value;
+        for ( var key in T.t )
+        {
+            if ( isNaN( T.t[key] ) ) T.t[key] = "";
+        }
+    }
+    else
+    {
+        for ( var key in T.t )
+        {
+            if ( !isNaN( T.t[key] ) && !isNaN( t[key] ) )
+            {
+                T.t[key] = parseInt( T.t[key] ) + parseInt( t[key] );
+            }
+        }
+    }
 }
 
-CSVFile.prototype.getNrOfRows
+Setup.CreateTableSetupFn.AddT.Clone
 =
-function()
+function( obj )
 {
-	return this.rows.length;
+    var ret = {};
+
+    for ( var name in obj )
+    {
+        var value = obj[name];
+        ret[name] = obj[name];
+    }
+
+    return ret;
 }
 
-CSVFile.prototype.CSVLineRE = new RegExp('("[\\w ,]+" ?|[\\w ]*), ?("[\\w ,]+" ?|[\\w ]*)$');
 
-CSVFile.prototype.parseContent
+Setup.CreateFormSetupFn
 =
-function( file_content )
+function( id, key_field )
 {
-	var line_reader = new CSVFile.LineReader( file_content, 10000 );
-	var line  = line_reader.readLine();
-	if ( false !== line )
-	{
-        var trimmed = line.trim(); //trims CRs from Mac apps such as Numbers.
-        //if (!this.CSVLineRE.test(trimmed)) throw "Header of file does not match expected Excel/LibreOffice CSV format."
-		this.headers = CSVFile.SplitAndTrim( trimmed );
+    var fn
+    =
+    function( responseText )
+    {
+        InsertResponseValues( id, key_field, responseText )
+    }
 
-
-		while ( (false !== (line = line_reader.readLine())) )
-		{
-			var fields = CSVFile.SplitAndTrim( line );
-
-			if ( "" != fields.join( "" ) )
-			{
-				this.rows.push( fields );
-			}
-		}
-	}
+    return fn;
 }
 
-CSVFile.SplitAndTrim
+Setup.CreateDivSetupFn
 =
-function( line )
+function( id )
 {
-	var array = new Array();
-	var bits  = CSVFile.SplitWhileRespectingQuotes( line, "," );
-	var n     = bits.length;
+    var fn
+    =
+    function( responseText )
+    {
+        var div = document.getElementById( id )
+        
+        if ( div )
+        {
+            var json = JSON.parse( responseText )
+            
+            if ( ("OK" == json.status) && (1 == json.results.length) )
+            {
+                div.innerHTML = Replace( div.innerHTML, json.results[0] )
+                div.style.opacity = "1.0"
+            }
+            else
+            {
+                alert( "An unexpected error occurred while retrieving data" )
+            }
+        }
+    }
+    
+    return fn;
+}
+
+Setup.CreateFormHandlerFn
+=
+function( id, handler, parameter )
+{
+    var fn
+    =
+    function( responseText )
+    {
+        var json = JSON.parse( responseText );
+
+        if ( "ERROR" == json.status )
+        {
+            alert( json.error );
+        }
+        else
+        {
+            handler( parameter );
+        }
+    }
+    
+    return fn;
+}
+
+Setup.Elements
+=
+function( elements )
+{
+	var n = elements.length;
 	
 	for ( var i=0; i < n; i++ )
 	{
-		var field = bits[i];
-			field = field.trim();
+		var element    = elements[i];
+		var parameters = GetSearchValues();
 
-		if ( "" != field )
-		{
-			var x     = field.length - 1;
-
-			if ( '"' == field.charAt( x ) ) field = field.substring( 0, x );
-			if ( '"' == field.charAt( 0 ) ) field = field.substring( 1    );
-
-			field = field.trim();
-		}
-	
-		array.push( field );
+		Setup.Element( element, parameters );
 	}
-
-	return array;
 }
 
-CSVFile.SplitWhileRespectingQuotes
+Setup.Element
 =
-function( line, delimiter )
+function( element, parameters )
 {
-	var array = Array();
-	var out   = true;
-	var s     = 0;
-	var n     = line.length;
-	
-	for ( var i=0; i < n; i++ )
+	if ( element && element.hasAttribute( "data-setup-url" ) )
 	{
-		switch ( line.charAt( i ) )
+		var url        = element.getAttribute( "data-setup-url" );
+		var handler    = Setup.DefaultHandler;
+
+		if ( element.hasOwnProperty( "setup" ) )
 		{
-		case '"':
-			out = !out;
-			break;
-			
-		case delimiter:
-			if ( out )
-			{
-				array.push( line.substring( s, i ) );
-				s = i + 1;
-			}
-			break;
+			handler = element.setup;
+
+			handler = handler ? handler : element.handler;
 		}
+
+		if ( !parameters.target_id && element.hasAttribute( "id" ) )
+		{
+			parameters.target_id = element.getAttribute( "id" );
+		}
+
+		Call( Resolve() + url, parameters, handler );
 	}
-	
-	if ( s < n )
-	{
-		array.push( line.substring( s, n ) );
-	}
-	
-	return array;
 }
 
-CSVFile.LineReader
+Setup.DefaultHandler
 =
-function( file_content, limit )
+function( responseText )
 {
-	this.content = file_content;
-	this.pos     = 0;
-	this.lines   = 0;
-	this.limit   = limit;
-}
-
-CSVFile.LineReader.prototype.readLine
-=
-function()
-{
-	var line     = false;
-	var loop     = true;
-	var in_quote = false;
-
-	if ( ++this.lines < this.limit )
+	var json = JSON.parse( responseText );
+	
+	if ( "OK" != json.status )
 	{
-		if ( this.pos < this.content.length )
-		{
-			line = "";
-		
-			while ( this.pos < this.content.length )
-			{
-				var ch = this.content[this.pos++];
-
-				if ( '"' == ch )
-				{
-					in_quote = !in_quote;
-					line += ch;
-				}
-				else
-				if ( '\n' == ch )
-				{
-					if ( in_quote ) line += ch;
-					else            break;
-				}
-				else if ( '\r' == ch )
-				{
-					if ( in_quote ) line += ch;
-					else
-					{
-						if ( '\n' == this.content[this.pos] )
-						{
-							this.pos++;
-						}
-						break;
-					}
-				}
-				else
-				{
-					line += ch;
-				}
-			}
-		}
+		console.log( responseText );
 	}
-
-	return line;
 }
 
 /*
@@ -1388,613 +2955,6 @@ function()
 }
 
 /*
- *  PureJavacript, DataStorage.js
- *
- *  Copyright 2014 - 2017, CrossAdaptive
- */
-
-DataStorage         = {}
-DataStorage.Local   = {}
-DataStorage.Session = {}
-
-DataStorage.Exists
-=
-function()
-{
-	return typeof( Storage ) !== "undefined";
-}
-
-DataStorage.Local.SetItem
-=
-function( key, value )
-{
-	var success = false;
-
-	if ( typeof( Storage ) !== "undefined" )
-	{
-		if ( value && "" != value )
-		{
-			window.localStorage.setItem( key, value );
-		
-			success = (window.localStorage.key == value);
-		}
-	}
-	return success;
-}
-
-DataStorage.Local.GetItem
-=
-function( key )
-{
-	var value = null;
-
-	if ( DataStorage.Exists() )
-	{
-		value = window.localStorage.getItem( key );
-	}
-	return value;
-}
-
-DataStorage.Local.RemoveItem
-=
-function( key )
-{
-	var success = false;
-
-	if ( typeof( Storage ) !== "undefined" )
-	{
-		window.localStorage.removeItem( key );
-		
-		success = (window.localStorage.key == null);
-	}
-	return success;
-}
-
-DataStorage.Local.HasItem
-=
-function( key )
-{
-	var success = false;
-
-	if ( typeof( Storage ) !== "undefined" )
-	{
-		success = window.localStorage.hasOwnProperty( key );
-	}
-	return success;
-}
-
-DataStorage.Session.SetItem
-=
-function( key, value )
-{
-	var success = false;
-
-	if ( typeof( Storage ) !== "undefined" )
-	{
-		if ( value && "" != value )
-		{
-			window.sessionStorage.setItem( key, value );
-		
-			success = (window.sessionStorage.key == value);
-		}
-	}
-	return success;
-}
-
-DataStorage.Session.GetItem
-=
-function( key )
-{
-	var value = null;
-
-	if ( DataStorage.Exists() )
-	{
-		value = window.sessionStorage.getItem( key );
-	}
-	return value;
-}
-
-DataStorage.Session.RemoveItem
-=
-function( key )
-{
-	var success = false;
-
-	if ( typeof( Storage ) !== "undefined" )
-	{
-		window.sessionStorage.removeItem( key );
-		
-		success = (window.sessionStorage.key == null);
-	}
-	return success;
-}
-
-DataStorage.Session.HasItem
-=
-function( key )
-{
-	var success = false;
-
-	if ( typeof( Storage ) !== "undefined" )
-	{
-		success = window.sessionStorage.hasOwnProperty( key );
-	}
-	return success;
-}
-
-/*
- *  PureJavacript, Datetime.js
- *
- *  Copyright 2014 - 2017, CrossAdaptive
- */
-
-Datetime         = {}
-Datetime.IsValid = DateIsValid
-Datetime.ToYMD   = YMDDate
-
-function DateIsValid( $datetime )
-{
-	var is_date = false;
-
-	switch ( $datetime )
-	{
-	case null:
-	case "NULL":
-	case "null":
-	case "":
-	case "0":
-	case "0000-00-00":
-	case "0000-00-00 00:00:00":
-		break;
-		
-	default:
-		is_date = true;
-	}
-
-	return is_date;
-}
-
-function YMDDate( date_string )
-{
-	var ymd_date = null;
-	var ymd      = new Array();
-
-	date_string = date_string.replace( /%2F/g, "/" );
-	
-	if ( -1 !== date_string.indexOf( "/" ) )
-	{
-		var parts = date_string.split( "/" );
-		
-		switch ( parts.length )
-		{
-		case 3:
-			ymd[0] = (2 == parts[2].length) ? "20" + parts[2] : parts[2];
-			ymd[1] = parts[1];
-			ymd[2] = parts[0];
-			break;
-			
-		case 2:
-			ymd[0] = new Date().getFullYear();
-			ymd[1] = parts[1];
-			ymd[2] = parts[0];
-		}
-	}
-	else
-	if ( -1 !== date_string.indexOf( "-" ) )
-	{
-		ymd = date_string.split( "-" );
-	}
-	
-	if ( 3 == ymd.length )
-	{
-		if ( (3 == ymd.length) && (4 == ymd[0].length) && (2 == ymd[1].length) && (2 == ymd[2].length) )
-		{
-			var year  = parseInt( ymd[0] );
-			var month = parseInt( ymd[1] );
-			var day   = parseInt( ymd[2] );
-
-			if ( YMDDate.IsMonth( month ) && YMDDate.IsDayOfMonth( day, month ) )
-			{
-				ymd_date = ymd.join( '-' );
-			}
-		}
-	}
-	
-	return ymd_date;
-}
-
-YMDDate.IsMonth
-=
-function( month )
-{
-	return (1 <= month) && (month <= 12);
-}
-
-YMDDate.IsDayOfMonth
-=
-function( day, month )
-{
-	switch ( month )
-	{
-	case 1:
-	case 3:
-	case 5:
-	case 7:
-	case 8:
-	case 10:
-	case 12:
-		return (1 <= day) && (day <= 31);
-
-	case 4:
-	case 6:
-	case 9:
-	case 11:
-		return (1 <= day) && (day <= 30);
-
-	case 2:
-		return (1 <= day) && (day <= 29);
-
-	default:
-		return false;
-	}
-}
-
-/*
- *  PureJavacript, Element.js
- *
- *  Copyright 2014 - 2017, CrossAdaptive
- */
-
-Elements          = {}
-Elements.Toggle   = Toggle
-Elements.Show     = Toggle.Show
-Elements.Hide     = Toggle.Hide
-Elements.ShowHide = ShowHide;
-Elements.HideShow = null;
-
-function Toggle( id )
-{
-	var ret = null;
-	var e = document.getElementById( id );
-	
-	if ( e )
-	{
-		if ( null === e.offsetParent )
-		{
-			ret = Toggle.Show( e );
-		}
-		else
-		{
-			ret = Toggle.Hide( e );
-		}
-	}
-	
-	return ret;
-}
-
-Toggle.Show
-=
-function ( e )
-{
-    switch ( e.tagName )
-    {
-    case "TABLE":
-        e.style.display    = "table";
-        break;
-
-    case "TR":
-        e.style.display    = "table-row-group";
-        break;
-
-    case "TH":
-        e.style.display    = "table-cell";
-        break;
-
-    case "TD":
-        e.style.display    = "table-cell";
-        break;
-
-    default:
-        e.style.display    = "block";
-    }
-
-	e.style.visibility = "visible";
-
-	return true;
-}
-
-Toggle.Hide
-=
-function ( e )
-{
-	e.style.display    = "none";
-	e.style.visibility = "hidden";
-
-	return false;
-}
-
-Elements.HideShow
-=
-function ( cls, id )
-{
-    var elements = document.getElementsByClassName( cls );
-    var e        = document.getElementById( id );
-    var n        = elements.length;
-
-    for ( var i=0; i < n; i++ )
-    {
-        Toggle.Hide( elements[i] );
-
-        Class.RemoveClass( elements[i], "active" );
-    }
-
-    if ( e )
-    {
-        Toggle.Show( e );
-        Class.AddClass( e, "active" );
-    }
-
-    return false;
-}
-
-function ShowHide( id, show_id, hide_id )
-{
-	var self   = document.getElementById( id );
-	var show_e = document.getElementById( show_id );
-	var hide_e = document.getElementById( hide_id );
-	
-	if ( show_e && hide_e )
-	{
-		Toggle.Hide( hide_e );
-		Toggle.Show( show_e );
-	}
-
-	if ( self )
-	{
-		ShowHide.MakePeersInactive( self );
-		ShowHide.MakeActive( self );
-	}
-}
-
-ShowHide.MakePeersInactive
-=
-function( e )
-{
-	if ( e.parentNode && e.parentNode.parentNode )
-	{
-		var children = e.parentNode.parentNode.getElementsByTagName( "A" );
-		var n        = children.length;
-		
-		for ( var i=0; i < n; i++ )
-		{
-			var child = children[i];
-		
-			ShowHide.MakeInactive( child );
-		}
-	}
-}
-
-ShowHide.MakeActive
-=
-function( e )
-{
-	Class.AddClass( e, "active" );
-}
-
-ShowHide.MakeInactive
-=
-function( e )
-{
-	Class.RemoveClass( e, "active" );
-}
-
-/*
- *  PureJavacript, Enum.js
- *
- *  Copyright 2017, CrossAdaptive
- */
-
-function Enum( values )
-{
-    var e = {}
-    var n = values.length;
-
-    for ( var i=0; i < n; i++ )
-    {
-        var name = values[i]
-
-        e[name] = name;
-    }
-
-    return e;
-}
-
-/*
- *  PureJavacript, Filter.js
- *
- *  Copyright 2017, CrossAdaptive
- */
-
-Filter = {}
-
-function Filter( id, tag_name, pattern )
-{
-    var element = document.getElementById( id );
-
-    if ( !element )
-    {
-        alert( "Filter: could not find target element: " + id );
-    }
-    else
-    {
-        var terms    = pattern.split( ' ' );
-        var elements = element.getElementsByTagName( tag_name );
-        var n        = elements.length;
-
-        for ( var i=0; i < n; i++ )
-        {
-            var e     = elements[i];
-            var title = e.getAttribute( "title" );
-            var html  = e.innerHTML;
-
-            Toggle.Show( e );
-
-            for ( index in terms )
-            {
-                var term = terms[index];
-
-                if ( ! Filter.ElementContainsText( e, term ) )
-                {
-                    Toggle.Hide( e )
-                    break;
-                }
-            }
-        }
-    }
-}
-
-Filter.ElementContainsText
-=
-function( e, t )
-{
-    var contains = false;
-
-    if ( e.children && (0 < e.children.length) )
-    {
-        for ( index in e.children )
-        {
-            var child = e.children[index];
-
-            if ( (contains = Filter.ElementContainsText( child, t )) )
-            {
-                break;
-            }
-        }
-    }
-    else
-    if ( Filter.StringContainsText( e.title, t ) )
-    {
-        contains = true;
-    }
-    else
-    if ( Filter.StringContainsText( e.innerHTML, t ) )
-    {
-        contains = true;
-    }
-
-    return contains;
-}
-
-Filter.StringContainsText
-=
-function( s, t )
-{
-    var contains = false;
-
-    if ( s )
-    {
-        if ( "" == t )
-        {
-            contains = true;
-        }
-        else
-        {
-            var lc_s = s.toLowerCase();
-            var lc_t = t.toLowerCase();
-
-            contains = (-1 != lc_s.indexOf( lc_t ));
-        }
-    }
-
-    return contains;
-}
-
-Filter.TableBody
-=
-function( tbody_id, form )
-{
-    // 1)   Retrieve values frorm any selects/inputs in forms.
-
-    var values = Filter.TableBody.RequiredValues( form ); // Returns text array.
-
-    //  2)  Iterate through tables rows and show/hide matching/unmatching rows.
-
-    var tbody  = document.getElementById( tbody_id );
-    var rows   = tbody.getElementsByTagName( "TR" );
-    var n      = rows.length;
-
-    for ( var i=0; i < n; i++ )
-    {
-        var tr = rows[i];
-
-        if ( -1 == tr.className.indexOf( "hidden" ) )
-        {
-            tr.style.display = Filter.TableBody.ContainsAll( tr, values ) ? "table-row" : "none";
-        }
-    }
-}
-
-Filter.TableBody.RequiredValues
-=
-function( form )
-{
-    var values = new Array();
-    var n      = form.elements.length;
-
-    for ( var i = 0; i < n; i++ )
-    {
-        var input = form.elements[i];
-
-        switch ( input.tagName )
-        {
-        case "SELECT":
-            var option = input.options[input.selectedIndex];
-            var text   = option.text.toLowerCase();
-
-            if ( option.value && ("" != text) )
-            {
-                values.push( text );
-            }
-            break;
-
-        case "INPUT":
-            if ( "" != input.value )
-            {
-                var bits = input.value.split( " " );
-                for ( index in bits )
-                {
-                    values.push( bits[index].toLowerCase() );
-                }
-            }
-            break;
-        }
-    }
-
-    return values;
-}
-
-Filter.TableBody.ContainsAll
-=
-function( tr, values )
-{
-    //  Returns true only if tr contains all values in passed array.
-
-    var contains = true;
-    var n        = values.length;
-
-    for ( var i=0; i < n; i++ )
-    {
-        if (-1 === tr.innerHTML.toLowerCase().indexOf( values[i] ))
-        {
-            contains = false;
-            break;
-        }
-    }
-
-    return contains;
-}
-
-/*
  *  PureJavacript, Forms.js
  *
  *  Copyright 2014 - 2017, CrossAdaptive
@@ -2055,7 +3015,7 @@ function GetFormValues( form )
 				break;
 
 			case "radio":
-				var v = encodeURIComponent( value );
+				var v = value;
 				if ( ! e.checked )
 				{
 					key   = null;
@@ -2094,11 +3054,11 @@ function GetFormValues( form )
 			
 				if ( object[key] )
 				{
-					object[key] += ("," + encodeURIComponent( value ));
+					object[key] += ("," + value);
 				}
 				else
 				{
-					object[key] = encodeURIComponent( value );
+					object[key] = value;
 				}
 			}
 		}
@@ -2337,8 +3297,8 @@ function Save( event, handler )
 	case 'select-one':
 	case 'text':
 	default:
-		parameters.name  = encodeURIComponent( element.name  );
-		parameters.value = encodeURIComponent( element.value );
+		parameters.name  = element.name;
+		parameters.value = element.value;
 	}
 
     if ( element.hasAttribute( "id" ) )
@@ -2569,8 +3529,8 @@ function( parameters, tr )
 	{
 		if ( "TD" == tr.cells[i].tagName )
 		{
-			var key = encodeURIComponent( tr.cells[i].getAttribute( "data-name" ) );
-			var val = encodeURIComponent( tr.cells[i].innerHTML );
+			var key = tr.cells[i].getAttribute( "data-name" );
+			var val = tr.cells[i].innerHTML;
 		
 			if ( key && val )
 			{
@@ -2941,23 +3901,630 @@ function ( element, cls )
 }
 
 /*
- *  PureJavacript, Geocode.js
+ *  PureJavacript, Cookie.js
  *
  *  Copyright 2014 - 2017, CrossAdaptive
  */
 
-function Geocode( latitude, longitude, handler )
+Cookie            = {}
+Cookie.Get        = GetCookie
+Cookie.Set        = SetCookie
+Cookie.Unset      = UnsetCookie
+
+function GetCookie( search )
 {
-	var GOOGLE_URL = "https://maps.googleapis.com";
+    var key = "";
+    var val = "";
+
+    if ( "" != search )
+    {
+        var bits = document.cookie.split( ";" );
+        var n    = bits.length;
+
+        for ( var i=0; i < n; i++ )
+        {
+            var keyval = bits[i].split( "=" );
+
+            if ( (2 == keyval.length) && (keyval[0].trim() == search) )
+            {
+                val = keyval[1].trim();
+                break;
+            }
+        }
+    }
+
+    return val;
+}
+
+function SetCookie( path, cname, cvalue, exdays )
+{
+    var d       = new Date(); d.setTime(d.getTime() + (exdays*24*60*60*1000));
+    var expires = (0 != exdays) ? "expires="+d.toUTCString() + ";" : "";
+	var cookie  = cname + "=" + cvalue + "; " + expires + " " + "path=/" + ";";
 	
-	var parameters = new Object();
-		parameters.latlng = latitude + "," + longitude;
+    document.cookie = cookie;
+}
 
-    /*
-     *  https://maps.googleapis.com/maps/api/geocode/json?latlng=40.714224,-73.961452&key=API_KEY
-     */
+function UnsetCookie( name )
+{
+	document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=/";
+}
 
-	Call( GOOGLE_URL, "/maps/api/geocode/json/", parameters, handler );
+function SetIDTypeCookie( idtype )
+{
+	SetCookie( "/", "idtype", idtype, 1 );
+}
+
+function SetSessionIDTypeCookie( sid )
+{
+	SetCookie( "/", "sessionid", sid, 1 );
+}
+
+function UnsetIDTypeCookie()
+{
+	document.cookie = "idtype=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=/";
+}
+
+function UnsetSessionIDTypeCookie()
+{
+	document.cookie = "sessionid=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=/";
+}
+
+/*
+ *  PureJavacript, Filter.js
+ *
+ *  Copyright 2017, CrossAdaptive
+ */
+
+Filter = {}
+
+function Filter( id, tag_name, pattern )
+{
+    var element = document.getElementById( id );
+
+    if ( !element )
+    {
+        alert( "Filter: could not find target element: " + id );
+    }
+    else
+    {
+        var terms    = pattern.split( ' ' );
+        var elements = element.getElementsByTagName( tag_name );
+        var n        = elements.length;
+
+        for ( var i=0; i < n; i++ )
+        {
+            var e     = elements[i];
+            var title = e.getAttribute( "title" );
+            var html  = e.innerHTML;
+
+            Toggle.Show( e );
+
+            for ( index in terms )
+            {
+                var term = terms[index];
+
+                if ( ! Filter.ElementContainsText( e, term ) )
+                {
+                    Toggle.Hide( e )
+                    break;
+                }
+            }
+        }
+    }
+}
+
+Filter.ElementContainsText
+=
+function( e, t )
+{
+    var contains = false;
+
+    if ( e.children && (0 < e.children.length) )
+    {
+        for ( index in e.children )
+        {
+            var child = e.children[index];
+
+            if ( (contains = Filter.ElementContainsText( child, t )) )
+            {
+                break;
+            }
+        }
+    }
+    else
+    if ( Filter.StringContainsText( e.title, t ) )
+    {
+        contains = true;
+    }
+    else
+    if ( Filter.StringContainsText( e.innerHTML, t ) )
+    {
+        contains = true;
+    }
+
+    return contains;
+}
+
+Filter.StringContainsText
+=
+function( s, t )
+{
+    var contains = false;
+
+    if ( s )
+    {
+        if ( "" == t )
+        {
+            contains = true;
+        }
+        else
+        {
+            var lc_s = s.toLowerCase();
+            var lc_t = t.toLowerCase();
+
+            contains = (-1 != lc_s.indexOf( lc_t ));
+        }
+    }
+
+    return contains;
+}
+
+Filter.TableBody
+=
+function( tbody_id, form )
+{
+    // 1)   Retrieve values frorm any selects/inputs in forms.
+
+    var values = Filter.TableBody.RequiredValues( form ); // Returns text array.
+
+    //  2)  Iterate through tables rows and show/hide matching/unmatching rows.
+
+    var tbody  = document.getElementById( tbody_id );
+    var rows   = tbody.getElementsByTagName( "TR" );
+    var n      = rows.length;
+
+    for ( var i=0; i < n; i++ )
+    {
+        var tr = rows[i];
+
+        if ( -1 == tr.className.indexOf( "hidden" ) )
+        {
+            tr.style.display = Filter.TableBody.ContainsAll( tr, values ) ? "table-row" : "none";
+        }
+    }
+}
+
+Filter.TableBody.RequiredValues
+=
+function( form )
+{
+    var values = new Array();
+    var n      = form.elements.length;
+
+    for ( var i = 0; i < n; i++ )
+    {
+        var input = form.elements[i];
+
+        switch ( input.tagName )
+        {
+        case "SELECT":
+            var option = input.options[input.selectedIndex];
+            var text   = option.text.toLowerCase();
+
+            if ( option.value && ("" != text) )
+            {
+                values.push( text );
+            }
+            break;
+
+        case "INPUT":
+            if ( "" != input.value )
+            {
+                var bits = input.value.split( " " );
+                for ( index in bits )
+                {
+                    values.push( bits[index].toLowerCase() );
+                }
+            }
+            break;
+        }
+    }
+
+    return values;
+}
+
+Filter.TableBody.ContainsAll
+=
+function( tr, values )
+{
+    //  Returns true only if tr contains all values in passed array.
+
+    var contains = true;
+    var n        = values.length;
+
+    for ( var i=0; i < n; i++ )
+    {
+        if (-1 === tr.innerHTML.toLowerCase().indexOf( values[i] ))
+        {
+            contains = false;
+            break;
+        }
+    }
+
+    return contains;
+}
+
+/*
+ *  PureJavacript, CSVFile.js
+ *
+ *  Copyright 2014 - 2017, CrossAdaptive
+ */
+
+function CSVFile( file_content )
+{
+	this.headers = new Array();
+	this.rows    = new Array();
+
+	this.parseContent( file_content );
+}
+
+CSVFile.prototype.getValueFor
+=
+function( row, labels )
+{
+	var value = "";
+	var n     = labels.length;
+
+	for ( var i=0; i < n; i++ )
+	{
+		var value = this.getValue( row, labels[i] );
+		
+		if ( "" != value ) break;
+	}
+
+	return value;
+}
+
+CSVFile.prototype.getValue
+=
+function( row, label )
+{
+	var value  = "";
+	var column = -1;
+	var n      = this.headers.length;
+	
+	for ( var i=0; i < n; i++ )
+	{
+		var text1 = label.toLowerCase().trim();
+		var text2 = this.headers[i].toLowerCase().trim();
+	
+		if ( text1 == text2 )
+		{
+			column = i; break;
+		}
+	}
+
+	if ( -1 != column )
+	{
+		var array = this.rows[row];
+			value = array[column];
+	}
+	
+	return value;
+}
+
+CSVFile.prototype.getNrOfRows
+=
+function()
+{
+	return this.rows.length;
+}
+
+CSVFile.prototype.CSVLineRE = new RegExp('("[\\w ,]+" ?|[\\w ]*), ?("[\\w ,]+" ?|[\\w ]*)$');
+
+CSVFile.prototype.parseContent
+=
+function( file_content )
+{
+	var line_reader = new CSVFile.LineReader( file_content, 10000 );
+	var line  = line_reader.readLine();
+	if ( false !== line )
+	{
+        var trimmed = line.trim(); //trims CRs from Mac apps such as Numbers.
+        //if (!this.CSVLineRE.test(trimmed)) throw "Header of file does not match expected Excel/LibreOffice CSV format."
+		this.headers = CSVFile.SplitAndTrim( trimmed );
+
+
+		while ( (false !== (line = line_reader.readLine())) )
+		{
+			var fields = CSVFile.SplitAndTrim( line );
+
+			if ( "" != fields.join( "" ) )
+			{
+				this.rows.push( fields );
+			}
+		}
+	}
+}
+
+CSVFile.SplitAndTrim
+=
+function( line )
+{
+	var array = new Array();
+	var bits  = CSVFile.SplitWhileRespectingQuotes( line, "," );
+	var n     = bits.length;
+	
+	for ( var i=0; i < n; i++ )
+	{
+		var field = bits[i];
+			field = field.trim();
+
+		if ( "" != field )
+		{
+			var x     = field.length - 1;
+
+			if ( '"' == field.charAt( x ) ) field = field.substring( 0, x );
+			if ( '"' == field.charAt( 0 ) ) field = field.substring( 1    );
+
+			field = field.trim();
+		}
+	
+		array.push( field );
+	}
+
+	return array;
+}
+
+CSVFile.SplitWhileRespectingQuotes
+=
+function( line, delimiter )
+{
+	var array = Array();
+	var out   = true;
+	var s     = 0;
+	var n     = line.length;
+	
+	for ( var i=0; i < n; i++ )
+	{
+		switch ( line.charAt( i ) )
+		{
+		case '"':
+			out = !out;
+			break;
+			
+		case delimiter:
+			if ( out )
+			{
+				array.push( line.substring( s, i ) );
+				s = i + 1;
+			}
+			break;
+		}
+	}
+	
+	if ( s < n )
+	{
+		array.push( line.substring( s, n ) );
+	}
+	
+	return array;
+}
+
+CSVFile.LineReader
+=
+function( file_content, limit )
+{
+	this.content = file_content;
+	this.pos     = 0;
+	this.lines   = 0;
+	this.limit   = limit;
+}
+
+CSVFile.LineReader.prototype.readLine
+=
+function()
+{
+	var line     = false;
+	var loop     = true;
+	var in_quote = false;
+
+	if ( ++this.lines < this.limit )
+	{
+		if ( this.pos < this.content.length )
+		{
+			line = "";
+		
+			while ( this.pos < this.content.length )
+			{
+				var ch = this.content[this.pos++];
+
+				if ( '"' == ch )
+				{
+					in_quote = !in_quote;
+					line += ch;
+				}
+				else
+				if ( '\n' == ch )
+				{
+					if ( in_quote ) line += ch;
+					else            break;
+				}
+				else if ( '\r' == ch )
+				{
+					if ( in_quote ) line += ch;
+					else
+					{
+						if ( '\n' == this.content[this.pos] )
+						{
+							this.pos++;
+						}
+						break;
+					}
+				}
+				else
+				{
+					line += ch;
+				}
+			}
+		}
+	}
+
+	return line;
+}
+
+/*
+ *  PureJavacript, Modal.js
+ *
+ *  Copyright 2014 - 2017, CrossAdaptive
+ */
+
+Modal        = {}
+Modal.Close  = CloseModals;
+Modal.Toggle = ToggleModal;
+
+function CloseModals()
+{
+	var modal_bg = document.getElementById( "modal-bg" );
+	var divs     = document.getElementsByTagName( "DIV" );
+	var n        = divs.length;
+	
+	for ( var i=0; i < n; i++ )
+	{
+		if ( "modal" == divs[i].className )
+		{
+			var modal = divs[i];
+			
+			modal.style.display = "none";
+		}
+	}
+
+	if ( modal_bg ) modal_bg.style.display = "none";
+}
+
+function ToggleModal( modal_id )
+{
+	var modal    = document.getElementById( modal_id   );
+	var modal_bg = document.getElementById( "modal-bg" );
+	
+	if ( modal )
+	{
+		switch ( modal.style.display )
+		{
+		case "block":
+			modal.style.display    = "none";
+			modal_bg.style.display = "none";
+			break;
+			
+		case "none":
+		default:
+			modal_bg.style.display = "block";
+
+			modal.style.visibility = "hidden";
+			modal.style.display    = "block";
+
+			var width = modal.offsetWidth;
+				width = width / 2;
+				width = 1 - width;
+		
+			modal.style.marginLeft = width + "px";
+			
+			modal.style.visibility = "visible";
+		}
+	}
+}
+
+/*
+ *  PureJavacript, Class.js
+ *
+ *  Copyright 2014 - 2017, CrossAdaptive
+ */
+
+Class             = {}
+Class.AddClass    = AddClass;
+Class.RemoveClass = RemoveClass;
+
+function AddClass( e, className )
+{
+	if ( ! Class.Contains( e, className ) )
+	{
+		if ( "" == e.className )
+		{
+			e.className = className;
+		}
+		else
+		{
+			e.className += " " + className;
+		}
+	}
+}
+
+function RemoveClass( e, className )
+{
+	if ( Class.Contains( e, className ) )
+	{
+		e.className = Class.Remove( e.className, className );
+	}
+}
+
+Class.Remove
+=
+function( hay, needle )
+{
+	var ret = hay.replace( needle, "" ).trim();
+
+	while ( -1 != ret.indexOf( "  " ) )
+	{
+		ret = ret.replace( "  ", " " );
+	}
+	
+	return ret;
+}
+
+Class.Contains
+=
+function( e, className )
+{
+	//
+	//	AddClass.Contains( { className="cls active" }, "active' );
+	//
+	//	var st = 10 - 6;
+	//
+	//	0123456789
+	//	cls active
+	//	01234
+
+	var contains = false;
+
+	if ( e && e.className && className )
+	{
+		var st = (e.className.length - className.length) - 1;
+
+		if ( className == e.className )
+		{
+			contains = true;
+		}
+		else
+		if ( 0 <= st )
+		{
+			if ( -1 != e.className.indexOf( " " + className + " " ) )
+			{
+				contains = true;
+			}
+			else
+			if ( 0 == e.className.indexOf( className + " " ) )
+			{
+				contains = true;
+			}
+			else
+			if ( st == e.className.indexOf( " " + className ) )
+			{
+				contains = true;
+			}
+		}
+	}
+	return contains;
 }
 
 /*
@@ -3030,1679 +4597,137 @@ function Replace( text, array )
 }
 
 /*
- *  PureJavacript, HTMLEntities.js
+ *  PureJavacript, DataStorage.js
  *
  *  Copyright 2014 - 2017, CrossAdaptive
  */
 
-HTMLEntities        = {}
-HTMLEntities.Encode = HTMLEntitiesEncode
-HTMLEntities.Decode = DecodeHTMLEntities
+DataStorage         = {}
+DataStorage.Local   = {}
+DataStorage.Session = {}
 
-/*
- *	The following implementations were copied from the following opensource implementations:
- *	
- *	http://locutus.io/php/strings/htmlentities/
- *	http://locutus.io/php/strings/get_html_translation_table/index.html
- */
-
-function HTMLEntitiesEncode( string, quoteStyle, charset, doubleEncode )
-{
-	//  discuss at: http://locutus.io/php/htmlentities/
-	// original by: Kevin van Zonneveld (http://kvz.io)
-	//  revised by: Kevin van Zonneveld (http://kvz.io)
-	//  revised by: Kevin van Zonneveld (http://kvz.io)
-	// improved by: nobbler
-	// improved by: Jack
-	// improved by: Rafał Kukawski (http://blog.kukawski.pl)
-	// improved by: Dj (http://locutus.io/php/htmlentities:425#comment_134018)
-	// bugfixed by: Onno Marsman (https://twitter.com/onnomarsman)
-	// bugfixed by: Brett Zamir (http://brett-zamir.me)
-	//    input by: Ratheous
-	//      note 1: function is compatible with PHP 5.2 and older
-	//   example 1: htmlentities('Kevin & van Zonneveld')
-	//   returns 1: 'Kevin &amp; van Zonneveld'
-	//   example 2: htmlentities("foo'bar","ENT_QUOTES")
-	//   returns 2: 'foo&#039;bar'
-
-	var hashMap = HTMLEntitiesEncode.GetHTMLTranslationTable( 'HTML_ENTITIES', quoteStyle )
-
-	string = string === null ? '' : string + ''
-
-	if ( !hashMap )
-	{
-		return false
-	}
-
-	if ( quoteStyle && quoteStyle === 'ENT_QUOTES' )
-	{
-		hashMap["'"] = '&#039;'
-	}
-
-	doubleEncode = doubleEncode === null || !!doubleEncode
-
-	var regex = new RegExp('&(?:#\\d+|#x[\\da-f]+|[a-zA-Z][\\da-z]*);|[' + Object.keys(hashMap).join('').replace(/([()[\]{}\-.*+?^$|\/\\])/g, '\\$1') + ']','g')
-
-	return string.replace( regex,
-		function ( ent )
-		{
-			if ( ent.length > 1 )
-			{
-				return doubleEncode ? hashMap['&'] + ent.substr(1) : ent
-			}
-
-			return hashMap[ent]
-		}
-	)
-}
-
-function DecodeHTMLEntities( htmlEncodedString )
-{
-	var ret = htmlEncodedString;
-
-	if ( "string" == typeof htmlEncodedString )
-	{
-		var bits = htmlEncodedString.split( '&' );
-		var n    = bits.length;
-
-		if ( 1 < n )
-		{
-			for ( var i=0; i < n; i++ )
-			{
-				var s = bits[i].indexOf( ";" );
-
-				if ( -1 != s )
-				{
-					var bit = bits[i];
-					var bob = bit.substring( 0, s + 1 );
-
-					switch ( bob )
-					{
-					case "amp;":
-						bits[i] = "&"  + bit.substring( s + 1, bit.length );
-						break;
-						
-					case "quot;":
-						bits[i] = "\"" + bit.substring( s + 1, bit.length );
-						break;
-						
-					case "apos;":
-						bits[i] = "\'" + bit.substring( s + 1, bit.length );
-						break;
-						
-					case "lt;":
-						bits[i] = "<"  + bit.substring( s + 1, bit.length );
-						break;
-						
-					case "gt;":
-						bits[i] = ">"  + bit.substring( s + 1, bit.length );
-						break;
-
-					default:
-						bits[i] = DecodeHTMLEntities.DecodeEntity( bob ) + bit.substring( s + 1, bit.length );
-					}
-				}
-			}
-			ret = bits.join( "" );
-		}
-	}
-
-	return ret;
-}
-
-HTMLEntitiesEncode.GetHTMLTranslationTable
-=
-function( table, quoteStyle )
-{
-	// eslint-disable-line camelcase
-	//  discuss at: http://locutus.io/php/get_html_translation_table/
-	// original by: Philip Peterson
-	//  revised by: Kevin van Zonneveld (http://kvz.io)
-	// bugfixed by: noname
-	// bugfixed by: Alex
-	// bugfixed by: Marco
-	// bugfixed by: madipta
-	// bugfixed by: Brett Zamir (http://brett-zamir.me)
-	// bugfixed by: T.Wild
-	// improved by: KELAN
-	// improved by: Brett Zamir (http://brett-zamir.me)
-	//    input by: Frank Forte
-	//    input by: Ratheous
-	//      note 1: It has been decided that we're not going to add global
-	//      note 1: dependencies to Locutus, meaning the constants are not
-	//      note 1: real constants, but strings instead. Integers are also supported if someone
-	//      note 1: chooses to create the constants themselves.
-	//   example 1: get_html_translation_table('HTML_SPECIALCHARS')
-	//   returns 1: {'"': '&quot;', '&': '&amp;', '<': '&lt;', '>': '&gt;'}
-
-	var entities = {}
-	var hashMap = {}
-	var decimal
-	var constMappingTable = {}
-	var constMappingQuoteStyle = {}
-	var useTable = {}
-	var useQuoteStyle = {}
-
-	// Translate arguments
-	constMappingTable[0] = 'HTML_SPECIALCHARS'
-	constMappingTable[1] = 'HTML_ENTITIES'
-	constMappingQuoteStyle[0] = 'ENT_NOQUOTES'
-	constMappingQuoteStyle[2] = 'ENT_COMPAT'
-	constMappingQuoteStyle[3] = 'ENT_QUOTES'
-
-	useTable = !isNaN(table)
-	? constMappingTable[table]
-	: table
-	  ? table.toUpperCase()
-	  : 'HTML_SPECIALCHARS'
-
-	useQuoteStyle = !isNaN(quoteStyle)
-	? constMappingQuoteStyle[quoteStyle]
-	: quoteStyle
-	  ? quoteStyle.toUpperCase()
-	  : 'ENT_COMPAT'
-
-	if (useTable !== 'HTML_SPECIALCHARS' && useTable !== 'HTML_ENTITIES') {
-	throw new Error('Table: ' + useTable + ' not supported')
-	}
-
-	entities['38'] = '&amp;'
-	if (useTable === 'HTML_ENTITIES')
-	{
-		entities['160'] = '&nbsp;'
-		entities['161'] = '&iexcl;'
-		entities['162'] = '&cent;'
-		entities['163'] = '&pound;'
-		entities['164'] = '&curren;'
-		entities['165'] = '&yen;'
-		entities['166'] = '&brvbar;'
-		entities['167'] = '&sect;'
-		entities['168'] = '&uml;'
-		entities['169'] = '&copy;'
-		entities['170'] = '&ordf;'
-		entities['171'] = '&laquo;'
-		entities['172'] = '&not;'
-		entities['173'] = '&shy;'
-		entities['174'] = '&reg;'
-		entities['175'] = '&macr;'
-		entities['176'] = '&deg;'
-		entities['177'] = '&plusmn;'
-		entities['178'] = '&sup2;'
-		entities['179'] = '&sup3;'
-		entities['180'] = '&acute;'
-		entities['181'] = '&micro;'
-		entities['182'] = '&para;'
-		entities['183'] = '&middot;'
-		entities['184'] = '&cedil;'
-		entities['185'] = '&sup1;'
-		entities['186'] = '&ordm;'
-		entities['187'] = '&raquo;'
-		entities['188'] = '&frac14;'
-		entities['189'] = '&frac12;'
-		entities['190'] = '&frac34;'
-		entities['191'] = '&iquest;'
-		entities['192'] = '&Agrave;'
-		entities['193'] = '&Aacute;'
-		entities['194'] = '&Acirc;'
-		entities['195'] = '&Atilde;'
-		entities['196'] = '&Auml;'
-		entities['197'] = '&Aring;'
-		entities['198'] = '&AElig;'
-		entities['199'] = '&Ccedil;'
-		entities['200'] = '&Egrave;'
-		entities['201'] = '&Eacute;'
-		entities['202'] = '&Ecirc;'
-		entities['203'] = '&Euml;'
-		entities['204'] = '&Igrave;'
-		entities['205'] = '&Iacute;'
-		entities['206'] = '&Icirc;'
-		entities['207'] = '&Iuml;'
-		entities['208'] = '&ETH;'
-		entities['209'] = '&Ntilde;'
-		entities['210'] = '&Ograve;'
-		entities['211'] = '&Oacute;'
-		entities['212'] = '&Ocirc;'
-		entities['213'] = '&Otilde;'
-		entities['214'] = '&Ouml;'
-		entities['215'] = '&times;'
-		entities['216'] = '&Oslash;'
-		entities['217'] = '&Ugrave;'
-		entities['218'] = '&Uacute;'
-		entities['219'] = '&Ucirc;'
-		entities['220'] = '&Uuml;'
-		entities['221'] = '&Yacute;'
-		entities['222'] = '&THORN;'
-		entities['223'] = '&szlig;'
-		entities['224'] = '&agrave;'
-		entities['225'] = '&aacute;'
-		entities['226'] = '&acirc;'
-		entities['227'] = '&atilde;'
-		entities['228'] = '&auml;'
-		entities['229'] = '&aring;'
-		entities['230'] = '&aelig;'
-		entities['231'] = '&ccedil;'
-		entities['232'] = '&egrave;'
-		entities['233'] = '&eacute;'
-		entities['234'] = '&ecirc;'
-		entities['235'] = '&euml;'
-		entities['236'] = '&igrave;'
-		entities['237'] = '&iacute;'
-		entities['238'] = '&icirc;'
-		entities['239'] = '&iuml;'
-		entities['240'] = '&eth;'
-		entities['241'] = '&ntilde;'
-		entities['242'] = '&ograve;'
-		entities['243'] = '&oacute;'
-		entities['244'] = '&ocirc;'
-		entities['245'] = '&otilde;'
-		entities['246'] = '&ouml;'
-		entities['247'] = '&divide;'
-		entities['248'] = '&oslash;'
-		entities['249'] = '&ugrave;'
-		entities['250'] = '&uacute;'
-		entities['251'] = '&ucirc;'
-		entities['252'] = '&uuml;'
-		entities['253'] = '&yacute;'
-		entities['254'] = '&thorn;'
-		entities['255'] = '&yuml;'
-	}
-
-	if (useQuoteStyle !== 'ENT_NOQUOTES')
-	{
-		entities['34'] = '&quot;'
-	}
-
-	if (useQuoteStyle === 'ENT_QUOTES')
-	{
-		entities['39'] = '&#39;'
-	}
-	entities['60'] = '&lt;'
-	entities['62'] = '&gt;'
-
-	// ascii decimals to real symbols
-	for (decimal in entities)
-	{
-		if (entities.hasOwnProperty(decimal))
-		{
-			hashMap[String.fromCharCode(decimal)] = entities[decimal]
-		}
-	}
-
-	return hashMap
-}
-
-DecodeHTMLEntities.DecodeEntity
-=
-function( entity )
-{
-	var ret = entity;
-
-	if ( 0 == entity.indexOf( "#" ) )
-	{
-		var entity2 = entity.substring( 1, entity.length );
-		var e       = entity2.indexOf( ";" );
-	
-		if ( (entity2.length - 1) == e )
-		{
-			var entity3 = entity2.substring( 0, entity2.length - 1 );
-			
-			var dec = parseInt( entity3 );
-			
-			if ( NaN !== dec )
-			{
-				ret = String.fromCharCode( dec );
-			}
-		}
-	}
-	
-	return ret;
-}
-
-/*
- *  PureJavacript, InputFile.js
- *
- *  Copyright 2014 - 2017, CrossAdaptive
- */
-
-function InputFile( file_id, progress_handler, onload_handler, onerror_handler )
-{
-	return new InputFile.Class( file_id, progress_handler, onload_handler, onerror_handler );
-}
-
-InputFile.Class
-=
-function ( file_id, progress_handler, onload_handler, onerror_handler )
-{
-	this.reader            = new FileReader();
-	this.reader.onprogress = progress_handler ? progress_handler : InputFile.OnProgress;
-	this.reader.onloadend  =  onload_handler ?   onload_handler : InputFile.OnLoad;
-	this.reader.onerror    =  onerror_handler ?  onerror_handler : InputFile.OnError;
-	this.count             = 0;
-
-	var input = document.getElementById( file_id );
-	var file  = input.files[0];
-
-	switch ( input.files[0].type.split( "/" )[1] )
-	{
-	case "png":
-		this.fileType = "png";
-		break;
-		
-	case "jpg":
-	case "jpeg":
-		this.fileType = "jpg";
-		break;
-
-    case "csv":
-        this.fileType = "csv";
-        break;
-
-	default:
-		this.fileType = "";
-	}
-
-    /*
-     *  Kludge to allow IE browsers to call 'readAsBinaryString', see:
-     *  https://stackoverflow.com/questions/31391207/javascript-readasbinarystring-function-on-e11
-     */
-
-    if ( FileReader.prototype.readAsBase64 === undefined )
-    {
-        FileReader.prototype.readAsBase64
-        =
-        function( file_input )
-        {
-            this.readAsArrayBuffer( file_input );
-        }
-
-        this.reader.onload
-        =
-        function( e )
-        {
-            var binary = "";
-            var bytes  = new Uint8Array( this.result );
-            var length = bytes.byteLength;
-
-            for ( var i=0; i < length; i++ )
-            {
-                binary += String.fromCharCode( bytes[i] )
-            }
-
-            this.resultAsBase64 = Base64.Encode( binary );
-        }
-    }
-
-    this.reader.readAsBase64( file );
-}
-
-InputFile.Class.prototype.getCount
+DataStorage.Exists
 =
 function()
 {
-	return this.count;
+	return typeof( Storage ) !== "undefined";
 }
 
-InputFile.OnProgress
+DataStorage.Local.SetItem
 =
-function()
+function( key, value )
 {
-	console.log( "InputFile: default onprogress handler" );
-}
+	var success = false;
 
-InputFile.OnLoad
-=
-function()
-{
-	console.log( "InputFile: default onload handler" );
-}
-
-InputFile.OnError
-=
-function()
-{
-	console.log( "InputFile: default onerror handler" );
-}
-
-/*
- *  PureJavacript, Is.js
- *
- *  Copyright 2014 - 2017, CrossAdaptive
- */
-
-Is        = {}
-Is.Date   = IsDate
-Is.Prefix = IsPrefix
-
-function IsDate( $datetime )
-{
-	var is_date = false;
-
-	switch ( $datetime )
+	if ( typeof( Storage ) !== "undefined" )
 	{
-	case null:
-	case "NULL":
-	case "null":
-	case "":
-	case "0":
-	case "0000-00-00":
-	case "0000-00-00 00:00:00":
-		break;
+		if ( value && "" != value )
+		{
+			window.localStorage.setItem( key, value );
 		
-	default:
-		is_date = true;
+			success = (window.localStorage.key == value);
+		}
 	}
-
-	return is_date;
+	return success;
 }
 
-function IsPrefix( string, prefix )
-{
-	return (0 == string.indexOf( prefix ));
-}
-
-/*
- *  PureJavacript, Links.js
- *
- *  Copyright 2014 - 2017, CrossAdaptive
- */
-
-Links          = {}
-Links.Activate = LinksActivate
-Links.Complete = LinksComplete
-
-function LinksActivate( links, href, top_level_links )
-{
-	var n = links.length;
-
-    if ( !top_level_links ) top_level_links = [];
-	
-	for ( var i=0; i < n; i++ )
-	{
-		var link = links[i];
-
-        if ( link.href )
-        {
-            if ( link.href == href )
-            {
-                link.className += ("" == link.className) ? "active" : " active";
-            }
-
-            //
-            //  If href       = '/dashboard/some/directory/',
-            //  and link.href = '/dashboard/some/',
-            //
-            //  then it should have the class 'subactive' added,
-            //  indicating that the link is a parent directory of the current page
-            //  unless it is a 'top_level' link.
-            //
-
-            var is_prefix    = LinksActivate.IsPrefix( href, link.href );
-            var is_dashboard = LinksActivate.IsDashboard( link.href );
-            var is_tll       = LinksActivate.TopLevelLinksContainsPrefixOfCurrentPage( top_level_links, href );
-
-            if ( is_prefix && !(is_dashboard && is_tll) )
-            {
-                link.className += ("" == link.className) ? "subactive" : " subactive";
-            }
-        }
-	}
-}
-
-LinksActivate.IsPrefix
+DataStorage.Local.GetItem
 =
-function( string, prefix )
+function( key )
 {
-    return (0 === string.indexOf( prefix ));
-}
+	var value = null;
 
-LinksActivate.IsDashboard
-=
-function( href )
-{
-    return (href == location.protocol + "//" + location.hostname + "/dashboard/" );
-}
-
-LinksActivate.TopLevelLinksContainsPrefixOfCurrentPage
-=
-function( top_level_links, current_page )
-{
-    var r = false;
-    var n = top_level_links.length;
-
-    for ( var i=0; i < n; i++ )
-    {
-        if ( IsPrefix( current_page, top_level_links[i] ) )
-        {
-            r = true;
-            break;
-        }
-    }
-
-    return r;
-}
-
-LinksActivate.IsRootHref
-=
-function( href )
-{
-    return ((location.protocol + '//') == href);
-}
-
-function LinksComplete( links, tuple )
-{
-	var n = links.length;
-	
-	for ( var i=0; i < n; i++ )
+	if ( DataStorage.Exists() )
 	{
-		var link = links[i];
-
-        if ( link.href )
-        {
-    		link.href      = Replace( link.href,      tuple );
-        }
-		link.innerHTML = Replace( link.innerHTML, tuple );
+		value = window.localStorage.getItem( key );
 	}
+	return value;
 }
 
-/*
- *  PureJavacript, Load.js
- *
- *  Copyright 2014 - 2017, CrossAdaptive
- */
-
-Load           = {}
-Load.ImageFile = LoadInputFromImageFile
-Load.Table     = LoadTableFromFile
-
-function LoadInputFromImageFile( targetID, fileID, holderID )
+DataStorage.Local.RemoveItem
+=
+function( key )
 {
-	var target = document.getElementById( targetID );
-	var file   = document.getElementById( fileID  );
-	
-	if ( target && file )
+	var success = false;
+
+	if ( typeof( Storage ) !== "undefined" )
 	{
-		file.imageFile = new InputFile( fileID, null, function() { LoadInputFromImageFileHandler( targetID, fileID, holderID ); }, null );
-	}
-}
-
-function LoadInputFromImageFileHandler( targetID, fileID, holderID )
-{
-	var target = document.getElementById( targetID  );
-	var file   = document.getElementById( fileID   );
-	var holder = document.getElementById( holderID );
-
-	var base64 = file.imageFile.reader.resultAsBase64;
-	var ext    = file.imageFile.fileType;
-	var url64  = "data:image/" + ext + ";base64," + base64;
-	
-	target.value = url64.replace( '=', '' );
-
-	if ( holder )
-	{
-		holder.style.background     = "white url(" + url64 + ") no-repeat center center";
-		holder.style.backgroundSize = "cover";
-	}
-}
-
-function LoadTableFromFile( event )
-{
-	var table_id = event.target.getAttribute( "data-target-id" );
-	var table    = document.getElementById( table_id );
-	
-	if ( table )
-	{
-		var id = event.target.id;
+		window.localStorage.removeItem( key );
 		
-		LoadTableFromFile.table = table;
-		LoadTableFromFile.file  = InputFile( id, null, LoadTableFromFile.OnLoad, null );
+		success = (window.localStorage.key == null);
 	}
+	return success;
 }
 
-LoadTableFromFile.OnLoad
+DataStorage.Local.HasItem
 =
-function()
+function( key )
 {
-	if ( ! LoadTableFromFile.file )
+	var success = false;
+
+	if ( typeof( Storage ) !== "undefined" )
 	{
-		console.log( "Unexpectedly, could not find file!" );
+		success = window.localStorage.hasOwnProperty( key );
 	}
-	//else
-	//if ( "csv" != LoadTableFromFile.file.fileType )
-	//{
-	//	alert( "Please add a CSV (Comman Seperated Value) file - file of type " + LoadTableFromFile.file.fileType + " selecteed" );
-	//
-	//	location.reload();
-	//}
-	else
+	return success;
+}
+
+DataStorage.Session.SetItem
+=
+function( key, value )
+{
+	var success = false;
+
+	if ( typeof( Storage ) !== "undefined" )
 	{
-		var table     = LoadTableFromFile.table;
-		var content   = Base64.Decode( LoadTableFromFile.file.reader.resultAsBase64 );
-		var csv_file  = new CSVFile( content );
-		var col_specs = LoadTableFromFile.ExtractColumnSpecs( LoadTableFromFile.table );
-		var tbody     = table.tBodies[0];
-
-		var rows      = csv_file.getNrOfRows();
-
-		if ( 0 < rows )
+		if ( value && "" != value )
 		{
-			tbody.innerHTML = "";
+			window.sessionStorage.setItem( key, value );
 		
-			for ( var row=0; row < rows; row++ )
-			{
-				var tr = document.createElement( "TR" );
-				var n  = col_specs.length;
-				
-				for ( var i=0; i < n; i++ )
-				{
-					var spec           = col_specs[i];
-					var td             = document.createElement( "TD" );
-						td.innerHTML   = HTMLEntitiesEncode( csv_file.getValueFor( row, spec.source_names ), 'ENT_QUOTES', 'UTF8', true );
-						td.setAttribute( "data-name", spec.field );
-
-					tr.appendChild( td );
-				}
-			
-				tbody.appendChild( tr );
-			}
+			success = (window.sessionStorage.key == value);
 		}
 	}
+	return success;
 }
 
-LoadTableFromFile.ExtractColumnSpecs
+DataStorage.Session.GetItem
 =
-function( table )
+function( key )
 {
-	var col_specs   = new Array();
-	var th_elements = table.getElementsByTagName( "TH" );
-	var n           = th_elements.length;
-	
-	for ( var i=0; i < n; i++ )
+	var value = null;
+
+	if ( DataStorage.Exists() )
 	{
-		var th           = th_elements[i];
-		var field        = th.getAttribute( "data-field" );
-		var source_names = th.getAttribute( "data-source-names" );
-
-		var col_spec                 = new Object();
-			col_spec['field']        = field;
-			col_spec['source_names'] = source_names.split( "," );
-
-		col_specs.push( col_spec );
+		value = window.sessionStorage.getItem( key );
 	}
-	return col_specs;
+	return value;
 }
 
-/*
- *  PureJavacript, Locations.js
- *
- *  Copyright 2014 - 2017, CrossAdaptive
- */
-
-Locations              = {}
-Locations.SearchValues = GetSearchValues
-Locations.SearchValue  = GetSearchValue
-Locations.Up           = Up
-Locations.CreateDownFn = CreateDownFn
-Locations.Down         = Down
-
-function GetSearchValues()
+DataStorage.Session.RemoveItem
+=
+function( key )
 {
-	var object = new Object;
-	
-	var bits = window.location.search.substring( 1 ).split( "&" );
-	var n    = bits.length;
-	
-	for ( var i=0; i < n; i++ )
+	var success = false;
+
+	if ( typeof( Storage ) !== "undefined" )
 	{
-		var keyvalue = bits[i].split( "=" );
-
-        if ( 2 == keyvalue.length )
-        {
-            var key      = decodeURIComponent( keyvalue[0] );
-            var value    = decodeURIComponent( keyvalue[1] );
-
-            object[key] = value;
-        }
-	}
-	return object;
-}
-
-function GetSearchValue( name )
-{
-	var parameters = GetSearchValues();
-	
-	return parameters[name] ? parameters[name] : "";
-}
-
-function Up( search_parameters )
-{
-	var loc  = location.protocol + "//" + location.host;
-	var bits = location.pathname.split( "/" );
-	var path = "";
-
-	switch ( bits.length )
-	{
-	case 0: // ""
-	case 1: // Can't happen
-		path = "/";
-		break;
-	
-	case 2: // "/"
-		path = "/";
-		break;
-	
-	default:
-		bits = ("" == bits[bits.length - 1]) ? bits.slice( 0, -2 ) : bits.slice( 0, -1 );
-		path = bits.join( "/" ) + "/";
-	}
-
-	loc += path;
-
-    if ( null == search_parameters )
-    {
-        loc += location.search;
-    }
-    else
-    {
-        loc += "?";
-
-        for ( key in search_parameters )
-        {
-            loc += search_parameters[key] + "=" + GetSearchValue( search_parameters[key] ) + "&";
-        }
-        loc = loc.substring( 0, loc.length - 1 );
-    }
-
-	location.replace( loc );
-}
-
-function CreateDownFn( pathname, search )
-{
-    return function()
-    {
-        Down( pathname, search );
-    }
-}
-
-function Down( pathname, search )
-{
-    var loc  = location.protocol + "//" + location.host + location.pathname + pathname + search;
-
-    if ( -1 !== loc.indexOf( '%' ) )
-    {
-        var parameters = Locations.SearchValues();
-
-        loc = Replace( loc, parameters );
-    }
-
-    location.replace( loc );
-}
-
-/*
- *  PureJavacript, Modal.js
- *
- *  Copyright 2014 - 2017, CrossAdaptive
- */
-
-Modal        = {}
-Modal.Close  = CloseModals;
-Modal.Toggle = ToggleModal;
-
-function CloseModals()
-{
-	var modal_bg = document.getElementById( "modal-bg" );
-	var divs     = document.getElementsByTagName( "DIV" );
-	var n        = divs.length;
-	
-	for ( var i=0; i < n; i++ )
-	{
-		if ( "modal" == divs[i].className )
-		{
-			var modal = divs[i];
-			
-			modal.style.display = "none";
-		}
-	}
-
-	if ( modal_bg ) modal_bg.style.display = "none";
-}
-
-function ToggleModal( modal_id )
-{
-	var modal    = document.getElementById( modal_id   );
-	var modal_bg = document.getElementById( "modal-bg" );
-	
-	if ( modal )
-	{
-		switch ( modal.style.display )
-		{
-		case "block":
-			modal.style.display    = "none";
-			modal_bg.style.display = "none";
-			break;
-			
-		case "none":
-		default:
-			modal_bg.style.display = "block";
-
-			modal.style.visibility = "hidden";
-			modal.style.display    = "block";
-
-			var width = modal.offsetWidth;
-				width = width / 2;
-				width = 1 - width;
+		window.sessionStorage.removeItem( key );
 		
-			modal.style.marginLeft = width + "px";
-			
-			modal.style.visibility = "visible";
-		}
+		success = (window.sessionStorage.key == null);
 	}
+	return success;
 }
 
-/*
- *  PureJavacript, Selects.js
- *
- *  Copyright 2014 - 2017, CrossAdaptive
- */
-
-function Selects( resolver )
-{
-	Selects.resolver = resolver;
-	Selects.setup();
-}
-
-Selects.setup
+DataStorage.Session.HasItem
 =
-function()
+function( key )
 {
-	var kinds = Array();
-	var selects = document.getElementsByTagName( "SELECT" );
-	if ( selects )
+	var success = false;
+
+	if ( typeof( Storage ) !== "undefined" )
 	{
-		var n = selects.length;
-		
-		for ( var i=0; i < n; i++ )
-		{
-			var select = selects[i];
-				select.setValue = Selects.setValue;
-
-			var id   = select.hasAttribute( "id" ) ? select.getAttribute( "id" ) + ":" : "";
-			var kind = select.getAttribute( "data-kind" );
-
-			if ( kind )
-			{
-				var cupid = id + kind;
-
-				kinds.push( cupid );
-			}
-		}
+		success = window.sessionStorage.hasOwnProperty( key );
 	}
-
-	if ( kinds.length )
-	{
-		Selects.Multiselect( Selects.ArrayToString( kinds ), "", Selects.setup.handler );
-	}
-}
-
-Selects.setup.handler
-=
-function( responseText )
-{
-	var obj = JSON.parse( responseText );
-	if ( obj && obj.results )
-	{
-		var lists = Array();
-		var n = obj.results.length;
-			
-		for ( var i=0; i < n; i++ )
-		{
-			var list   = obj.results[i];
-			var name   = list.name;
-			var tuples = list.tuples;
-			
-			lists[name] = tuples;
-		}
-		Selects.setup.init( lists );
-	}
-}
-
-Selects.setup.init
-=
-function( lists )
-{
-	var selects = document.getElementsByTagName( "SELECT" );
-
-	if ( selects )
-	{
-		var n = selects.length;
-		
-		for ( var i=0; i < n; i++ )
-		{
-			var select = selects[i];
-			var id     = select.hasAttribute( "id" ) ? select.getAttribute( "id" ) + ":" : "";
-			var kind   = select.getAttribute( "data-kind" );
-			
-			if ( kind && lists.hasOwnProperty( id + kind ) )
-			{
-				Selects.setup.addOptions( select, lists );
-			}
-		}
-
-		for ( var i=0; i < n; i++ )
-		{
-			var select = selects[i];
-			var id     = select.hasAttribute( "id" ) ? select.getAttribute( "id" ) + ":" : "";
-			var kind   = select.getAttribute( "data-kind" );
-			
-			if ( kind && lists.hasOwnProperty( id + kind ) )
-			{
-				if ( select.hasAttribute( "data-cascade" ) )
-				{
-					select.addEventListener( "change", Selects.Cascade );
-
-					if ( select.hasAttribute( "data-value" ) )
-					{
-						Selects.DoCascade( select );
-					}
-				}
-			}
-		}
-	}
-}
-
-Selects.setup.addOptions
-=
-function( select, lists )
-{
-	var id           = select.hasAttribute( "id" ) ? select.getAttribute( "id" ) + ":" : "";
-	var kind         = select.getAttribute( "data-kind" );
-	var type         = select.getAttribute( "data-select-type" );
-	var tuples       = lists[id + kind];
-	
-	if ( tuples )
-	{
-		select.options.length = 0;
-
-		var offset   = 0;
-		var selected = 0;
-		var label    = select.getAttribute( "data-label"  ) ? select.getAttribute( "data-label"  ) : select.getAttribute( "placeholder" );
-		if ( label )
-		{
-			select.options[0] = new Option( label, '' );
-			offset++;
-		}
-
-		//if ( ! select.disabled )
-		{
-			var data_value = select.getAttribute( "data-value" );
-			var data_text  = select.getAttribute( "data-text"  );
-
-			var n = tuples.length;
-			for ( var i=0; i < n; i++ )
-			{
-				var disabled = false;
-				var name     = tuples[i].name;
-				var text     = DecodeHTMLEntities( tuples[i].text );
-					text     = text ? text : "";
-
-				if ( 0 == name.indexOf( "!" ) )
-				{
-					disabled = true;
-					name = name.substring( 1 );
-				}
-
-				if ( name == data_value               ) selected = i+offset;
-				if ( -1 !== text.indexOf( data_text ) ) selected = i+offset;
-
-				if ( name != text )
-				{
-					select.options[i+offset] = new Option( text, name );
-				}
-				else
-				{
-					select.options[i+offset] = new Option( text );
-				}
-				select.options[i+offset].disabled = disabled;
-			}
-
-			select.selectedIndex = selected;
-		}
-		
-		if ( ("progressive" == type) && (0 < selected) )
-		{
-			for ( var i=selected - 1; i >= 0; i-- )
-			{
-				select.options[i].disabled = true;
-			}
-		}
-	}
-}
-
-Selects.lookupOptions
-=
-function( id, kind, value )
-{
-	var select = document.getElementById( id );
-	
-	if ( select )
-	{
-		var n = select.length;
-
-		if ( 0 < n )
-		{
-			for ( var i=0; i < n; i++ )
-			{
-				if ( select.options[i].value == value )
-				{
-					select.selectedIndex = i;
-					break;
-				}
-			}
-		}
-		else
-		{
-			select.setAttribute( "data-value", value );
-		}
-	}
-}
-
-Selects.Cascade
-=
-function( event )
-{
-	Selects.DoCascade( event.target );
-}
-
-Selects.DoCascade
-=
-function( select )
-{
-	var value   = select.value;
-	var targets = select.getAttribute( "data-cascade" );
-
-	if ( targets )
-	{
-		var bits    = targets.split( "," );
-		var n       = bits.length;
-		
-		for ( var i=0; i < n; i++ )
-		{
-			var target = bits[i];
-			
-			if ( target )
-			{
-				Selects.Reload( target, value );
-			}
-		}
-		
-		select.addEventListener( "change", Selects.Cascade );
-		//select.onchange = Selects.Cascade;
-	}
-}
-
-Selects.Reload
-=
-function( target, value )
-{
-	var select = document.getElementById( target );
-	if ( select )
-	{
-		if ( "SELECT" == select.tagName )
-		{
-			var kind = select.getAttribute( "data-kind" );
-			
-			Selects.Multiselect( target + ":" + kind, value, Selects.setup.handler );
-
-			//if ( value ) select.disabled = false;
-		}
-		else
-		{
-			if ( select.reload )
-			{
-				select.reload( value );
-			}
-		}
-	}
-}
-
-Selects.Multiselect
-=
-function( kinds, value, handler )
-{
-	var search            = GetSearchValues();
-    var parameters        = new Object();
-    	parameters.kinds  = kinds;
-        parameters.filter = value ? value : search.filter ? search.filter : "";
-
-	var api_host = Selects.resolver();
-
-	Call( api_host + "/api/multiselect/", parameters, handler );
-}
-
-Selects.SetValue
-=
-function( id, value )
-{
-	var select = document.getElementById( id );
-
-	select.setValue( value );
-	
-//	if ( select )
-//	{
-//		var n = select.length;
-//
-//		if ( 0 < n )
-//		{
-//			for ( var i=0; i < n; i++ )
-//			{
-//				if ( select.options[i].value == value )
-//				{
-//					select.selectedIndex = i;
-//					break;
-//				}
-//			}
-//		}
-//		else
-//		{
-//			select.setAttribute( "data-value", value );
-//		}
-//	}
-}
-
-Selects.setValue
-=
-function( value )
-{
-	if ( this )
-	{
-		var n = this.length;
-
-		if ( 0 < n )
-		{
-			for ( var i=0; i < n; i++ )
-			{
-				if ( this.options[i].value == value )
-				{
-					this.selectedIndex = i;
-					break;
-				}
-			}
-
-			Selects.DoCascade( this );
-		}
-		else
-		{
-			this.setAttribute( "data-value", value );
-		}
-	}
-}
-
-Selects.ArrayToString
-=
-function( array )
-{
-	var string = "";
-	var sep    = "";
-
-	for ( var i in array )
-	{
-		string += sep + array[i];
-		sep = ",";
-	}
-	
-	return string;
-}
-
-/*
- *  PureJavacript, Session.js
- *
- *  Copyright 2014 - 2017, CrossAdaptive
- */
-
-function Session( Redirect )
-{
-	Session.Redirect = Redirect;
-
-	Call( "/api/auth/session/", new Array(), Session.Switch );
-}
-
-Session.Switch
-=
-function( responseText )
-{
-	Session.Handler( responseText );
-
-	if ( Session.Redirect )
-	{
-		Session.Redirect( Session.idtype );
-	}
-}
-
-Session.Handler
-=
-function ( responseText )
-{
-	var idtype = "";
-
-	Session.idtype = "";
-
-	if ( -1 != responseText.indexOf( "UNAUTHENTICATED" ) )
-	{
-		Session.status = "UNAUTHENTICATED";
-	}
-	else
-	if ( -1 != responseText.indexOf( "INVALID_SESSION" ) )
-	{
-		Session.status = "INVALID_SESSION";
-	}
-	else
-	if ( "" != responseText )
-	{
-		var obj = JSON.parse( responseText );
-		if ( obj && obj.sessionid )
-		{
-			Session.USER        = obj.USER;
-			Session.email       = obj.email;
-			Session.sessionid   = obj.sessionid;
-			Session.idtype      = obj.idtype;
-			Session.given_name  = obj.given_name;
-			Session.family_name = obj.family_name;
-			Session.user_hash   = obj.user_hash;
-			Session.read_only   = obj.read_only;
-			Session.status      = "AUTHENTICATED";
-
-			idtype = Session.idtype;
-		}
-		else
-		if ( obj && obj.results && (1 == obj.results.length) && obj.results[0].sessionid )
-		{
-			var obj = obj.results[0];
-
-			Session.USER        = obj.USER;
-			Session.email       = obj.email;
-			Session.sessionid   = obj.sessionid;
-			Session.idtype      = obj.idtype;
-			Session.given_name  = obj.given_name;
-			Session.family_name = obj.family_name;
-			Session.user_hash   = obj.user_hash;
-			Session.read_only   = obj.read_only;
-			Session.status      = "AUTHENTICATED";
-
-			idtype = Session.idtype;
-		}
-		else
-		if ( obj && obj.error )
-		{
-			Session.status = obj["error"];
-		}
-	}
-
-	//Redirect( idtype );
-}
-
-/*
- *  PureJavacript, Setup.js
- *
- *  Copyright 2014 - 2017, CrossAdaptive
- */
-
-function Setup()
-{
-	Setup.Elements( document.getElementsByTagName( "DIV"   ) );
-	Setup.Elements( document.getElementsByTagName( "FORM"  ) );
-	Setup.Elements( document.getElementsByTagName( "TBODY" ) );
-}
-
-Setup.CreateTableSetupFn
-=
-function( id, nr_columns )
-{
-    var path   = "";
-    var search = "";
-
-    return Setup.CreateTableSetupWithDownFn( id, nr_columns, path, search );
-}
-
-Setup.CreateTableSetupWithDownFn
-=
-function( id, nr_columns, path, search )
-{
-    /*
-     *  The returned function parses the JSON formatted response text and creates a table row template for each result tuple.
-     *  These are added to the tbody corresponding to 'id' - 'nr_of_columns' is used if no result tuples are returned.
-     */
-
-    var fn
-    =
-    function( responseText )
-    {
-        var json  = JSON.parse( responseText );
-        var tbody = document.getElementById( id );
-
-        if ( tbody && ("OK" == json.status) )
-        {
-            var htm  = Setup.CreateTableSetupFn.RetrieveTemplate( id );
-            var htm2 = Setup.CreateTableSetupFn.RetrieveTemplate( id + "-tally" );
-
-            if ( ! htm )
-            {
-                alert( "Table '" + id + "' is missing a row template with the id: '" + id + "-template'" );
-            }
-            else
-            {
-                var n = json.results.length;
-                
-                if ( 0 == n )
-                {
-                    tbody.innerHTML = "<tr><td colspan='" + nr_columns + "'>No entries added.</td></tr>";
-                }
-                else
-                {
-                    var T = { t: null };
-
-                    var loading = tbody.querySelector( "TR.loading" );
-                    if ( loading )
-                    {
-                        tbody.removeChild( loading )
-                    }
-                    else
-                    {
-                        var rows = tbody.querySelectorAll( "TR" );
-
-                        if ( 0 < rows.length )
-                        {
-                            var tds = rows[0].querySelectorAll( "TD" );
-
-                            if ( (0 < tds.length) && (-1 != tds[0].innerHTML.toLowerCase().indexOf( "loading" ) ) )
-                            {
-                                tbody.removeChild( rows[0] );
-                            }
-                        } 
-                    }
-                    
-                    for ( var i=0; i < n; i++ )
-                    {
-                        var e = document.createElement( "TR" );
-                        var t = json.results[i];
-                            t['i'] = i + 1;
-
-                        Setup.CreateTableSetupFn.AddT( T, t );
-
-                        e.innerHTML = Replace( htm, t );
-                        
-                        if ( "" != path )
-                        {
-                            e.style.cursor = "pointer";
-                            e.onclick = Locations.CreateDownFn( path, Replace( search, t ) );
-                        }
-
-                        if ( path && search )
-                        {
-                            e.className = "clickable"
-                        }
-                        
-                        if ( 0 == (i % 2) )
-                        {
-                            e.className += " alternate"
-                        }
-
-                        if ( "css_class" in t )
-                        {
-                            e.className += " " + t['css_class'];
-                        }
-
-                        tbody.appendChild( e );
-                    }
-
-                    if ( htm2 && T.t )
-                    {
-                        var e = document.createElement( "TR" );
-                            e.innerHTML = Replace( htm2, T.t );
-
-                        tbody.appendChild( e );
-                    }
-                }
-            }
-        }
-    }
-    
-    return fn;
-}
-
-Setup.CreateTableSetupFn.RetrieveTemplate
-=
-function( id )
-{
-    var htm             = "";
-    var row_template_id = id + "-template";
-    var template_tr     = document.getElementById( row_template_id );
-
-    if ( template_tr )
-    {
-        htm = template_tr.innerHTML;
-    }
-    
-    return htm;
-}
-
-Setup.CreateTableSetupFn.AddT
-=
-function( T, t )
-{
-    if ( null == T.t )
-    {
-        T.t = Setup.CreateTableSetupFn.AddT.Clone( t );
-
-        for ( var key in T.t )
-        {
-            if ( isNaN( T.t[key] ) ) T.t[key] = "";
-        }
-    }
-    else
-    {
-        for ( var key in T.t )
-        {
-            if ( !isNaN( T.t[key] ) && !isNaN( t[key] ) )
-            {
-                T.t[key] = parseInt( T.t[key] ) + parseInt( t[key] );
-            }
-        }
-    }
-}
-
-Setup.CreateTableSetupFn.AddT.Clone
-=
-function( obj )
-{
-    var ret = {};
-
-    for ( var name in obj )
-    {
-        var value = obj[name];
-        ret[name] = obj[name];
-    }
-
-    return ret;
-}
-
-
-Setup.CreateFormSetupFn
-=
-function( id, key_field )
-{
-    var fn
-    =
-    function( responseText )
-    {
-        InsertResponseValues( id, key_field, responseText )
-    }
-
-    return fn;
-}
-
-Setup.CreateDivSetupFn
-=
-function( id )
-{
-    var fn
-    =
-    function( responseText )
-    {
-        var div = document.getElementById( id )
-        
-        if ( div )
-        {
-            var json = JSON.parse( responseText )
-            
-            if ( ("OK" == json.status) && (1 == json.results.length) )
-            {
-                div.innerHTML = Replace( div.innerHTML, json.results[0] )
-                div.style.opacity = "1.0"
-            }
-            else
-            {
-                alert( "An unexpected error occurred while retrieving data" )
-            }
-        }
-    }
-    
-    return fn;
-}
-
-Setup.CreateFormHandlerFn
-=
-function( id, handler, parameter )
-{
-    var fn
-    =
-    function( responseText )
-    {
-        var json = JSON.parse( responseText );
-
-        if ( "ERROR" == json.status )
-        {
-            alert( json.error );
-        }
-        else
-        {
-            handler( parameter );
-        }
-    }
-    
-    return fn;
-}
-
-Setup.Elements
-=
-function( elements )
-{
-	var n = elements.length;
-	
-	for ( var i=0; i < n; i++ )
-	{
-		var element    = elements[i];
-		var parameters = GetSearchValues();
-
-		Setup.Element( element, parameters );
-	}
-}
-
-Setup.Element
-=
-function( element, parameters )
-{
-	if ( element && element.hasAttribute( "data-setup-url" ) )
-	{
-		var url        = element.getAttribute( "data-setup-url" );
-		var handler    = Setup.DefaultHandler;
-
-		if ( element.hasOwnProperty( "setup" ) )
-		{
-			handler = element.setup;
-
-			handler = handler ? handler : element.handler;
-		}
-
-		if ( !parameters.target_id && element.hasAttribute( "id" ) )
-		{
-			parameters.target_id = element.getAttribute( "id" );
-		}
-
-		Call( Resolve() + url, parameters, handler );
-	}
-}
-
-Setup.DefaultHandler
-=
-function( responseText )
-{
-	var json = JSON.parse( responseText );
-	
-	if ( "OK" != json.status )
-	{
-		console.log( responseText );
-	}
-}
-
-/*
- *  PureJavacript, String.js
- *
- *  Copyright 2014 - 2017, CrossAdaptive
- */
-
-Strings = {}
-Strings.EndsWith     = StringEndsWith
-Strings.StartsWith   = StringStartsWith
-Strings.StripUnicode = StringStripUnicode
-Strings.Truncate     = StringTruncate
-
-function StringEndsWith( string, suffix )
-{
-	var n = string.length;
-	var s = suffix.length;
-	var i = string.indexOf( suffix );
-
-	return (i == (n - s));
-}
-
-function StringStartsWith( string, prefix )
-{
-    return (0 === string.indexOf( prefix ));
-}
-
-function StringStripUnicode( s )
-{
-	var r = "";
-	var l = "";
-	var n = s.length;
-	
-	for ( var i=0; i < n; i++ )
-	{
-		try {
-			if ( s.charCodeAt( i ) <= 255 )
-			{
-				r += s.charAt( i );
-				l += "#";
-			}
-			else
-			{
-				l += "U";
-			}
-		}
-		catch (err)
-		{}
-	}
-	
-	console.log( l );
-	
-	return r;
-}
-
-function StringTruncate( text, max_length )
-{
-	if ( text && (text.length > max_length) )
-	{
-		text = text.substring( 0, max_length - 3 ) + "...";
-	}
-	return text;
+	return success;
 }
 

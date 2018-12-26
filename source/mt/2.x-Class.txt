@@ -80,7 +80,7 @@ function( e, className )
 
 	var contains = false;
 
-	if ( e.className && className )
+	if ( e && e.className && className )
 	{
 		var st = (e.className.length - className.length) - 1;
 

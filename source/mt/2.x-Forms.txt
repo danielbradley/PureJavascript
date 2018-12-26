@@ -99,7 +99,7 @@ function GetFormValues( form )
 				break;
 
 			case "radio":
-				var v = encodeURIComponent( value );
+				var v = value;
 				if ( ! e.checked )
 				{
 					key   = null;
@@ -138,11 +138,11 @@ function GetFormValues( form )
 			
 				if ( object[key] )
 				{
-					object[key] += ("," + encodeURIComponent( value ));
+					object[key] += ("," + value);
 				}
 				else
 				{
-					object[key] = encodeURIComponent( value );
+					object[key] = value;
 				}
 			}
 		}
@@ -409,8 +409,8 @@ function Save( event, handler )
 	case 'select-one':
 	case 'text':
 	default:
-		parameters.name  = encodeURIComponent( element.name  );
-		parameters.value = encodeURIComponent( element.value );
+		parameters.name  = element.name;
+		parameters.value = element.value;
 	}
 
     if ( element.hasAttribute( "id" ) )
@@ -658,8 +658,8 @@ function( parameters, tr )
 	{
 		if ( "TD" == tr.cells[i].tagName )
 		{
-			var key = encodeURIComponent( tr.cells[i].getAttribute( "data-name" ) );
-			var val = encodeURIComponent( tr.cells[i].innerHTML );
+			var key = tr.cells[i].getAttribute( "data-name" );
+			var val = tr.cells[i].innerHTML;
 		
 			if ( key && val )
 			{
