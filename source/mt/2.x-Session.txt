@@ -66,11 +66,9 @@ function ( responseText )
 	if ( "" != responseText )
 	{
 		var obj = JSON.parse( responseText );
-		if ( obj && obj.sessionid )
+		if ( obj && obj.idtype )
 		{
-			Session.USER        = obj.USER;
 			Session.email       = obj.email;
-			Session.sessionid   = obj.sessionid;
 			Session.idtype      = obj.idtype;
 			Session.given_name  = obj.given_name;
 			Session.family_name = obj.family_name;
@@ -81,13 +79,11 @@ function ( responseText )
 			idtype = Session.idtype;
 		}
 		else
-		if ( obj && obj.results && (1 == obj.results.length) && obj.results[0].sessionid )
+		if ( obj && obj.results && (1 == obj.results.length) && obj.results[0].idtype )
 		{
 			var obj = obj.results[0];
 
-			Session.USER        = obj.USER;
 			Session.email       = obj.email;
-			Session.sessionid   = obj.sessionid;
 			Session.idtype      = obj.idtype;
 			Session.given_name  = obj.given_name;
 			Session.family_name = obj.family_name;

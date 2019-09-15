@@ -1,0 +1,60 @@
+
+.. Menu (functions)
+
+!
+~!_gen/js/Menu.js~
+/*
+ *  PureJavacript, Menu.js
+ *
+ *  Copyright 2014 - 2019, CrossAdaptive
+ */
+~
+!
+
+... Menu( id )
+
+|
+Menu( id )
+|
+
+Displays the menu element by:
+locating the element,
+determining its display type using the 'data-display' attribute,
+then setting its 'style.display' property to that.
+
+~_gen/js/Menu.js~
+function Menu( id )
+{
+    var element = document.getElementById( id );
+    var display = element.getAttribute( "data-display" );
+
+    if ( !display )
+    {
+        display = "block";
+    }
+
+    if ( element.style.display && (display == element.style.display) )
+    {
+        element.style.display = "none";
+        document.removeEventListener( "keyup", Menu.EscHandler );
+    }
+    else
+    {
+        element.style.display = display;
+        document.addEventListener( "keyup", function( event ) { Menu.EscHandler( event, id ) } );
+    }
+}
+
+Menu.EscHandler
+=
+function( event, id )
+{
+    if ( 27 === event.keyCode )
+    {
+        var element = document.getElementById( id );
+            element.style.display = "none";
+
+        document.removeEventListener( "keyup", Menu.EscHandler );
+    }
+}
+~

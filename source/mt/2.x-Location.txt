@@ -131,7 +131,7 @@ function Up( search_parameters )
         loc = loc.substring( 0, loc.length - 1 );
     }
 
-	location.replace( loc );
+	location.assign( loc );
 }
 ~
 
@@ -173,6 +173,6 @@ function Down( pathname, search )
         loc = Replace( loc, parameters );
     }
 
-    location.replace( loc );
+    location.assign( loc );
 }
 ~

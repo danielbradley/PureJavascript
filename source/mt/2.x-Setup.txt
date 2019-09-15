@@ -288,6 +288,7 @@ function( elements )
 	{
 		var element    = elements[i];
 		var parameters = GetSearchValues();
+        var parameters = Setup.AddSelectCookies( parameters );
 
 		Setup.Element( element, parameters );
 	}
@@ -328,5 +329,33 @@ function( responseText )
 	{
 		console.log( responseText );
 	}
+}
+
+Setup.AddSelectCookies
+=
+function( parameters )
+{
+    var selects = document.getElementsByTagName( "SELECT" );
+    var n       = selects.length;
+
+    for ( var i=0; i < n; i++ )
+    {
+        var s = selects[i];
+
+        if ( true == s.hasAttribute( "data-cookie" ) )
+        {
+            var name  = s.name;
+            var value = GetCookie( name );
+
+            parameters[name] = value;
+
+            if ( ! s.hasAttribute( "data-value" ) )
+            {
+                s.setAttribute( "data-value", value );
+            }
+        }
+    }
+
+    return parameters;
 }
 ~

@@ -125,9 +125,22 @@ function()
 				
 				for ( var i=0; i < n; i++ )
 				{
+					//	Weirdness alert !!!
+					//	When assigning from 'value' into 'td.innerHTML' Safari (and possibly other browsers)
+					//	will html entity encode characters such as ampersands that are in 'value'.
+					//	To ensure that this always happens, 'td.innerHTML' is then passed to the function
+					//	'HTMLEntitiesEncode', which will encode any entities that were not automatically
+					//	converted by the browser. Note, the fourth parameter of 'HTMLEntitiesEncode' is
+					//	false, which prevents already encoded entities from being re-encoded.
+					//	Therefore, this kind of makes it impossible to use this Load.Table mechanism
+					//	to load values that contain html entities that need to be preserved, i.e.
+					//	&amp; should be converted to '&amp;', 'a', 'm', 'p', ';'.
+
 					var spec           = col_specs[i];
 					var td             = document.createElement( "TD" );
-						td.innerHTML   = HTMLEntitiesEncode( csv_file.getValueFor( row, spec.source_names ), 'ENT_QUOTES', 'UTF8', true );
+					var value          = csv_file.getValueFor( row, spec.source_names );
+						td.innerHTML   = value;
+						td.innerHTML   = HTMLEntitiesEncode( td.innerHTML, 'ENT_QUOTES', 'UTF8', false );
 						td.setAttribute( "data-name", spec.field );
 
 					tr.appendChild( td );

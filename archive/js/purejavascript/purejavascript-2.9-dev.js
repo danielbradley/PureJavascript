@@ -1,4 +1,4 @@
-/* PureJavascript version 2.b */
+/* PureJavascript version 2.9 */
 /*
  *  PureJavacript, APIServer.js
  *
@@ -2251,14 +2251,6 @@ function InsertResponseValues( formID, keyName, responseText )
 		                    input.addEventListener( "change", Forms.Changed );
 		                    input.addEventListener( "keyup",  Forms.Changed );
 		                }
-
-		                if( "checkbox" == input.type )
-		                {
-		                	if ( input.setup )
-		                	{
-								input.setup( { "target": input } );
-		                	}
-		                }
 		                break;
 
 	                case "TEXTAREA":
@@ -2716,28 +2708,23 @@ function Validate( event, handler )
 	var form   = event.target;
 	var n      = form.elements.length;
 
-	var del = (form.elements['submit'] && ('delete' == form.elements['submit'].value));
-
-	if ( ! del )
+	form.checkValidity();
+	
+	for ( var i=0; i < n; i++ )
 	{
-		form.checkValidity();
-		
-		for ( var i=0; i < n; i++ )
+		var element   = form.elements[i];
+
+		if ( element.hasAttribute( "required" ) )
 		{
-			var element   = form.elements[i];
+			var name      = element.name;
+			var value     = element.value;
+			var validated = element.validity.valid;
 
-			if ( element.hasAttribute( "required" ) )
+			Validate.AddClass( element, "checked" );
+
+			if ( false === validated )
 			{
-				var name      = element.name;
-				var value     = element.value;
-				var validated = element.validity.valid;
-
-				Validate.AddClass( element, "checked" );
-
-				if ( false === validated )
-				{
-					valid = false;
-				}
+				valid = false;
 			}
 		}
 	}

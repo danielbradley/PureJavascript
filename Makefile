@@ -1,4 +1,4 @@
-version=1.w
+version=2.b
 
 .PHONY: archive
 
@@ -21,12 +21,12 @@ release_proxy: archive/js/purejavascript/purejavascript-$(version).js
 
 archive/js/purejavascript/purejavascript-$(version).js:
 	mkdir -p archive/js/purejavascript
-	cat `find _gen/js -name "*.js"` > archive/js/purejavascript/purejavascript-$(version).js
+	cat `find -s _gen/js -name "*.js"` > archive/js/purejavascript/purejavascript-$(version).js
 	cp -f archive/js/purejavascript/purejavascript-$(version).js archive/js/purejavascript/purejavascript-latest.js
 
 dev_proxy:
 	mkdir -p archive/js/purejavascript
-	cat `find _gen/js -name "*.js"` > archive/js/purejavascript/purejavascript-$(version)-dev.js
+	cat `find -s _gen/js -name "*.js"` > archive/js/purejavascript/purejavascript-$(version)-dev.js
 	cp -f archive/js/purejavascript/purejavascript-$(version)-dev.js archive/js/purejavascript/purejavascript-latest-dev.js
 
 artifacts: doc quasi content
@@ -36,6 +36,7 @@ doc:
 	max2html --style source/css/style.css --out _documentation/purejavascript source/mt/*.txt
 
 quasi:
+	echo "/* PureJavascript version $(version) */" > _gen/js/AAA.js
 	quasi -f . source/mt/*.txt
 
 content:

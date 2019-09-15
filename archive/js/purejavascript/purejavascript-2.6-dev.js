@@ -1,4 +1,4 @@
-/* PureJavascript version 2.b */
+/* PureJavascript version 2.6 */
 /*
  *  PureJavacript, APIServer.js
  *
@@ -272,7 +272,7 @@ function( responseText )
 
         if ( "ERROR" == json.status )
         {
-            switch ( json.error.split( " " )[0] )
+            switch ( json.error )
             {
             case "INVALID_USER":
             case "INVALID_PASSWORD":
@@ -984,7 +984,7 @@ function SetCookie( path, cname, cvalue, exdays )
     var p       = ("" != path) ? path : "/";
     var d       = new Date(); d.setTime(d.getTime() + (exdays*24*60*60*1000));
     var expires = (0 != exdays) ? "expires="+d.toUTCString() + ";" : "";
-    var cookie  = cname + "=" + cvalue + "; " + expires + " " + "path=" + p + ";secure;SameSite=strict";
+    var cookie  = cname + "=" + cvalue + "; " + expires + " " + "path=" + p + ";secure;HttpOnly;SameSite=strict";
     
     document.cookie = cookie;
 }
@@ -2208,7 +2208,6 @@ function InsertResponseValues( formID, keyName, responseText )
 	{
 		var json = JSON.parse( responseText );
 		var form = document.getElementById( formID );
-			form.autocomplete = "off";
 
 		if ( json && form && ("OK" == json.status) && (1 == json.results.length) )
 		{
@@ -2250,14 +2249,6 @@ function InsertResponseValues( formID, keyName, responseText )
 		                default:
 		                    input.addEventListener( "change", Forms.Changed );
 		                    input.addEventListener( "keyup",  Forms.Changed );
-		                }
-
-		                if( "checkbox" == input.type )
-		                {
-		                	if ( input.setup )
-		                	{
-								input.setup( { "target": input } );
-		                	}
 		                }
 		                break;
 
@@ -2716,28 +2707,23 @@ function Validate( event, handler )
 	var form   = event.target;
 	var n      = form.elements.length;
 
-	var del = (form.elements['submit'] && ('delete' == form.elements['submit'].value));
-
-	if ( ! del )
+	form.checkValidity();
+	
+	for ( var i=0; i < n; i++ )
 	{
-		form.checkValidity();
-		
-		for ( var i=0; i < n; i++ )
+		var element   = form.elements[i];
+
+		if ( element.hasAttribute( "required" ) )
 		{
-			var element   = form.elements[i];
+			var name      = element.name;
+			var value     = element.value;
+			var validated = element.validity.valid;
 
-			if ( element.hasAttribute( "required" ) )
+			Validate.AddClass( element, "checked" );
+
+			if ( false === validated )
 			{
-				var name      = element.name;
-				var value     = element.value;
-				var validated = element.validity.valid;
-
-				Validate.AddClass( element, "checked" );
-
-				if ( false === validated )
-				{
-					valid = false;
-				}
+				valid = false;
 			}
 		}
 	}
@@ -4481,7 +4467,9 @@ function ( responseText )
 		var obj = JSON.parse( responseText );
 		if ( obj && obj.idtype )
 		{
+			Session.USER        = obj.USER;
 			Session.email       = obj.email;
+			Session.sessionid   = obj.sessionid;
 			Session.idtype      = obj.idtype;
 			Session.given_name  = obj.given_name;
 			Session.family_name = obj.family_name;
@@ -4496,7 +4484,9 @@ function ( responseText )
 		{
 			var obj = obj.results[0];
 
+			Session.USER        = obj.USER;
 			Session.email       = obj.email;
+			Session.sessionid   = obj.sessionid;
 			Session.idtype      = obj.idtype;
 			Session.given_name  = obj.given_name;
 			Session.family_name = obj.family_name;

@@ -172,6 +172,7 @@ function InsertResponseValues( formID, keyName, responseText )
 	{
 		var json = JSON.parse( responseText );
 		var form = document.getElementById( formID );
+			form.autocomplete = "off";
 
 		if ( json && form && ("OK" == json.status) && (1 == json.results.length) )
 		{
@@ -213,6 +214,14 @@ function InsertResponseValues( formID, keyName, responseText )
 		                default:
 		                    input.addEventListener( "change", Forms.Changed );
 		                    input.addEventListener( "keyup",  Forms.Changed );
+		                }
+
+		                if( "checkbox" == input.type )
+		                {
+		                	if ( input.setup )
+		                	{
+								input.setup( { "target": input } );
+		                	}
 		                }
 		                break;
 
@@ -583,7 +592,16 @@ SubmitTableValues.Handler
 function( responseText, parameters, table, i, verify )
 {
 	var endpoint = table.getAttribute( "data-url" );
-	var json     = JSON.parse( responseText );
+	var json     = "";
+
+	try
+	{
+		json = JSON.parse( responseText );
+	}
+	catch ( err )
+	{
+		console.log( responseText );
+	}
 
 	SubmitTableValues.MarkupRow( json, table, i );
 
@@ -707,23 +725,28 @@ function Validate( event, handler )
 	var form   = event.target;
 	var n      = form.elements.length;
 
-	form.checkValidity();
-	
-	for ( var i=0; i < n; i++ )
+	var del = (form.elements['submit'] && ('delete' == form.elements['submit'].value));
+
+	if ( ! del )
 	{
-		var element   = form.elements[i];
-
-		if ( element.hasAttribute( "required" ) )
+		form.checkValidity();
+		
+		for ( var i=0; i < n; i++ )
 		{
-			var name      = element.name;
-			var value     = element.value;
-			var validated = element.validity.valid;
+			var element   = form.elements[i];
 
-			Validate.AddClass( element, "checked" );
-
-			if ( false === validated )
+			if ( element.hasAttribute( "required" ) )
 			{
-				valid = false;
+				var name      = element.name;
+				var value     = element.value;
+				var validated = element.validity.valid;
+
+				Validate.AddClass( element, "checked" );
+
+				if ( false === validated )
+				{
+					valid = false;
+				}
 			}
 		}
 	}

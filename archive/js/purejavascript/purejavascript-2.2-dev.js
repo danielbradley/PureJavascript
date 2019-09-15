@@ -1,4 +1,4 @@
-/* PureJavascript version 2.b */
+/* PureJavascript version 2.2 */
 /*
  *  PureJavacript, APIServer.js
  *
@@ -226,7 +226,7 @@ function ( responseText )
 		if ( obj && obj.idtype )
 		{
 			Auth.SetIDTypeCookie( obj.idtype );
-			//Auth.SetSessionIDTypeCookie( obj.sessionid );
+			Auth.SetSessionIDTypeCookie( obj.sessionid );
 			Auth.SetCookie( "email", obj.email, 1 );
             Auth.SetCookie( "group_code", obj.group_code, 1 );
 
@@ -272,9 +272,8 @@ function( responseText )
 
         if ( "ERROR" == json.status )
         {
-            switch ( json.error.split( " " )[0] )
+            switch ( json.error )
             {
-            case "INVALID_USER":
             case "INVALID_PASSWORD":
             case "INVALID_CREDENTIALS":
                 alert( "Invalid username or password." );
@@ -299,7 +298,7 @@ function( responseText )
             if ( obj && obj.idtype )
             {
                 Auth.SetIDTypeCookie( obj.idtype );
-                //Auth.SetSessionIDTypeCookie(  obj.sessionid     );
+                Auth.SetSessionIDTypeCookie(  obj.sessionid     );
                 Auth.SetCookie( "email",      obj.email,      1 );
                 Auth.SetCookie( "given",      obj.given_name, 1 );
                 Auth.SetCookie( "group_code", obj.group_code, 1 );
@@ -366,7 +365,7 @@ function( cname, cvalue, exdays )
     var d = new Date();
     d.setTime(d.getTime() + (exdays*24*60*60*1000));
     var expires = "expires="+d.toUTCString();
-    document.cookie = cname + "=" + cvalue + "; " + ";path=/;secure;SameSite=strict";
+    document.cookie = cname + "=" + cvalue + "; " + expires + ";path=/;";
 }
 
 /*
@@ -981,11 +980,10 @@ function GetCookie( search )
 
 function SetCookie( path, cname, cvalue, exdays )
 {
-    var p       = ("" != path) ? path : "/";
     var d       = new Date(); d.setTime(d.getTime() + (exdays*24*60*60*1000));
     var expires = (0 != exdays) ? "expires="+d.toUTCString() + ";" : "";
-    var cookie  = cname + "=" + cvalue + "; " + expires + " " + "path=" + p + ";secure;SameSite=strict";
-    
+	var cookie  = cname + "=" + cvalue + "; " + expires + " " + "path=/" + ";";
+	
     document.cookie = cookie;
 }
 
@@ -1012,18 +1010,6 @@ function UnsetIDTypeCookie()
 function UnsetSessionIDTypeCookie()
 {
 	document.cookie = "sessionid=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=/";
-}
-
-function SetSelectCookieFilter( event )
-{
-    var select = event.target;
-    var path   = location.pathname;
-    var name   = select.name;
-    var value  = select.options[select.selectedIndex].value;
-
-    SetCookie( path, name, value, 0 );
-
-    location.reload();
 }
 
 /*
@@ -2208,7 +2194,6 @@ function InsertResponseValues( formID, keyName, responseText )
 	{
 		var json = JSON.parse( responseText );
 		var form = document.getElementById( formID );
-			form.autocomplete = "off";
 
 		if ( json && form && ("OK" == json.status) && (1 == json.results.length) )
 		{
@@ -2250,14 +2235,6 @@ function InsertResponseValues( formID, keyName, responseText )
 		                default:
 		                    input.addEventListener( "change", Forms.Changed );
 		                    input.addEventListener( "keyup",  Forms.Changed );
-		                }
-
-		                if( "checkbox" == input.type )
-		                {
-		                	if ( input.setup )
-		                	{
-								input.setup( { "target": input } );
-		                	}
 		                }
 		                break;
 
@@ -2716,28 +2693,23 @@ function Validate( event, handler )
 	var form   = event.target;
 	var n      = form.elements.length;
 
-	var del = (form.elements['submit'] && ('delete' == form.elements['submit'].value));
-
-	if ( ! del )
+	form.checkValidity();
+	
+	for ( var i=0; i < n; i++ )
 	{
-		form.checkValidity();
-		
-		for ( var i=0; i < n; i++ )
+		var element   = form.elements[i];
+
+		if ( element.hasAttribute( "required" ) )
 		{
-			var element   = form.elements[i];
+			var name      = element.name;
+			var value     = element.value;
+			var validated = element.validity.valid;
 
-			if ( element.hasAttribute( "required" ) )
+			Validate.AddClass( element, "checked" );
+
+			if ( false === validated )
 			{
-				var name      = element.name;
-				var value     = element.value;
-				var validated = element.validity.valid;
-
-				Validate.AddClass( element, "checked" );
-
-				if ( false === validated )
-				{
-					valid = false;
-				}
+				valid = false;
 			}
 		}
 	}
@@ -4479,9 +4451,11 @@ function ( responseText )
 	if ( "" != responseText )
 	{
 		var obj = JSON.parse( responseText );
-		if ( obj && obj.idtype )
+		if ( obj && obj.sessionid )
 		{
+			Session.USER        = obj.USER;
 			Session.email       = obj.email;
+			Session.sessionid   = obj.sessionid;
 			Session.idtype      = obj.idtype;
 			Session.given_name  = obj.given_name;
 			Session.family_name = obj.family_name;
@@ -4492,11 +4466,13 @@ function ( responseText )
 			idtype = Session.idtype;
 		}
 		else
-		if ( obj && obj.results && (1 == obj.results.length) && obj.results[0].idtype )
+		if ( obj && obj.results && (1 == obj.results.length) && obj.results[0].sessionid )
 		{
 			var obj = obj.results[0];
 
+			Session.USER        = obj.USER;
 			Session.email       = obj.email;
+			Session.sessionid   = obj.sessionid;
 			Session.idtype      = obj.idtype;
 			Session.given_name  = obj.given_name;
 			Session.family_name = obj.family_name;
@@ -4778,7 +4754,6 @@ function( elements )
 	{
 		var element    = elements[i];
 		var parameters = GetSearchValues();
-        var parameters = Setup.AddSelectCookies( parameters );
 
 		Setup.Element( element, parameters );
 	}
@@ -4819,34 +4794,6 @@ function( responseText )
 	{
 		console.log( responseText );
 	}
-}
-
-Setup.AddSelectCookies
-=
-function( parameters )
-{
-    var selects = document.getElementsByTagName( "SELECT" );
-    var n       = selects.length;
-
-    for ( var i=0; i < n; i++ )
-    {
-        var s = selects[i];
-
-        if ( true == s.hasAttribute( "data-cookie" ) )
-        {
-            var name  = s.name;
-            var value = GetCookie( name );
-
-            parameters[name] = value;
-
-            if ( ! s.hasAttribute( "data-value" ) )
-            {
-                s.setAttribute( "data-value", value );
-            }
-        }
-    }
-
-    return parameters;
 }
 
 /*

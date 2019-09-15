@@ -230,7 +230,7 @@ CSVFile.LineReader
 =
 function( file_content, limit )
 {
-	this.content = file_content;
+	this.content = CSVFileLineReaderUnicodeStrip( file_content );
 	this.pos     = 0;
 	this.lines   = 0;
 	this.limit   = limit;
@@ -254,6 +254,11 @@ function()
 			{
 				var ch = this.content[this.pos++];
 
+				if ( 127 < ch )
+				{
+					// ignore 
+				}
+				else
 				if ( '"' == ch )
 				{
 					in_quote = !in_quote;
@@ -286,5 +291,63 @@ function()
 	}
 
 	return line;
+}
+
+CSVFile.LineReader.prototype.unidecode
+=
+CSVFileLineReaderUnicodeStrip;
+
+function CSVFileLineReaderUnicodeStrip( content )
+{
+	var str = "";
+	var n   = content.length;
+	var i   = 0;
+
+	while ( i < n )
+	{
+		var ch = content.charCodeAt(i);
+
+		if ( (ch == (0xFC | ch)) && (i+5 < n) )	// 6 byte unicode
+		{
+			i += 6;
+		}
+		else
+		if ( (ch == (0xF8 | ch)) && (i+4 < n) )	// 5 byte unicode
+		{
+			i += 5;
+		}
+		else
+		if ( (ch == (0xF0 | ch)) && (i+3 < n) )	// 4 byte unicode
+		{
+			i += 4;
+		}
+		else
+		if ( (ch == (0xE0 | ch)) && (i+2 < n) )	// 3 byte unicode
+		{
+			i += 3;
+		}
+		else
+		if ( (ch == (0xC0 | ch)) && (i+1 < n) )	// 2 byte unicode
+		{
+			i += 2;
+		}
+		else
+		if ( (ch == (0xC0 | ch)) && (i+1 < n) )	// 2 byte unicode
+		{
+			i += 2;
+		}
+		else
+		if ( (ch == (0x80 | ch)) )	            // extra byte
+		{
+			console.log( "Warning detected invalid unicode" );
+			i += 1;
+		}
+		else
+		{
+			str += content[i];		         	// ascii character
+			i++;
+		}
+	}
+	return str;
 }
 ~
