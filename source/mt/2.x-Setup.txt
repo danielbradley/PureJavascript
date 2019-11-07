@@ -64,14 +64,25 @@ function( id, nr_columns, path, search )
             }
             else
             {
-                var n = json.results.length;
-                
-                if ( 0 == n )
+                var n      = json.results.length;
+                var offset = parseInt( tbody.getAttribute( "data-offset" ) );
+                    offset = isNaN( offset ) ? 0 : offset;
+
+                var limit  = parseInt( tbody.getAttribute( "data-limit"  ) );
+                    offset = isNaN( limit ) ? 0 : limit;
+
+                if ( (0 == n) && (0 == offset) )
                 {
                     tbody.innerHTML = "<tr><td colspan='" + nr_columns + "'>No entries added.</td></tr>";
                 }
                 else
                 {
+                    if ( (0 < offset) && (n < limit) )
+                    {
+                        var load_more = document.getElementById( "tbody-load-more" );
+                        if ( load_more ) load_more.style.display = "none";
+                    }
+
                     var T = { t: null };
 
                     var loading = tbody.querySelector( "TR.loading" );
