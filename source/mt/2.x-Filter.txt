@@ -9,7 +9,7 @@
  *  Copyright 2017, CrossAdaptive
  */
 
-Filter = {}
+//Filter = {}
 ~
 !
 
