@@ -1,4 +1,4 @@
-/* PureJavascript version 2.e */
+/* PureJavascript version 2.d */
 /*
  *  PureJavacript, APIServer.js
  *
@@ -1904,7 +1904,7 @@ function Enum( values )
  *  Copyright 2017, CrossAdaptive
  */
 
-//Filter = {}
+Filter = {}
 
 function Filter( id, tag_name, pattern )
 {

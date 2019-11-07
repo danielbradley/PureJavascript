@@ -1,4 +1,4 @@
-/* PureJavascript version 2.a */
+/* PureJavascript version 2.e */
 /*
  *  PureJavacript, APIServer.js
  *
@@ -1904,7 +1904,7 @@ function Enum( values )
  *  Copyright 2017, CrossAdaptive
  */
 
-Filter = {}
+//Filter = {}
 
 function Filter( id, tag_name, pattern )
 {
@@ -2250,6 +2250,14 @@ function InsertResponseValues( formID, keyName, responseText )
 		                default:
 		                    input.addEventListener( "change", Forms.Changed );
 		                    input.addEventListener( "keyup",  Forms.Changed );
+		                }
+
+		                if( "checkbox" == input.type )
+		                {
+		                	if ( input.setup )
+		                	{
+								input.setup( { "target": input } );
+		                	}
 		                }
 		                break;
 
@@ -4558,14 +4566,25 @@ function( id, nr_columns, path, search )
             }
             else
             {
-                var n = json.results.length;
-                
-                if ( 0 == n )
+                var n      = json.results.length;
+                var offset = parseInt( tbody.getAttribute( "data-offset" ) );
+                    offset = isNaN( offset ) ? 0 : offset;
+
+                var limit  = parseInt( tbody.getAttribute( "data-limit"  ) );
+                    offset = isNaN( limit ) ? 0 : limit;
+
+                if ( (0 == n) && (0 == offset) )
                 {
                     tbody.innerHTML = "<tr><td colspan='" + nr_columns + "'>No entries added.</td></tr>";
                 }
                 else
                 {
+                    if ( (0 < offset) && (n < limit) )
+                    {
+                        var load_more = document.getElementById( "tbody-load-more" );
+                        if ( load_more ) load_more.style.display = "none";
+                    }
+
                     var T = { t: null };
 
                     var loading = tbody.querySelector( "TR.loading" );
