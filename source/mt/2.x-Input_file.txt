@@ -74,22 +74,22 @@ function ( file_id, progress_handler, onload_handler, onerror_handler )
         {
             this.readAsArrayBuffer( file_input );
         }
+    }
 
-        this.reader.onload
-        =
-        function( e )
+    this.reader.onload
+    =
+    function( e )
+    {
+        var binary = "";
+        var bytes  = new Uint8Array( this.result );
+        var length = bytes.byteLength;
+
+        for ( var i=0; i < length; i++ )
         {
-            var binary = "";
-            var bytes  = new Uint8Array( this.result );
-            var length = bytes.byteLength;
-
-            for ( var i=0; i < length; i++ )
-            {
-                binary += String.fromCharCode( bytes[i] )
-            }
-
-            this.resultAsBase64 = Base64.Encode( binary );
+            binary += String.fromCharCode( bytes[i] )
         }
+
+        this.resultAsBase64 = Base64.Encode( binary );
     }
 
     this.reader.readAsBase64( file );
