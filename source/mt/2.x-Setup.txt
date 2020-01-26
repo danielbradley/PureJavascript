@@ -270,15 +270,23 @@ function( id, handler, parameter )
     =
     function( responseText )
     {
-        var json = JSON.parse( responseText );
-
-        if ( "ERROR" == json.status )
+        if ( null === responseText )
         {
-            alert( json.error );
+            setTimeout( function() { handler( parameter ) }, 1000 );
+            //handler( parameter );
         }
         else
         {
-            handler( parameter );
+            var json = JSON.parse( responseText );
+
+            if ( json && ("ERROR" == json.status) )
+            {
+                alert( json.error );
+            }
+            else
+            {
+                handler( parameter );
+            }
         }
     }
     
