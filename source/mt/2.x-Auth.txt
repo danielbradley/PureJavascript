@@ -107,7 +107,9 @@ function Auth_LogoutAndReload( logout_api_url )
 {
 	Auth.UnsetIDTypeCookie();
 	Auth.UnsetSessionIDTypeCookie();
-	Auth.UnsetCookie( "email" );
+    Auth.UnsetCookie( "accessid"   );
+	Auth.UnsetCookie( "email"      );
+    Auth.UnsetCookie( "group_code" );
 
     if ( logout_api_url )
     {
@@ -225,10 +227,12 @@ function( responseText )
             if ( obj && obj.idtype )
             {
                 Auth.SetIDTypeCookie( obj.idtype );
-                //Auth.SetSessionIDTypeCookie(  obj.sessionid     );
+                Auth.SetCookie( "accessid",   obj.accessid,   1 );
                 Auth.SetCookie( "email",      obj.email,      1 );
                 Auth.SetCookie( "given",      obj.given_name, 1 );
                 Auth.SetCookie( "group_code", obj.group_code, 1 );
+
+                Auth.SetCookie( "Authorization", "", 1 );
 
                 location.reload();   /*  Only line different from standard Auth.Login.Handler */
             }
