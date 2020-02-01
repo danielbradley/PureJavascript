@@ -28,6 +28,7 @@ Forms.Save                 = Save
 Forms.Submit               = Submit
 Forms.SubmitTableValues    = SubmitTableValues
 Forms.Validate             = Validate
+Forms.ValidateForm         = ValidateForm
 ~
 
 
@@ -243,6 +244,27 @@ function InsertResponseValues( formID, keyName, responseText )
                 		input.disabled = false;
                 	}
                 }
+            }
+
+            var buttons = form.querySelectorAll( "BUTTON.validate" );
+        	var n       = buttons.length;
+
+            if ( 0 < n )
+            {
+            	if ( Forms.ValidateForm( form ) )
+            	{
+            		for ( var i=0; i < n; i++ )
+            		{
+            			buttons[i].disabled = false;
+            		}
+            	}
+            	else
+            	{
+            		for ( var i=0; i < n; i++ )
+            		{
+            			buttons[i].disabled = true;
+            		}
+            	}
             }
 		}
 	}
@@ -729,6 +751,9 @@ function Validate( event, handler )
 
 	if ( ! del )
 	{
+		valid = Forms.ValidateForm( form );
+
+		/*
 		form.checkValidity();
 		
 		for ( var i=0; i < n; i++ )
@@ -737,18 +762,24 @@ function Validate( event, handler )
 
 			if ( element.hasAttribute( "required" ) )
 			{
+				var type      = element.type;
 				var name      = element.name;
 				var value     = element.value;
 				var validated = element.validity.valid;
 
 				Validate.AddClass( element, "checked" );
 
-				if ( false === validated )
+				if ( (false === validated) || (('hidden' == type) && (0 == value)) )
 				{
 					valid = false;
 				}
+				else
+				{
+
+				}
 			}
 		}
+		*/
 	}
 
 	if ( valid && handler )
@@ -764,6 +795,43 @@ function Validate( event, handler )
 }
 ~
 
+... Validate Form
+
+|
+Forms.ValidateForm( form )
+|
+
+~_gen/js/Forms.js~
+function ValidateForm( form )
+{
+	var valid = true;
+	var n     = form.elements.length;
+
+	form.checkValidity();
+		
+	for ( var i=0; i < n; i++ )
+	{
+		var element = form.elements[i];
+
+		if ( element.hasAttribute( "required" ) )
+		{
+			var type      = element.type;
+			var name      = element.name;
+			var value     = element.value;
+			var validated = element.validity.valid;
+
+			Validate.AddClass( element, "checked" );
+
+			if ( (false === validated) || (('hidden' == type) && (0 == value)) )
+			{
+				valid = false;
+			}
+		}
+	}
+
+	return valid;
+}
+~
 
 ... Word Limit
 
