@@ -34,6 +34,11 @@ function Call( endpoint, parameters, custom_handler )
 {
 	parameters['wab_requesting_url'] = location.protocol + "//" + location.host + location.pathname;
 
+	if ( document.body.hasAttribute( "data-csrf" ) )
+	{
+		parameters['wab_csrf_token'] = document.body.getAttribute( "data-csrf" );
+	}
+
 	var search = endpoint.indexOf( "?" );
 	if ( -1 !== search )
 	{
@@ -52,7 +57,15 @@ function Call( endpoint, parameters, custom_handler )
 		endpoint = Resolve() + endpoint;
 	}
 
-	Call.Post( endpoint, command, handler, 0, 0 );
+	if ( 'async' in parameters && ("true" === parameters['async']) )
+	{
+		Call.Post( endpoint, command, null, 0, 0 );
+		handler( null );
+	}
+	else
+	{
+		Call.Post( endpoint, command, handler, 0, 0 );
+	}
 }
 ~
 
@@ -100,33 +113,12 @@ function( method, endpoint, command, handler, timeout, timeouts )
 		=
 		function()
 		{
-			if ( 10 < timeouts )
-			{
-				alert( "Giving up! Connections to the API server have timed out " + timeouts + " times." );
-			}
-			else
-			if ( 3 < timeouts )
-			{
-				alert( "Warning! Connections to the API server have timed out several times. Will keep trying, but now might be a good time to check the quality of your Internet connection." );
-
-				Call.Post( endpoint, command, handler, timeout * 2, timeouts + 1 );
-			}
-			else
-			{
-				Call.Post( endpoint, command, handler, timeout * 2, timeouts + 1 );
-			}
+			alert( "Giving up! Connection to the API server has timed out. Try again later." );
 		}
 
-	if ( "GET" != method)
-	{
 		httpRequest.setRequestHeader( "Content-type", "application/x-www-form-urlencoded" );
-	}
-	else
-	{
-		httpRequest.setRequestHeader( "Content-type", "text/css" );
-	}
 
-	return httpRequest;
+		return httpRequest;
 }
 
 Call.OnReadyStateChange
@@ -148,7 +140,7 @@ function( self, endpoint, handler )
 		{
 		case 200:
 			console.log( "Called: " + endpoint );
-			handler( self.responseText );
+			if ( handler ) handler( self.responseText );
 			break;
 
 		case 404:
