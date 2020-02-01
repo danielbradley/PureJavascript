@@ -1,4 +1,4 @@
-/* PureJavascript version 2.j */
+/* PureJavascript version 2.g */
 /*
  *  PureJavacript, APIServer.js
  *
@@ -187,9 +187,7 @@ function Auth_LogoutAndReload( logout_api_url )
 {
 	Auth.UnsetIDTypeCookie();
 	Auth.UnsetSessionIDTypeCookie();
-    Auth.UnsetCookie( "accessid"   );
-	Auth.UnsetCookie( "email"      );
-    Auth.UnsetCookie( "group_code" );
+	Auth.UnsetCookie( "email" );
 
     if ( logout_api_url )
     {
@@ -301,12 +299,10 @@ function( responseText )
             if ( obj && obj.idtype )
             {
                 Auth.SetIDTypeCookie( obj.idtype );
-                Auth.SetCookie( "accessid",   obj.accessid,   1 );
+                //Auth.SetSessionIDTypeCookie(  obj.sessionid     );
                 Auth.SetCookie( "email",      obj.email,      1 );
                 Auth.SetCookie( "given",      obj.given_name, 1 );
                 Auth.SetCookie( "group_code", obj.group_code, 1 );
-
-                Auth.SetCookie( "Authorization", "", 1 );
 
                 location.reload();   /*  Only line different from standard Auth.Login.Handler */
             }
@@ -625,8 +621,6 @@ CSVFileLineReaderUnicodeStrip;
 
 function CSVFileLineReaderUnicodeStrip( content )
 {
-	content = CSVFile.LineReader.prototype.unirecode( content );
-
 	var str = "";
 	var n   = content.length;
 	var i   = 0;
@@ -652,12 +646,6 @@ function CSVFileLineReaderUnicodeStrip( content )
 		else
 		if ( (ch == (0xE0 | ch)) && (i+2 < n) )	// 3 byte unicode
 		{
-			var tmp1 = utf8_to_unicode( content.substring( i, i + 3 ) );
-			var tmp2 = UTF8Codepoint( content.substring( i, i + 3 ) );
-			var ent  = CodepointToEntity( tmp2 );
-
-			str += ent;
-
 			i += 3;
 		}
 		else
@@ -685,144 +673,6 @@ function CSVFileLineReaderUnicodeStrip( content )
 	return str;
 }
 
-
-CSVFile.LineReader.prototype.unirecode
-=
-CSVFileLineReaderUnicodeRecode;
-
-/*
- *	Based on:
- *	https://stackoverflow.com/questions/17267329/converting-unicode-character-to-string-format
- */
-
-function CSVFileLineReaderUnicodeRecode( content )
-{
-	return content.replace( /\\u[\dA-F]{3}/gi, Unirecode );
-}
-
-function Unirecode( match )
-{
-	return String.fromCharCode(parseInt(match.replace(/\\u/g, ''), 16));
-}
-
-function MyUnicode2HTML( content, start, end )
-{
-	var entity = "&#x";
-
-	for ( var i = start; i < end; i++ )
-	{
-		var char_code = content.charCodeAt( i );
-		var hex       = char_code.toString( 16 );
-
-		entity += hex;
-	}
-	entity += ";";
-
-	return entity;
-}
-
-function utf8_to_unicode( str )
-{
-	var unicode     = new Array();
-	var values      = new Array();
-	var looking_for = 0;
-	var n           = str.length;
-
-	for ( var i=0; i < n; i++ )
-	{
-		var val = str.charCodeAt( i );
-
-		if ( val < 128 )
-		{
-			unicode.push( val );
-		}
-		else
-		{
-			if ( values.length == 0 )
-			{
-				looking_for = (val < 224) ? 2 : 3;
-			}
-
-			values.push( val );
-
-			if ( values.length == looking_for )
-			{
-				var number = 0;
-
-				if ( looking_for == 3 )
-				{
-					number = ((values[0] % 16) * 4096)
-						   + ((values[1] % 64) *   64)
-						   + ((values[2] % 64) *    1);
-				}
-				else
-				{
-					number = ((values[0] % 32) * 64)
-					       + ((values[1] % 64) *  1);
-				}
-
-				unicode.push( number );
-				values = new Array();
-				looking_for = 1;
-			} // if
-		} // if
-	} // for
-
-	return unicode[0];
-}
-
-function UTF8Codepoint( utf8 )
-{
-	var codepoint   = 0;
-	var val         = utf8.charCodeAt( 0 );
-
-	if ( val < 128 )
-	{
-		codepoint = val;
-	}
-	else
-	{
-		var values      = new Array();
-		var n           = utf8.length;
-		var looking_for = (val < 224) ? 2 : 3;
-
-		values.push( val );
-
-		for ( var i=1; i < n; i++ )
-		{
-			val = utf8.charCodeAt( i );
-
-			values.push( val );
-		}
-
-		if ( values.length == looking_for )
-		{
-			switch( looking_for )
-			{
-			case 3:
-				codepoint = ((values[0] % 16) * 4096)
-					      + ((values[1] % 64) *   64)
-					      + ((values[2] % 64) *    1);
-				break;
-
-			case 2:
-  				codepoint = ((values[0] % 32) *   64)
-  						  + ((values[1] % 64) *    1);
-  				break;
-  			}
-  		}
-  	}
-
-  	return codepoint;
-}
-
-function CodepointToEntity( codepoint )
-{
-	var entity = "&#x" + codepoint.toString( 16 ) + ";";
-
-	return entity;
-}
-
 /*
  *  PureJavacript, Call.js
  *
@@ -834,11 +684,6 @@ function CodepointToEntity( codepoint )
 function Call( endpoint, parameters, custom_handler )
 {
 	parameters['wab_requesting_url'] = location.protocol + "//" + location.host + location.pathname;
-
-	if ( document.body.hasAttribute( "data-csrf" ) )
-	{
-		parameters['wab_csrf_token'] = document.body.getAttribute( "data-csrf" );
-	}
 
 	var search = endpoint.indexOf( "?" );
 	if ( -1 !== search )
@@ -910,12 +755,33 @@ function( method, endpoint, command, handler, timeout, timeouts )
 		=
 		function()
 		{
-			alert( "Giving up! Connection to the API server has timed out. Try again later." );
+			if ( 10 < timeouts )
+			{
+				alert( "Giving up! Connections to the API server have timed out " + timeouts + " times." );
+			}
+			else
+			if ( 3 < timeouts )
+			{
+				alert( "Warning! Connections to the API server have timed out several times. Will keep trying, but now might be a good time to check the quality of your Internet connection." );
+
+				Call.Post( endpoint, command, handler, timeout * 2, timeouts + 1 );
+			}
+			else
+			{
+				Call.Post( endpoint, command, handler, timeout * 2, timeouts + 1 );
+			}
 		}
 
+	if ( "GET" != method)
+	{
 		httpRequest.setRequestHeader( "Content-type", "application/x-www-form-urlencoded" );
+	}
+	else
+	{
+		httpRequest.setRequestHeader( "Content-type", "text/css" );
+	}
 
-		return httpRequest;
+	return httpRequest;
 }
 
 Call.OnReadyStateChange

@@ -1,16 +1,21 @@
-version=2.e
+version=2.j
 
 .PHONY: archive
 
 default:
 	echo "make dev | release | public"
 
-dev:     artifacts     dev_proxy copy
+dev:     quasi           dev_proxy     dev_copy
 
-release: artifacts release_proxy copy
+release: quasi artifacts release_proxy copy
 
 public:
-	rsync --delete -avz _content _resources ../../_Public/purejavascript.com
+	rsync --delete -avz _content _resources ../../_Public/com.purejavascript
+
+dev_copy:
+	mkdir -p _resources/downloads
+	cp -f  archive/js/purejavascript/purejavascript-$(version)-dev.js _resources/downloads
+	cp -f  archive/js/purejavascript/purejavascript-latest-dev.js     _resources/downloads
 
 copy:
 	mkdir -p _resources/downloads
@@ -29,7 +34,7 @@ dev_proxy:
 	cat `find -s _gen/js -name "*.js"` > archive/js/purejavascript/purejavascript-$(version)-dev.js
 	cp -f archive/js/purejavascript/purejavascript-$(version)-dev.js archive/js/purejavascript/purejavascript-latest-dev.js
 
-artifacts: doc quasi content
+artifacts: doc content
 
 doc:
 	mkdir -p _documentation

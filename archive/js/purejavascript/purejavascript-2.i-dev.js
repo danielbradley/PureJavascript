@@ -1,4 +1,4 @@
-/* PureJavascript version 2.j */
+/* PureJavascript version 2.i */
 /*
  *  PureJavacript, APIServer.js
  *
@@ -652,11 +652,10 @@ function CSVFileLineReaderUnicodeStrip( content )
 		else
 		if ( (ch == (0xE0 | ch)) && (i+2 < n) )	// 3 byte unicode
 		{
-			var tmp1 = utf8_to_unicode( content.substring( i, i + 3 ) );
-			var tmp2 = UTF8Codepoint( content.substring( i, i + 3 ) );
-			var ent  = CodepointToEntity( tmp2 );
+			//var tmp1 = UTF8_to_NumCR( content.substring( i, i + 3 ) );
+			//var tmp2 = UTF8Codepoint( content.substring( i, i + 3 ) );
 
-			str += ent;
+			//str += tmp2;
 
 			i += 3;
 		}
@@ -720,7 +719,7 @@ function MyUnicode2HTML( content, start, end )
 
 	return entity;
 }
-
+/*
 function utf8_to_unicode( str )
 {
 	var unicode     = new Array();
@@ -774,7 +773,7 @@ function utf8_to_unicode( str )
 function UTF8Codepoint( utf8 )
 {
 	var codepoint   = 0;
-	var val         = utf8.charCodeAt( 0 );
+	var val         = str.charCodeAt( 0 );
 
 	if ( val < 128 )
 	{
@@ -783,14 +782,14 @@ function UTF8Codepoint( utf8 )
 	else
 	{
 		var values      = new Array();
-		var n           = utf8.length;
+		var n           = str.length;
 		var looking_for = (val < 224) ? 2 : 3;
 
 		values.push( val );
 
 		for ( var i=1; i < n; i++ )
 		{
-			val = utf8.charCodeAt( i );
+			val = str.charCodeAt( i + 1 );
 
 			values.push( val );
 		}
@@ -815,13 +814,7 @@ function UTF8Codepoint( utf8 )
 
   	return codepoint;
 }
-
-function CodepointToEntity( codepoint )
-{
-	var entity = "&#x" + codepoint.toString( 16 ) + ";";
-
-	return entity;
-}
+*/
 
 /*
  *  PureJavacript, Call.js
@@ -834,11 +827,6 @@ function CodepointToEntity( codepoint )
 function Call( endpoint, parameters, custom_handler )
 {
 	parameters['wab_requesting_url'] = location.protocol + "//" + location.host + location.pathname;
-
-	if ( document.body.hasAttribute( "data-csrf" ) )
-	{
-		parameters['wab_csrf_token'] = document.body.getAttribute( "data-csrf" );
-	}
 
 	var search = endpoint.indexOf( "?" );
 	if ( -1 !== search )
@@ -910,12 +898,33 @@ function( method, endpoint, command, handler, timeout, timeouts )
 		=
 		function()
 		{
-			alert( "Giving up! Connection to the API server has timed out. Try again later." );
+			if ( 10 < timeouts )
+			{
+				alert( "Giving up! Connections to the API server have timed out " + timeouts + " times." );
+			}
+			else
+			if ( 3 < timeouts )
+			{
+				alert( "Warning! Connections to the API server have timed out several times. Will keep trying, but now might be a good time to check the quality of your Internet connection." );
+
+				Call.Post( endpoint, command, handler, timeout * 2, timeouts + 1 );
+			}
+			else
+			{
+				Call.Post( endpoint, command, handler, timeout * 2, timeouts + 1 );
+			}
 		}
 
+	if ( "GET" != method)
+	{
 		httpRequest.setRequestHeader( "Content-type", "application/x-www-form-urlencoded" );
+	}
+	else
+	{
+		httpRequest.setRequestHeader( "Content-type", "text/css" );
+	}
 
-		return httpRequest;
+	return httpRequest;
 }
 
 Call.OnReadyStateChange
