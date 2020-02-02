@@ -2884,6 +2884,9 @@ function Validate( event, handler )
 
 	if ( ! del )
 	{
+		valid = Forms.ValidateForm( form );
+
+		/*
 		form.checkValidity();
 		
 		for ( var i=0; i < n; i++ )
@@ -2909,6 +2912,7 @@ function Validate( event, handler )
 				}
 			}
 		}
+		*/
 	}
 
 	if ( valid && handler )

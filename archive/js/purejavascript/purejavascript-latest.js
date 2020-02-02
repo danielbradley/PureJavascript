@@ -1,4 +1,4 @@
-/* PureJavascript version 2.e */
+/* PureJavascript version 2.k */
 /*
  *  PureJavacript, APIServer.js
  *
@@ -187,7 +187,9 @@ function Auth_LogoutAndReload( logout_api_url )
 {
 	Auth.UnsetIDTypeCookie();
 	Auth.UnsetSessionIDTypeCookie();
-	Auth.UnsetCookie( "email" );
+    Auth.UnsetCookie( "accessid"   );
+	Auth.UnsetCookie( "email"      );
+    Auth.UnsetCookie( "group_code" );
 
     if ( logout_api_url )
     {
@@ -299,10 +301,12 @@ function( responseText )
             if ( obj && obj.idtype )
             {
                 Auth.SetIDTypeCookie( obj.idtype );
-                //Auth.SetSessionIDTypeCookie(  obj.sessionid     );
+                Auth.SetCookie( "accessid",   obj.accessid,   1 );
                 Auth.SetCookie( "email",      obj.email,      1 );
                 Auth.SetCookie( "given",      obj.given_name, 1 );
                 Auth.SetCookie( "group_code", obj.group_code, 1 );
+
+                Auth.SetCookie( "Authorization", "", 1 );
 
                 location.reload();   /*  Only line different from standard Auth.Login.Handler */
             }
@@ -621,6 +625,8 @@ CSVFileLineReaderUnicodeStrip;
 
 function CSVFileLineReaderUnicodeStrip( content )
 {
+	content = CSVFile.LineReader.prototype.unirecode( content );
+
 	var str = "";
 	var n   = content.length;
 	var i   = 0;
@@ -646,6 +652,12 @@ function CSVFileLineReaderUnicodeStrip( content )
 		else
 		if ( (ch == (0xE0 | ch)) && (i+2 < n) )	// 3 byte unicode
 		{
+			var tmp1 = utf8_to_unicode( content.substring( i, i + 3 ) );
+			var tmp2 = UTF8Codepoint( content.substring( i, i + 3 ) );
+			var ent  = CodepointToEntity( tmp2 );
+
+			str += ent;
+
 			i += 3;
 		}
 		else
@@ -673,6 +685,144 @@ function CSVFileLineReaderUnicodeStrip( content )
 	return str;
 }
 
+
+CSVFile.LineReader.prototype.unirecode
+=
+CSVFileLineReaderUnicodeRecode;
+
+/*
+ *	Based on:
+ *	https://stackoverflow.com/questions/17267329/converting-unicode-character-to-string-format
+ */
+
+function CSVFileLineReaderUnicodeRecode( content )
+{
+	return content.replace( /\\u[\dA-F]{3}/gi, Unirecode );
+}
+
+function Unirecode( match )
+{
+	return String.fromCharCode(parseInt(match.replace(/\\u/g, ''), 16));
+}
+
+function MyUnicode2HTML( content, start, end )
+{
+	var entity = "&#x";
+
+	for ( var i = start; i < end; i++ )
+	{
+		var char_code = content.charCodeAt( i );
+		var hex       = char_code.toString( 16 );
+
+		entity += hex;
+	}
+	entity += ";";
+
+	return entity;
+}
+
+function utf8_to_unicode( str )
+{
+	var unicode     = new Array();
+	var values      = new Array();
+	var looking_for = 0;
+	var n           = str.length;
+
+	for ( var i=0; i < n; i++ )
+	{
+		var val = str.charCodeAt( i );
+
+		if ( val < 128 )
+		{
+			unicode.push( val );
+		}
+		else
+		{
+			if ( values.length == 0 )
+			{
+				looking_for = (val < 224) ? 2 : 3;
+			}
+
+			values.push( val );
+
+			if ( values.length == looking_for )
+			{
+				var number = 0;
+
+				if ( looking_for == 3 )
+				{
+					number = ((values[0] % 16) * 4096)
+						   + ((values[1] % 64) *   64)
+						   + ((values[2] % 64) *    1);
+				}
+				else
+				{
+					number = ((values[0] % 32) * 64)
+					       + ((values[1] % 64) *  1);
+				}
+
+				unicode.push( number );
+				values = new Array();
+				looking_for = 1;
+			} // if
+		} // if
+	} // for
+
+	return unicode[0];
+}
+
+function UTF8Codepoint( utf8 )
+{
+	var codepoint   = 0;
+	var val         = utf8.charCodeAt( 0 );
+
+	if ( val < 128 )
+	{
+		codepoint = val;
+	}
+	else
+	{
+		var values      = new Array();
+		var n           = utf8.length;
+		var looking_for = (val < 224) ? 2 : 3;
+
+		values.push( val );
+
+		for ( var i=1; i < n; i++ )
+		{
+			val = utf8.charCodeAt( i );
+
+			values.push( val );
+		}
+
+		if ( values.length == looking_for )
+		{
+			switch( looking_for )
+			{
+			case 3:
+				codepoint = ((values[0] % 16) * 4096)
+					      + ((values[1] % 64) *   64)
+					      + ((values[2] % 64) *    1);
+				break;
+
+			case 2:
+  				codepoint = ((values[0] % 32) *   64)
+  						  + ((values[1] % 64) *    1);
+  				break;
+  			}
+  		}
+  	}
+
+  	return codepoint;
+}
+
+function CodepointToEntity( codepoint )
+{
+	var entity = "&#x" + codepoint.toString( 16 ) + ";";
+
+	return entity;
+}
+
 /*
  *  PureJavacript, Call.js
  *
@@ -684,6 +834,11 @@ function CSVFileLineReaderUnicodeStrip( content )
 function Call( endpoint, parameters, custom_handler )
 {
 	parameters['wab_requesting_url'] = location.protocol + "//" + location.host + location.pathname;
+
+	if ( document.body.hasAttribute( "data-csrf" ) )
+	{
+		parameters['wab_csrf_token'] = document.body.getAttribute( "data-csrf" );
+	}
 
 	var search = endpoint.indexOf( "?" );
 	if ( -1 !== search )
@@ -703,7 +858,15 @@ function Call( endpoint, parameters, custom_handler )
 		endpoint = Resolve() + endpoint;
 	}
 
-	Call.Post( endpoint, command, handler, 0, 0 );
+	if ( 'async' in parameters && ("true" === parameters['async']) )
+	{
+		Call.Post( endpoint, command, null, 0, 0 );
+		handler( null );
+	}
+	else
+	{
+		Call.Post( endpoint, command, handler, 0, 0 );
+	}
 }
 
 Call.Post
@@ -747,33 +910,12 @@ function( method, endpoint, command, handler, timeout, timeouts )
 		=
 		function()
 		{
-			if ( 10 < timeouts )
-			{
-				alert( "Giving up! Connections to the API server have timed out " + timeouts + " times." );
-			}
-			else
-			if ( 3 < timeouts )
-			{
-				alert( "Warning! Connections to the API server have timed out several times. Will keep trying, but now might be a good time to check the quality of your Internet connection." );
-
-				Call.Post( endpoint, command, handler, timeout * 2, timeouts + 1 );
-			}
-			else
-			{
-				Call.Post( endpoint, command, handler, timeout * 2, timeouts + 1 );
-			}
+			alert( "Giving up! Connection to the API server has timed out. Try again later." );
 		}
 
-	if ( "GET" != method)
-	{
 		httpRequest.setRequestHeader( "Content-type", "application/x-www-form-urlencoded" );
-	}
-	else
-	{
-		httpRequest.setRequestHeader( "Content-type", "text/css" );
-	}
 
-	return httpRequest;
+		return httpRequest;
 }
 
 Call.OnReadyStateChange
@@ -795,7 +937,7 @@ function( self, endpoint, handler )
 		{
 		case 200:
 			console.log( "Called: " + endpoint );
-			handler( self.responseText );
+			if ( handler ) handler( self.responseText );
 			break;
 
 		case 404:
@@ -2098,6 +2240,7 @@ Forms.Save                 = Save
 Forms.Submit               = Submit
 Forms.SubmitTableValues    = SubmitTableValues
 Forms.Validate             = Validate
+Forms.ValidateForm         = ValidateForm
 
 function purejavascript_Forms_Changed( event )
 {
@@ -2279,6 +2422,27 @@ function InsertResponseValues( formID, keyName, responseText )
                 		input.disabled = false;
                 	}
                 }
+            }
+
+            var buttons = form.querySelectorAll( "BUTTON.validate" );
+        	var n       = buttons.length;
+
+            if ( 0 < n )
+            {
+            	if ( Forms.ValidateForm( form ) )
+            	{
+            		for ( var i=0; i < n; i++ )
+            		{
+            			buttons[i].disabled = false;
+            		}
+            	}
+            	else
+            	{
+            		for ( var i=0; i < n; i++ )
+            		{
+            			buttons[i].disabled = true;
+            		}
+            	}
             }
 		}
 	}
@@ -2720,6 +2884,9 @@ function Validate( event, handler )
 
 	if ( ! del )
 	{
+		valid = Forms.ValidateForm( form );
+
+		/*
 		form.checkValidity();
 		
 		for ( var i=0; i < n; i++ )
@@ -2728,18 +2895,24 @@ function Validate( event, handler )
 
 			if ( element.hasAttribute( "required" ) )
 			{
+				var type      = element.type;
 				var name      = element.name;
 				var value     = element.value;
 				var validated = element.validity.valid;
 
 				Validate.AddClass( element, "checked" );
 
-				if ( false === validated )
+				if ( (false === validated) || (('hidden' == type) && (0 == value)) )
 				{
 					valid = false;
 				}
+				else
+				{
+
+				}
 			}
 		}
+		*/
 	}
 
 	if ( valid && handler )
@@ -2752,6 +2925,36 @@ function Validate( event, handler )
 	}
 	
 	return false;
+}
+
+function ValidateForm( form )
+{
+	var valid = true;
+	var n     = form.elements.length;
+
+	form.checkValidity();
+		
+	for ( var i=0; i < n; i++ )
+	{
+		var element = form.elements[i];
+
+		if ( element.hasAttribute( "required" ) )
+		{
+			var type      = element.type;
+			var name      = element.name;
+			var value     = element.value;
+			var validated = element.validity.valid;
+
+			Validate.AddClass( element, "checked" );
+
+			if ( (false === validated) || (('hidden' == type) && (0 == value)) )
+			{
+				valid = false;
+			}
+		}
+	}
+
+	return valid;
 }
 
 function WordLimit( elements )
@@ -3526,22 +3729,22 @@ function ( file_id, progress_handler, onload_handler, onerror_handler )
         {
             this.readAsArrayBuffer( file_input );
         }
+    }
 
-        this.reader.onload
-        =
-        function( e )
+    this.reader.onload
+    =
+    function( e )
+    {
+        var binary = "";
+        var bytes  = new Uint8Array( this.result );
+        var length = bytes.byteLength;
+
+        for ( var i=0; i < length; i++ )
         {
-            var binary = "";
-            var bytes  = new Uint8Array( this.result );
-            var length = bytes.byteLength;
-
-            for ( var i=0; i < length; i++ )
-            {
-                binary += String.fromCharCode( bytes[i] )
-            }
-
-            this.resultAsBase64 = Base64.Encode( binary );
+            binary += String.fromCharCode( bytes[i] )
         }
+
+        this.resultAsBase64 = Base64.Encode( binary );
     }
 
     this.reader.readAsBase64( file );
@@ -4764,15 +4967,23 @@ function( id, handler, parameter )
     =
     function( responseText )
     {
-        var json = JSON.parse( responseText );
-
-        if ( "ERROR" == json.status )
+        if ( null === responseText )
         {
-            alert( json.error );
+            setTimeout( function() { handler( parameter ) }, 1000 );
+            //handler( parameter );
         }
         else
         {
-            handler( parameter );
+            var json = JSON.parse( responseText );
+
+            if ( json && ("ERROR" == json.status) )
+            {
+                alert( json.error );
+            }
+            else
+            {
+                handler( parameter );
+            }
         }
     }
     
