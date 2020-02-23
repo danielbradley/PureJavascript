@@ -25,6 +25,7 @@ Forms.GetValues            = GetFormValues
 Forms.InsertResponseValues = InsertResponseValues
 Forms.InsertValues         = InsertFormValues
 Forms.Save                 = Save
+Forms.SelectAll            = SelectAll
 Forms.Submit               = Submit
 Forms.SubmitTableValues    = SubmitTableValues
 Forms.Validate             = Validate
@@ -468,6 +469,30 @@ function( responseText )
 }
 ~
 
+... SelectAll (form id)
+
+|
+Forms.SelectAll( form_id )
+|
+
+~_gen/js/Forms.js~
+function SelectAll( event, form_id )
+{
+	var input = event.target;
+	var form  = document.getElementById( form_id );
+
+	if ( form )
+	{
+		var inputs = form.querySelectorAll( "INPUT[type=checkbox]" );
+		var n      = inputs.length;
+
+		for ( var i=0; i < n; i++ )
+		{
+			inputs[i].checked = input.checked;
+		}
+	}
+}
+~
 
 ... Submit
 
