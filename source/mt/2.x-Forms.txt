@@ -166,106 +166,114 @@ Forms.InsertResponseValues( formID, keyName, responseText )
 ~_gen/js/Forms.js~
 function InsertResponseValues( formID, keyName, responseText )
 {
-	var status     = false;
-	var parameters = GetSearchValues();
-	
-	if ( (null == keyName) || ("" != parameters[keyName]) )
+	var status = false;
+
+	if ( ! responseText )
 	{
-		var json = JSON.parse( responseText );
-		var form = document.getElementById( formID );
-			form.autocomplete = "off";
-
-		if ( json && form && ("OK" == json.status) && (1 == json.results.length) )
+		alert( "Error, no content returned." );
+	}
+	else
+	{
+		var parameters = GetSearchValues();
+		
+		if ( (null == keyName) || ("" != parameters[keyName]) )
 		{
-			var tuple = json.results[0];
+			var json = JSON.parse( responseText );
+			var form = document.getElementById( formID );
+				form.autocomplete = "off";
 
-			form.disabled = ("1" === tuple["form_disabled"]);
+			if ( json && form && ("OK" == json.status) && (1 == json.results.length) )
+			{
+				var tuple = json.results[0];
 
-			InsertFormValues( form, tuple );
+				form.disabled = ("1" === tuple["form_disabled"]);
 
-			status = true;
+				InsertFormValues( form, tuple );
 
-            var submit = form.querySelector( "BUTTON[type='submit']" );
-            if ( submit )
-            {
-                submit.disabled = true;
-            }
+				status = true;
 
-            for ( index in form.elements )
-            {
-                var input = form.elements[index];
+	            var submit = form.querySelector( "BUTTON[type='submit']" );
+	            if ( submit )
+	            {
+	                submit.disabled = true;
+	            }
 
-                if ( input.addEventListener )
-                {
-                	switch ( input.tagName )
-                	{
-                	case "SELECT":
-	                    input.addEventListener( "change", Forms.Changed );
-	                    break;
+	            for ( index in form.elements )
+	            {
+	                var input = form.elements[index];
 
-	                case "INPUT":
-	                	switch ( input.type )
+	                if ( input.addEventListener )
+	                {
+	                	switch ( input.tagName )
 	                	{
-		                case "checkbox":
-		                case "radio":
-		                case "file":
+	                	case "SELECT":
 		                    input.addEventListener( "change", Forms.Changed );
 		                    break;
 
-		                default:
-		                    input.addEventListener( "change", Forms.Changed );
-		                    input.addEventListener( "keyup",  Forms.Changed );
-		                }
-
-		                if( "checkbox" == input.type )
-		                {
-		                	if ( input.setup )
+		                case "INPUT":
+		                	switch ( input.type )
 		                	{
-								input.setup( { "target": input } );
-		                	}
+			                case "checkbox":
+			                case "radio":
+			                case "file":
+			                    input.addEventListener( "change", Forms.Changed );
+			                    break;
+
+			                default:
+			                    input.addEventListener( "change", Forms.Changed );
+			                    input.addEventListener( "keyup",  Forms.Changed );
+			                }
+
+			                if( "checkbox" == input.type )
+			                {
+			                	if ( input.setup )
+			                	{
+									input.setup( { "target": input } );
+			                	}
+			                }
+			                break;
+
+		                case "TEXTAREA":
+		                	input.addEventListener( "keyup",  Forms.Changed );
+		                	break;
+
+		                default:
+		                	break;
 		                }
-		                break;
-
-	                case "TEXTAREA":
-	                	input.addEventListener( "keyup",  Forms.Changed );
-	                	break;
-
-	                default:
-	                	break;
 	                }
-                }
 
-                if ( ! input.disabled ) input.disabled = form.disabled;
+	                if ( ! input.disabled ) input.disabled = form.disabled;
 
-                if ( input.className )
-                {
-                	if ( -1 !== input.className.indexOf( "do_not_disable" ) )
-                	{
-                		input.disabled = false;
-                	}
-                }
-            }
+	                if ( input.className )
+	                {
+	                	if ( -1 !== input.className.indexOf( "do_not_disable" ) )
+	                	{
+	                		input.disabled = false;
+	                	}
+	                }
+	            }
 
-            var buttons = form.querySelectorAll( "BUTTON.validate" );
-        	var n       = buttons.length;
+	            var buttons = form.querySelectorAll( "BUTTON.validate" );
+	        	var n       = buttons.length;
 
-            if ( 0 < n )
-            {
-            	if ( Forms.ValidateForm( form ) )
-            	{
-            		for ( var i=0; i < n; i++ )
-            		{
-            			buttons[i].disabled = false;
-            		}
-            	}
-            	else
-            	{
-            		for ( var i=0; i < n; i++ )
-            		{
-            			buttons[i].disabled = true;
-            		}
-            	}
-            }
+	            if ( 0 < n )
+	            {
+	            	if ( Forms.ValidateForm( form ) )
+	            	{
+	            		for ( var i=0; i < n; i++ )
+	            		{
+	            			buttons[i].disabled = false;
+	            		}
+	            	}
+	            	else
+	            	{
+	            		for ( var i=0; i < n; i++ )
+	            		{
+	            			buttons[i].disabled = true;
+	            		}
+	            	}
+	            }
+			}
 		}
 	}
 	return status;
