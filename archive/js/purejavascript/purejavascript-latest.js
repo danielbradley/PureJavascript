@@ -1,4 +1,4 @@
-/* PureJavascript version 2.l */
+/* PureJavascript version 2.m */
 /*
  *  PureJavacript, APIServer.js
  *
@@ -2237,6 +2237,7 @@ Forms.GetValues            = GetFormValues
 Forms.InsertResponseValues = InsertResponseValues
 Forms.InsertValues         = InsertFormValues
 Forms.Save                 = Save
+Forms.SelectAll            = SelectAll
 Forms.Submit               = Submit
 Forms.SubmitTableValues    = SubmitTableValues
 Forms.Validate             = Validate
@@ -2624,6 +2625,23 @@ Save.Handler
 function( responseText )
 {
 	console.log( responseText );
+}
+
+function SelectAll( event, form_id )
+{
+	var input = event.target;
+	var form  = document.getElementById( form_id );
+
+	if ( form )
+	{
+		var inputs = form.querySelectorAll( "INPUT[type=checkbox]" );
+		var n      = inputs.length;
+
+		for ( var i=0; i < n; i++ )
+		{
+			inputs[i].checked = input.checked;
+		}
+	}
 }
 
 function Submit( event, custom_handler )
