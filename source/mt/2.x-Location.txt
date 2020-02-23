@@ -16,8 +16,10 @@ Locations              = {}
 Locations.SearchValues = GetSearchValues
 Locations.SearchValue  = GetSearchValue
 Locations.Up           = Up
+Locations.TwoUp        = TwoUp
 Locations.CreateDownFn = CreateDownFn
 Locations.Down         = Down
+Locations.Reload       = Reload
 ~
 
 ... Search values
@@ -135,6 +137,61 @@ function Up( search_parameters )
 }
 ~
 
+... TwoUp
+
+|
+Locations.TwoUp( parameter_names )
+|
+
+The TwoUp function navigates the browser to the parent of the parent page.
+The argument 'parameter_names' is an array of strings that name search parameters that should be kept.
+Up is usually called when a form on a page has sucessfully completed,
+and the expected action is to return to a parent page.
+
+~_gen/js/Locations.js~
+function TwoUp( search_parameters )
+{
+    var loc  = location.protocol + "//" + location.host;
+    var bits = location.pathname.split( "/" );
+    var path = "";
+
+    switch ( bits.length )
+    {
+    case 0: // ""
+    case 1: // Can't happen
+        path = "/";
+        break;
+    
+    case 2: // "/"
+        path = "/";
+        break;
+    
+    default:
+        bits = ("" == bits[bits.length - 1]) ? bits.slice( 0, -3 ) : bits.slice( 0, -2 );
+        path = bits.join( "/" ) + "/";
+    }
+
+    loc += path;
+
+    if ( null == search_parameters )
+    {
+        loc += location.search;
+    }
+    else
+    {
+        loc += "?";
+
+        for ( key in search_parameters )
+        {
+            loc += search_parameters[key] + "=" + GetSearchValue( search_parameters[key] ) + "&";
+        }
+        loc = loc.substring( 0, loc.length - 1 );
+    }
+
+    location.assign( loc );
+}
+~
+
 ... Create Down Function
 
 |
@@ -174,5 +231,18 @@ function Down( pathname, search )
     }
 
     location.assign( loc );
+}
+~
+
+... Reload
+
+|
+Locations.Reload( ignored )
+|
+
+~_gen/js/Locations.js~
+function Reload( ignored )
+{
+    location.reload();
 }
 ~
