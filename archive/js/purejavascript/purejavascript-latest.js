@@ -1,8 +1,8 @@
-/* PureJavascript version 2.m */
+/* PureJavascript version 2.n */
 /*
  *  PureJavacript, APIServer.js
  *
- *  Copyright 2014 - 2017, CrossAdaptive
+ *  Copyright 2014 - 2020, CrossAdaptive
  *
  *  License LGPL v2
  */
@@ -51,6 +51,12 @@ function( domain )
     if ( Resolve.IsRegisteredDomain( base_domain ) )
     {
         //  Then return '.example.com'
+        base_domain = "." + base_domain;
+    }
+    else
+    if ( APIServer.IsSubdomain )
+    {
+        //  Then return '.myapp.example.com'
         base_domain = "." + base_domain;
     }
     else    // If base_domain == 'myapp.example.com'
