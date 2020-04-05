@@ -1,4 +1,4 @@
-version=2.n
+version=2.o
 
 .PHONY: archive
 

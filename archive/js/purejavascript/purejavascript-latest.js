@@ -1,4 +1,4 @@
-/* PureJavascript version 2.n */
+/* PureJavascript version 2.o */
 /*
  *  PureJavacript, APIServer.js
  *
@@ -428,6 +428,8 @@ function( row, labels )
 		
 		if ( "" != value ) break;
 	}
+
+	if ( undefined == value ) value = "";
 
 	return value;
 }
