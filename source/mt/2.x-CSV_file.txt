@@ -83,6 +83,8 @@ function( row, labels )
 		if ( "" != value ) break;
 	}
 
+	if ( undefined == value ) value = "";
+
 	return value;
 }
 ~
