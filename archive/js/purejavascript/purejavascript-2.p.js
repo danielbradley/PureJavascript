@@ -4909,17 +4909,13 @@ function( id, nr_columns, path, search )
                         else
                         {
                             e.innerHTML = Replace( htm, t );
-                        }
-                        
-                        if ( "" != path )
-                        {
-                            e.style.cursor = "pointer";
-                            e.onclick = Locations.CreateDownFn( path, Replace( search, t ) );
-                        }
 
-                        if ( path && search )
-                        {
-                            e.className = "clickable"
+                            if ( path )
+                            {
+                                e.style.cursor = "pointer";
+                                e.onclick      = Locations.CreateDownFn( path, Replace( search, t ) );
+                                e.className    = "clickable";
+                            }
                         }
                         
                         if ( 0 == (i % 2) )
