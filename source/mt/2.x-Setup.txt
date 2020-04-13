@@ -57,6 +57,7 @@ function( id, nr_columns, path, search )
         {
             var htm  = Setup.CreateTableSetupFn.RetrieveTemplate( id );
             var htm2 = Setup.CreateTableSetupFn.RetrieveTemplate( id + "-tally" );
+            var htm3 = Setup.CreateTableSetupFn.RetrieveTemplate( id + "-summary" );
 
             if ( ! htm )
             {
@@ -113,17 +114,20 @@ function( id, nr_columns, path, search )
 
                         Setup.CreateTableSetupFn.AddT( T, t );
 
-                        e.innerHTML = Replace( htm, t );
-                        
-                        if ( "" != path )
+                        if ( t.hasOwnProperty( "results_set_type" ) && ("summary" == t.results_set_type) )
                         {
-                            e.style.cursor = "pointer";
-                            e.onclick = Locations.CreateDownFn( path, Replace( search, t ) );
+                            e.innerHTML = Replace( htm3, t );
                         }
-
-                        if ( path && search )
+                        else
                         {
-                            e.className = "clickable"
+                            e.innerHTML = Replace( htm, t );
+
+                            if ( path )
+                            {
+                                e.style.cursor = "pointer";
+                                e.onclick      = Locations.CreateDownFn( path, Replace( search, t ) );
+                                e.className    = "clickable";
+                            }
                         }
                         
                         if ( 0 == (i % 2) )

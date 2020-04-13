@@ -82,7 +82,7 @@ Resolve.IsLocalAPIServer
 =
 function()
 {
-    return (-1 !== location.hostname.indexOf( ".local" ));
+    return (-1 !== location.hostname.indexOf( ".local" )) || StringEndsWith( location.hostname, ".test" );
 }
 
 Resolve.IsRegisteredDomain
