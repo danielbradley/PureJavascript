@@ -125,7 +125,7 @@ function( id, nr_columns, path, search )
                             if ( path )
                             {
                                 e.style.cursor = "pointer";
-                                e.onclick      = Locations.CreateDownFn( path, Replace( search, t ) );
+                                e.onclick      = Locations.CreateDownFn( path, Replace( search, t, true ) );
                                 e.className    = "clickable";
                             }
                         }

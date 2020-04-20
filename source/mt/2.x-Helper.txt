@@ -116,18 +116,19 @@ function Object_Get( $object, $member )
 ... Replace
 
 |
-Replace( text, dictionary )
+Replace( text, dictionary, recode = false )
 |
 
 For each key of the dictionary, searches and replaces any instances of '%key%' in the text with the value from the dictionary.
+If 'recode' is true, will decode html entities and re-encode using as URI componet.
 
 ~_gen/js/Helper.js~
-function Replace( text, array )
+function Replace( text, array, recode = false )
 {
 	for ( var member in array )
 	{
 		var key   = "%" + member + "%";
-		var value = array[member];
+		var value = recode ? Recode( array[member] ) : array[member];
 
 		while ( -1 != text.indexOf( key ) )
 		{
@@ -138,6 +139,41 @@ function Replace( text, array )
 }
 ~
 
+... Recode
 
+|
+Recode( html_entity_encoded_text )
+|
 
+~_gen/js/Helper.js~
+function Recode( html_entity_encoded_text )
+{
+	var decoded = DecodeHTMLEntity( html_entity_encoded_text );
+	var encoded = encodeURIComponent( decoded );
 
+	return encoded;
+}
+~
+
+... DecodeHTMLEntity
+
+|
+DecodeHTMLEntity( html_entity_encoded_text )
+|
+
+~_gen/js/Helper.js~
+function DecodeHTMLEntity( html_entity_encoded_text )
+{
+	var ret  = html_entity_encoded_text;
+	var type = typeof html_entity_encoded_text;
+
+	if ( "string" == type )
+	{
+		//	Based on:
+		//	https://stackoverflow.com/a/29824550
+		//
+		ret = html_entity_encoded_text.replace(/&#(\d+);/g, function( match, dec ) { return String.fromCharCode(dec); } );
+	}
+	return ret;
+}
+~
