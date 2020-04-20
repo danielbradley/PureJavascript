@@ -1,4 +1,4 @@
-/* PureJavascript version 2.p */
+/* PureJavascript version 2.q */
 /*
  *  PureJavacript, APIServer.js
  *
@@ -3692,12 +3692,12 @@ function Object_Get( $object, $member )
 	}
 }
 
-function Replace( text, array )
+function Replace( text, array, recode = false )
 {
 	for ( var member in array )
 	{
 		var key   = "%" + member + "%";
-		var value = array[member];
+		var value = recode ? Recode( array[member] ) : array[member];
 
 		while ( -1 != text.indexOf( key ) )
 		{
@@ -3705,6 +3705,29 @@ function Replace( text, array )
 		}
 	}
 	return text;
+}
+
+function Recode( html_entity_encoded_text )
+{
+	var decoded = DecodeHTMLEntity( html_entity_encoded_text );
+	var encoded = encodeURIComponent( decoded );
+
+	return encoded;
+}
+
+function DecodeHTMLEntity( html_entity_encoded_text )
+{
+	var ret  = html_entity_encoded_text;
+	var type = typeof html_entity_encoded_text;
+
+	if ( "string" == type )
+	{
+		//	Based on:
+		//	https://stackoverflow.com/a/29824550
+		//
+		ret = html_entity_encoded_text.replace(/&#(\d+);/g, function( match, dec ) { return String.fromCharCode(dec); } );
+	}
+	return ret;
 }
 
 /*
@@ -4913,7 +4936,7 @@ function( id, nr_columns, path, search )
                             if ( path )
                             {
                                 e.style.cursor = "pointer";
-                                e.onclick      = Locations.CreateDownFn( path, Replace( search, t ) );
+                                e.onclick      = Locations.CreateDownFn( path, Replace( search, t, true ) );
                                 e.className    = "clickable";
                             }
                         }
