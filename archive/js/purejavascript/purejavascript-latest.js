@@ -1,4 +1,4 @@
-/* PureJavascript version 2.q */
+/* PureJavascript version 2.r */
 /*
  *  PureJavacript, APIServer.js
  *
@@ -845,7 +845,9 @@ function Call( endpoint, parameters, custom_handler )
 
 	if ( document.body.hasAttribute( "data-csrf" ) )
 	{
-		parameters['wab_csrf_token'] = document.body.getAttribute( "data-csrf" );
+		var csrf = document.body.getAttribute( "data-csrf" );
+
+		if ( "NONE" != csrf ) parameters['wab_csrf_token'] = csrf;
 	}
 
 	var search = endpoint.indexOf( "?" );
