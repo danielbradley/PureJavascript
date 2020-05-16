@@ -1,4 +1,4 @@
-/* PureJavascript version 2.r */
+/* PureJavascript version 2.s */
 /*
  *  PureJavacript, APIServer.js
  *
@@ -3972,7 +3972,7 @@ function LinksComplete( links, tuple )
 
         if ( link.href )
         {
-    		link.href      = Replace( link.href,      tuple );
+    		link.href = Replace( link.href, tuple, true );
         }
 		link.innerHTML = Replace( link.innerHTML, tuple );
 	}
@@ -4664,6 +4664,7 @@ function( kinds, value, handler )
     var parameters        = new Object();
     	parameters.kinds  = kinds;
         parameters.filter = value ? value : search.filter ? search.filter : "";
+        parameters.json   = JSON.stringify( search );
 
 	var api_host = Selects.resolver();
 
