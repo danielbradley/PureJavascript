@@ -293,6 +293,7 @@ function( kinds, value, handler )
     var parameters        = new Object();
     	parameters.kinds  = kinds;
         parameters.filter = value ? value : search.filter ? search.filter : "";
+        parameters.json   = JSON.stringify( search );
 
 	var api_host = Selects.resolver();
 
