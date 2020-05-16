@@ -122,7 +122,7 @@ function LinksComplete( links, tuple )
 
         if ( link.href )
         {
-    		link.href      = Replace( link.href,      tuple );
+    		link.href = Replace( link.href, tuple, true );
         }
 		link.innerHTML = Replace( link.innerHTML, tuple );
 	}
