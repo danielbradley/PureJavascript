@@ -1,4 +1,4 @@
-/* PureJavascript version 2.s */
+/* PureJavascript version 2.t */
 /*
  *  PureJavacript, APIServer.js
  *
@@ -475,7 +475,7 @@ CSVFile.prototype.parseContent
 =
 function( file_content )
 {
-	var line_reader = new CSVFile.LineReader( file_content, 10000 );
+	var line_reader = new CSVFile.LineReader( file_content, 100000 );
 	var line  = line_reader.readLine();
 	if ( false !== line )
 	{
