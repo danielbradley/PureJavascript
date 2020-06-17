@@ -669,9 +669,12 @@ function( responseText, parameters, table, i, verify )
 	else
 	{
 		var progress_id = table.getAttribute( "data-progress" );
-		var progress    = document.getElementById( progress_id );
 
-			progress.style.width = "100%";
+		if ( progress_id )
+		{
+			var progress    = document.getElementById( progress_id );
+				progress.style.width = "100%";
+		}
 
 		Call( "/auth/session/", new Object(), SubmitTableValues.Finish );
 	}
@@ -850,11 +853,16 @@ function ValidateForm( form )
 		{
 			var type      = element.type;
 			var name      = element.name;
-			var value     = element.value;
+			var value     = element.value.trim();
 			var validated = element.validity.valid;
 
 			Validate.AddClass( element, "checked" );
 
+			if ( "" == value )
+			{
+				valid = false;
+			}
+			else
 			if ( (false === validated) || (('hidden' == type) && (0 == value)) )
 			{
 				valid = false;
