@@ -60,7 +60,7 @@ function( url_search_parameters )
             catch ( err )
             {}
 
-            if ( key && val ) object[key] = val;
+            if ( (null != key) && (null != val) ) object[key] = val;
         }
     }
     return object;
