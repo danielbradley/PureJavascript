@@ -1,4 +1,4 @@
-/* PureJavascript version 2.u */
+/* PureJavascript version 2.v */
 /*
  *  PureJavacript, APIServer.js
  *
@@ -2814,9 +2814,12 @@ function( responseText, parameters, table, i, verify )
 	else
 	{
 		var progress_id = table.getAttribute( "data-progress" );
-		var progress    = document.getElementById( progress_id );
 
-			progress.style.width = "100%";
+		if ( progress_id )
+		{
+			var progress    = document.getElementById( progress_id );
+				progress.style.width = "100%";
+		}
 
 		Call( "/auth/session/", new Object(), SubmitTableValues.Finish );
 	}
@@ -2978,11 +2981,16 @@ function ValidateForm( form )
 		{
 			var type      = element.type;
 			var name      = element.name;
-			var value     = element.value;
+			var value     = element.value.trim();
 			var validated = element.validity.valid;
 
 			Validate.AddClass( element, "checked" );
 
+			if ( "" == value )
+			{
+				valid = false;
+			}
+			else
 			if ( (false === validated) || (('hidden' == type) && (0 == value)) )
 			{
 				valid = false;
@@ -4164,7 +4172,7 @@ function( url_search_parameters )
             catch ( err )
             {}
 
-            if ( key && val ) object[key] = val;
+            if ( (null != key) && (null != val) ) object[key] = val;
         }
     }
     return object;
@@ -4884,15 +4892,20 @@ function( id, nr_columns, path, search )
                     offset = isNaN( offset ) ? 0 : offset;
 
                 var limit  = parseInt( tbody.getAttribute( "data-limit"  ) );
-                    offset = isNaN( limit ) ? 0 : limit;
+                    limit  = isNaN( limit ) ? 0 : limit;
 
                 if ( (0 == n) && (0 == offset) )
                 {
-                    tbody.innerHTML = "<tr><td colspan='" + nr_columns + "'>No entries added.</td></tr>";
+                    var tr = document.createElement( "TR" );
+                        tr.innerHTML = "<td colspan='" + nr_columns + "'>No entries added.</td>";
+
+                    Setup.Clear( tbody );
+
+                    tbody.appendChild( tr );
                 }
                 else
                 {
-                    if ( (0 < offset) && (n < limit) )
+                    if ( n != limit )
                     {
                         var load_more = document.getElementById( "tbody-load-more" );
                         if ( load_more ) load_more.style.display = "none";
@@ -4988,6 +5001,22 @@ function( id )
     return htm;
 }
 
+Setup.CreateTableSetupFn.RetrieveTemplateParameters
+=
+function( id )
+{
+    var parameters      = "";
+    var row_template_id = id + "-template";
+    var template_tr     = document.getElementById( row_template_id );
+
+    if ( template_tr.hasAttribute( "data-parameters" ) )
+    {
+        parameters = template_tr.getAttribute( "data-parameters" );
+    }
+    
+    return parameters;
+}
+
 Setup.CreateTableSetupFn.AddT
 =
 function( T, t )
@@ -5028,6 +5057,154 @@ function( obj )
     return ret;
 }
 
+Setup.CreateTableSetupWithClickFn
+=
+function( id, nr_columns, click_fn )
+{
+    /*
+     *  The returned function parses the JSON formatted response text and creates a table row template for each result tuple.
+     *  These are added to the tbody corresponding to 'id' - 'nr_of_columns' is used if no result tuples are returned.
+     */
+
+    var fn
+    =
+    function( responseText )
+    {
+        var json  = JSON.parse( responseText );
+        var tbody = document.getElementById( id );
+        var more  = tbody.getAttribute( "data-more" );
+
+        if ( tbody && ("OK" == json.status) )
+        {
+            var htm  = Setup.CreateTableSetupFn.RetrieveTemplate( id );
+            var htm2 = Setup.CreateTableSetupFn.RetrieveTemplate( id + "-tally" );
+            var htm3 = Setup.CreateTableSetupFn.RetrieveTemplate( id + "-summary" );
+
+            var parameters = Setup.CreateTableSetupFn.RetrieveTemplateParameters( id );
+
+            if ( ! htm )
+            {
+                alert( "Table '" + id + "' is missing a row template with the id: '" + id + "-template'" );
+            }
+            else
+            {
+                var n      = json.results.length;
+                var offset = parseInt( json.offset );
+                    offset = isNaN( offset ) ? 0 : offset;
+
+                var limit  = parseInt( json.limit );
+                    limit  = isNaN( limit ) ? 0 : limit;
+
+                if ( (0 == n) && (0 == offset) )
+                {
+                    var tr = document.createElement( "TR" );
+                        tr.innerHTML = "<td colspan='" + nr_columns + "'>No entries added.</td>";
+
+                    Setup.Clear( tbody );
+
+                    tbody.appendChild( tr );
+                }
+                else
+                {
+                    if ( more )
+                    {
+                        var count  = json.results[0].count;
+                        var button = document.getElementById( more );
+
+                        if ( button )
+                        {
+                            button.setAttribute( "data-limit", limit );
+                            button.setAttribute( "data-offset", offset + limit );
+
+                            if ( offset + n < count )
+                            {
+                                Class.RemoveClass( button, "hidden" );
+                            }
+                            else
+                            {
+                                Class.AddClass( button, "hidden" );
+                            }
+                        }
+                    }
+
+                    var T = { t: null };
+
+                    var loading = tbody.querySelector( "TR.loading" );
+                    if ( loading )
+                    {
+                        tbody.removeChild( loading )
+                    }
+                    else
+                    {
+                        var rows = tbody.querySelectorAll( "TR" );
+
+                        if ( 0 < rows.length )
+                        {
+                            var tds = rows[0].querySelectorAll( "TD" );
+
+                            if ( (0 < tds.length) && (-1 != tds[0].innerHTML.toLowerCase().indexOf( "loading" ) ) )
+                            {
+                                tbody.removeChild( rows[0] );
+                            }
+                        } 
+                    }
+                    
+                    for ( var i=0; i < n; i++ )
+                    {
+                        var e = document.createElement( "TR" );
+                        var t = json.results[i];
+                            t['i'] = i + 1;
+
+                        Setup.CreateTableSetupFn.AddT( T, t );
+
+                        if ( parameters )
+                        {
+                            e.setAttribute( "data-parameters", Replace( parameters, t ) );
+                        }
+
+                        if ( t.hasOwnProperty( "results_set_type" ) && ("summary" == t.results_set_type) )
+                        {
+                            e.innerHTML = Replace( htm3, t );
+                        }
+                        else
+                        {
+                            e.innerHTML = Replace( htm, t );
+
+                            if ( click_fn )
+                            {
+                                e.style.cursor = "pointer";
+                                e.onclick      =  click_fn;
+                                e.className    = "clickable";
+                            }
+                        }
+                        
+                        if ( 0 == (i % 2) )
+                        {
+                            e.className += " alternate"
+                        }
+
+                        if ( "css_class" in t )
+                        {
+                            e.className += " " + t['css_class'];
+                        }
+
+                        tbody.appendChild( e );
+                    }
+
+                    if ( htm2 && T.t )
+                    {
+                        var e = document.createElement( "TR" );
+                            e.innerHTML = Replace( htm2, T.t );
+
+                        tbody.appendChild( e );
+                    }
+                }
+            }
+        }
+    }
+    
+    return fn;
+}
 
 Setup.CreateFormSetupFn
 =
@@ -5072,6 +5249,85 @@ function( id )
     return fn;
 }
 
+Setup.CreateMultiDivSetupFn
+=
+function( id )
+{
+    var fn
+    =
+    function( responseText )
+    {
+        var div  = document.getElementById( id );
+        var t    = document.getElementById( id + "-template" );
+        var more = div.getAttribute( "data-more" );
+
+        if ( div && t )
+        {
+            var json = JSON.parse( responseText )
+
+            if ( "ERROR" == json.status )
+            {
+                alert( "An unexpected error occurred while retrieving data" );
+            }
+            else
+            {
+                var cls    = t.className; 
+                var n      = json.results.length;
+                var offset = parseInt( json.offset );
+                    offset = isNaN( offset ) ? 0 : offset;
+
+                var limit  = parseInt( json.limit );
+                    limit  = isNaN( limit ) ? 0 : limit;
+
+                if ( (0 == n) && (0 == offset) )
+                {
+                    // Ignore for now.
+                }
+                else
+                {
+                    if ( more )
+                    {
+                        var count  = json.results[0].count;
+                        var button = document.getElementById( more );
+
+                        if ( button )
+                        {
+                            button.setAttribute( "data-limit", limit );
+                            button.setAttribute( "data-offset", offset + limit );
+
+                            if ( offset + n < count )
+                            {
+                                Class.RemoveClass( button, "hidden" );
+                            }
+                            else
+                            {
+                                Class.AddClass( button, "hidden" );
+                            }
+                        }
+                    }
+
+                    // 
+                    //  Remove all existing children except templates.
+                    //
+
+                    for ( child of div.children ) if ( "DIV" == child.tagName ) div.removeChild( child );
+
+                    for ( var i=0; i < n; i++ )
+                    {
+                        var child           = document.createElement( "DIV" );
+                            child.className = cls;
+                            child.innerHTML = Replace( t.innerHTML, json.results[i] );
+
+                        div.appendChild( child );
+                    }
+                }
+            }
+        }
+    }
+    
+    return fn;
+}
+
 Setup.CreateFormHandlerFn
 =
 function( id, handler, parameter )
@@ -5101,6 +5357,32 @@ function( id, handler, parameter )
     }
     
     return fn;
+}
+
+Setup.More
+=
+function( event )
+{
+    var button    = event.target;
+    var target_id = button.getAttribute( "data-target" );
+    var target    = document.getElementById( target_id );
+
+    if ( !target )
+    {
+        alert( "Error, could not find target for Setup.More" );
+    }
+    else
+    {
+        var offset   = button.getAttribute( "data-offset"    );
+        var endpoint = target.getAttribute( "data-setup-url" );
+
+        var parameters        = Locations.SearchValues();
+            parameters.offset = offset;
+
+        Call( endpoint, parameters, target.setup );
+    }
+
+    return false;
 }
 
 Setup.Elements
@@ -5182,6 +5464,32 @@ function( parameters )
     }
 
     return parameters;
+}
+
+Setup.Clear
+=
+function( container )
+{
+    //  Need to remove from back to maintain
+    //  order of children.
+
+    var n = container.children.length - 1;
+    
+    for ( var i = n; 0 <= i; i-- )
+    {
+        var child = container.children[i];
+
+        switch ( child.tagName )
+        {
+        case "DIV":
+        case "TR":
+            if ( -1 == child.id.toLowerCase().indexOf( "template" ) )
+            {
+                container.removeChild( child );
+            }
+            break;
+        }
+    }
 }
 
 /*
