@@ -113,6 +113,8 @@ function( lists )
 			var select = selects[i];
 			var id     = select.hasAttribute( "id" ) ? select.getAttribute( "id" ) + ":" : "";
 			var kind   = select.getAttribute( "data-kind" );
+
+			select.addEventListener( "change", Selects.SetSelected );
 			
 			if ( kind && lists.hasOwnProperty( id + kind ) )
 			{
@@ -307,27 +309,6 @@ function( id, value )
 	var select = document.getElementById( id );
 
 	select.setValue( value );
-	
-//	if ( select )
-//	{
-//		var n = select.length;
-//
-//		if ( 0 < n )
-//		{
-//			for ( var i=0; i < n; i++ )
-//			{
-//				if ( select.options[i].value == value )
-//				{
-//					select.selectedIndex = i;
-//					break;
-//				}
-//			}
-//		}
-//		else
-//		{
-//			select.setAttribute( "data-value", value );
-//		}
-//	}
 }
 
 Selects.setValue
@@ -355,6 +336,29 @@ function( value )
 		{
 			this.setAttribute( "data-value", value );
 		}
+
+		Selects.SetSelectedClass( this );
+	}
+}
+
+Selects.SetSelected
+=
+function( event )
+{
+	var select = event.target;
+
+	Selects.SetSelectedClass( select );
+}
+
+Selects.SetSelectedClass
+=
+function( select )
+{
+	if ( 0 == select.selectedIndex )
+	{
+		Class.RemoveClass( select, "selected" );
+	} else {
+		Class.AddClass   ( select, "selected" );
 	}
 }
 

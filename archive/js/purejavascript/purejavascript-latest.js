@@ -1,4 +1,4 @@
-/* PureJavascript version 2.v */
+/* PureJavascript version 2.w */
 /*
  *  PureJavacript, APIServer.js
  *
@@ -2728,6 +2728,15 @@ function SubmitTableValues( event, verify )
 	var endpoint   = table.getAttribute( "data-url" );
 	var parameters = Forms.GetValues( form );
 
+	if ( ! verify )
+	{
+		verify
+		=
+		function( tr )
+		{
+			return true;
+		}
+	}
 
 	if ( table && table.rows && (1 < table.rows.length) )
 	{
@@ -4023,6 +4032,8 @@ function LoadInputFromImageFileHandler( targetID, fileID, holderID )
 	{
 		holder.style.background     = "white url(" + url64 + ") no-repeat center center";
 		holder.style.backgroundSize = "cover";
+
+		Class.RemoveClass( holder, "hidden" );
 	}
 }
 
@@ -4219,7 +4230,7 @@ function Up( search_parameters )
 
         for ( key in search_parameters )
         {
-            loc += search_parameters[key] + "=" + GetSearchValue( search_parameters[key] ) + "&";
+            loc += search_parameters[key] + "=" + Recode( GetSearchValue( search_parameters[key] ) ) + "&";
         }
         loc = loc.substring( 0, loc.length - 1 );
     }
@@ -4261,7 +4272,7 @@ function TwoUp( search_parameters )
 
         for ( key in search_parameters )
         {
-            loc += search_parameters[key] + "=" + GetSearchValue( search_parameters[key] ) + "&";
+            loc += search_parameters[key] + "=" + Recode( GetSearchValue( search_parameters[key] ) ) + "&";
         }
         loc = loc.substring( 0, loc.length - 1 );
     }
@@ -4281,10 +4292,10 @@ function Down( pathname, search )
 {
     var loc  = location.protocol + "//" + location.host + location.pathname + pathname + search;
 
-    if ( -1 !== loc.indexOf( '%' ) )
+    if ( -1 !== loc.indexOf( '=%' ) )
     {
         var parameters = Locations.SearchValues();
-
+    
         loc = Replace( loc, parameters );
     }
 
@@ -4492,6 +4503,8 @@ function( lists )
 			var select = selects[i];
 			var id     = select.hasAttribute( "id" ) ? select.getAttribute( "id" ) + ":" : "";
 			var kind   = select.getAttribute( "data-kind" );
+
+			select.addEventListener( "change", Selects.SetSelected );
 			
 			if ( kind && lists.hasOwnProperty( id + kind ) )
 			{
@@ -4686,27 +4699,6 @@ function( id, value )
 	var select = document.getElementById( id );
 
 	select.setValue( value );
-	
-//	if ( select )
-//	{
-//		var n = select.length;
-//
-//		if ( 0 < n )
-//		{
-//			for ( var i=0; i < n; i++ )
-//			{
-//				if ( select.options[i].value == value )
-//				{
-//					select.selectedIndex = i;
-//					break;
-//				}
-//			}
-//		}
-//		else
-//		{
-//			select.setAttribute( "data-value", value );
-//		}
-//	}
 }
 
 Selects.setValue
@@ -4734,6 +4726,29 @@ function( value )
 		{
 			this.setAttribute( "data-value", value );
 		}
+
+		Selects.SetSelectedClass( this );
+	}
+}
+
+Selects.SetSelected
+=
+function( event )
+{
+	var select = event.target;
+
+	Selects.SetSelectedClass( select );
+}
+
+Selects.SetSelectedClass
+=
+function( select )
+{
+	if ( 0 == select.selectedIndex )
+	{
+		Class.RemoveClass( select, "selected" );
+	} else {
+		Class.AddClass   ( select, "selected" );
 	}
 }
 
@@ -4771,6 +4786,11 @@ Session.Switch
 function( responseText )
 {
 	Session.Handler( responseText );
+
+	if ( 'function' === typeof Session.CustomHandler )
+	{
+		Session.CustomHandler( responseText );
+	}
 
 	if ( Session.Redirect )
 	{
@@ -5260,6 +5280,7 @@ function( id )
         var div  = document.getElementById( id );
         var t    = document.getElementById( id + "-template" );
         var more = div.getAttribute( "data-more" );
+        var type = t.getAttribute( "data-type" );
 
         if ( div && t )
         {
@@ -5306,15 +5327,10 @@ function( id )
                         }
                     }
 
-                    // 
-                    //  Remove all existing children except templates.
-                    //
-
-                    for ( child of div.children ) if ( "DIV" == child.tagName ) div.removeChild( child );
-
                     for ( var i=0; i < n; i++ )
                     {
-                        var child           = document.createElement( "DIV" );
+                        var type            = type ? type : "DIV";
+                        var child           = document.createElement( type );
                             child.className = cls;
                             child.innerHTML = Replace( t.innerHTML, json.results[i] );
 

@@ -450,6 +450,7 @@ function( id )
         var div  = document.getElementById( id );
         var t    = document.getElementById( id + "-template" );
         var more = div.getAttribute( "data-more" );
+        var type = t.getAttribute( "data-type" );
 
         if ( div && t )
         {
@@ -496,15 +497,10 @@ function( id )
                         }
                     }
 
-                    // 
-                    //  Remove all existing children except templates.
-                    //
-
-                    for ( child of div.children ) if ( "DIV" == child.tagName ) div.removeChild( child );
-
                     for ( var i=0; i < n; i++ )
                     {
-                        var child           = document.createElement( "DIV" );
+                        var type            = type ? type : "DIV";
+                        var child           = document.createElement( type );
                             child.className = cls;
                             child.innerHTML = Replace( t.innerHTML, json.results[i] );
 

@@ -39,6 +39,11 @@ function( responseText )
 {
 	Session.Handler( responseText );
 
+	if ( 'function' === typeof Session.CustomHandler )
+	{
+		Session.CustomHandler( responseText );
+	}
+
 	if ( Session.Redirect )
 	{
 		Session.Redirect( Session.idtype );

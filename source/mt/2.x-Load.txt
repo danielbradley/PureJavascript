@@ -54,6 +54,8 @@ function LoadInputFromImageFileHandler( targetID, fileID, holderID )
 	{
 		holder.style.background     = "white url(" + url64 + ") no-repeat center center";
 		holder.style.backgroundSize = "cover";
+
+		Class.RemoveClass( holder, "hidden" );
 	}
 }
 ~

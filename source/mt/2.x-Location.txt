@@ -128,7 +128,7 @@ function Up( search_parameters )
 
         for ( key in search_parameters )
         {
-            loc += search_parameters[key] + "=" + GetSearchValue( search_parameters[key] ) + "&";
+            loc += search_parameters[key] + "=" + Recode( GetSearchValue( search_parameters[key] ) ) + "&";
         }
         loc = loc.substring( 0, loc.length - 1 );
     }
@@ -183,7 +183,7 @@ function TwoUp( search_parameters )
 
         for ( key in search_parameters )
         {
-            loc += search_parameters[key] + "=" + GetSearchValue( search_parameters[key] ) + "&";
+            loc += search_parameters[key] + "=" + Recode( GetSearchValue( search_parameters[key] ) ) + "&";
         }
         loc = loc.substring( 0, loc.length - 1 );
     }
@@ -223,10 +223,10 @@ function Down( pathname, search )
 {
     var loc  = location.protocol + "//" + location.host + location.pathname + pathname + search;
 
-    if ( -1 !== loc.indexOf( '%' ) )
+    if ( -1 !== loc.indexOf( '=%' ) )
     {
         var parameters = Locations.SearchValues();
-
+    
         loc = Replace( loc, parameters );
     }
 

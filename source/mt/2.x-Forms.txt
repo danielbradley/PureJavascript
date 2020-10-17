@@ -583,6 +583,15 @@ function SubmitTableValues( event, verify )
 	var endpoint   = table.getAttribute( "data-url" );
 	var parameters = Forms.GetValues( form );
 
+	if ( ! verify )
+	{
+		verify
+		=
+		function( tr )
+		{
+			return true;
+		}
+	}
 
 	if ( table && table.rows && (1 < table.rows.length) )
 	{
