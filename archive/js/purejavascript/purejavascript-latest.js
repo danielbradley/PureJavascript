@@ -1,4 +1,4 @@
-/* PureJavascript version 2.w */
+/* PureJavascript version 2.x */
 /*
  *  PureJavacript, APIServer.js
  *
@@ -3423,6 +3423,10 @@ function DecodeHTMLEntities( htmlEncodedString )
 						
 					case "quot;":
 						bits[i] = "\"" + bit.substring( s + 1, bit.length );
+						break;
+
+					case "rsquo;":
+						bits[i] = "\'" + bit.substring( s + 1, bit.length );
 						break;
 						
 					case "apos;":
