@@ -111,6 +111,10 @@ function DecodeHTMLEntities( htmlEncodedString )
 					case "quot;":
 						bits[i] = "\"" + bit.substring( s + 1, bit.length );
 						break;
+
+					case "rsquo;":
+						bits[i] = "\'" + bit.substring( s + 1, bit.length );
+						break;
 						
 					case "apos;":
 						bits[i] = "\'" + bit.substring( s + 1, bit.length );
