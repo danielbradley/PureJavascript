@@ -1,4 +1,4 @@
-/* PureJavascript version 2.x */
+/* PureJavascript version 2.y */
 /*
  *  PureJavacript, APIServer.js
  *
@@ -4875,18 +4875,22 @@ function Setup()
 
 Setup.CreateTableSetupFn
 =
-function( id, nr_columns )
+function( id, nr_columns, clear )
 {
     var path   = "";
     var search = "";
 
-    return Setup.CreateTableSetupWithDownFn( id, nr_columns, path, search );
+    if ( undefined === clear ) clear = false;
+
+    return Setup.CreateTableSetupWithDownFn( id, nr_columns, path, search, clear );
 }
 
 Setup.CreateTableSetupWithDownFn
 =
-function( id, nr_columns, path, search )
+function( id, nr_columns, path, search, clear )
 {
+    if ( undefined === clear ) clear = false;
+
     /*
      *  The returned function parses the JSON formatted response text and creates a table row template for each result tuple.
      *  These are added to the tbody corresponding to 'id' - 'nr_of_columns' is used if no result tuples are returned.
@@ -4929,6 +4933,8 @@ function( id, nr_columns, path, search )
                 }
                 else
                 {
+                    if ( clear ) Setup.Clear( tbody );
+
                     if ( n != limit )
                     {
                         var load_more = document.getElementById( "tbody-load-more" );
