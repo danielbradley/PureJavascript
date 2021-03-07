@@ -1,4 +1,4 @@
-/* PureJavascript version 2.y */
+/* PureJavascript version 2.z */
 /*
  *  PureJavacript, APIServer.js
  *
@@ -4462,7 +4462,8 @@ Selects.setup.handler
 =
 function( responseText )
 {
-	var obj = JSON.parse( responseText );
+    var obj = typeof responseText === 'string' || responseText instanceof String ? JSON.parse( responseText ) : responseText;
+
 	if ( obj && obj.results )
 	{
 		var lists = Array();
@@ -4900,7 +4901,7 @@ function( id, nr_columns, path, search, clear )
     =
     function( responseText )
     {
-        var json  = JSON.parse( responseText );
+        var json  = typeof responseText === 'string' || responseText instanceof String ? JSON.parse( responseText ) : responseText;
         var tbody = document.getElementById( id );
 
         if ( tbody && ("OK" == json.status) )
@@ -5262,7 +5263,7 @@ function( id )
         
         if ( div )
         {
-            var json = JSON.parse( responseText )
+            var json = typeof responseText === 'string' || responseText instanceof String ? JSON.parse( responseText ) : responseText;
             
             if ( ("OK" == json.status) && (1 == json.results.length) )
             {
