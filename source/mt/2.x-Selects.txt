@@ -68,7 +68,8 @@ Selects.setup.handler
 =
 function( responseText )
 {
-	var obj = JSON.parse( responseText );
+    var obj = typeof responseText === 'string' || responseText instanceof String ? JSON.parse( responseText ) : responseText;
+
 	if ( obj && obj.results )
 	{
 		var lists = Array();
