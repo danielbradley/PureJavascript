@@ -1,4 +1,4 @@
-/* PureJavascript version 2.z */
+/* PureJavascript version 3.0 */
 /*
  *  PureJavacript, APIServer.js
  *
@@ -1418,13 +1418,13 @@ function( datalist, responseText )
 			}
 		}
 		
-		Datalist.SetupFunctions( datalist );
+		Datalist.SetupFunctions( datalist, ul );
 	}
 }
 
 Datalist.SetupFunctions
 =
-function( datalist )
+function( datalist, ul )
 {
 	var list_items = datalist.sublist.getElementsByTagName( "LI" );
 	var n = list_items.length;
@@ -1440,6 +1440,15 @@ function( datalist )
 
 	datalist.oninput    = function() { Datalist.OnInput   ( event, datalist ); };
 	datalist.onfocusout = function() { Datalist.OnFocusOut( event, datalist ); };
+	ul.onfocusout       = function() { Datalist.OnFocusOut( event, datalist ); };
+}
+
+Datalist.OutsideClick
+=
+function( event )
+{
+	console.log( event );
+	Datalist.HideDatalists( document.getElementsByTagName( "UL" ) );
 }
 
 Datalist.OnInput
@@ -1451,6 +1460,7 @@ function( event, datalist )
 	if ( ! div.ignoreFocus )
 	{
 		div.style.display = "block";
+		document.addEventListener( "click", Datalist.OutsideClick );
 
 		var filter = event.target.value;
 		
@@ -1549,6 +1559,8 @@ function( event )
 			datalist.handler( datalist );
 		}
 	}
+	document.removeEventListener( "click", Datalist.OutsideClick );
+	event.stopPropagation();
 }
 
 Datalist.OnFocusOut
@@ -1631,6 +1643,8 @@ function( elements )
 			Datalist.UnselectItems( e );
 		}
 	}
+
+	document.removeEventListener( "click", Datalist.OutsideClick );
 }
 
 Datalist.UnselectItems
