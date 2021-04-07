@@ -18,8 +18,12 @@ The following downloads are avaialable:
             </thead>
             <tbody>
                 <tr>
-                    <td><a href='/resources/downloads/purejavascript-latest.js'>purejavascript-latest-dev.js</a></td>
-                    <td>2021-01-01</td>
+                    <td><a href='/resources/downloads/purejavascript-latest.js'>purejavascript-latest-dev.js (3.1)</a></td>
+                    <td>2021-04-07</td>
+                </tr>
+                <tr>
+                    <td><a href='/resources/downloads/purejavascript-3.1.js'>purejavascript-3.1.js</a></td>
+                    <td>2021-04-07</td>
                 </tr>
                 <tr>
                     <td><a href='/resources/downloads/purejavascript-2.x-dev.js'>purejavascript-2.y-dev.js</a></td>

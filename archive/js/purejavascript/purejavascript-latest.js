@@ -1,4 +1,4 @@
-/* PureJavascript version 3.0 */
+/* PureJavascript version 3.1 */
 /*
  *  PureJavacript, APIServer.js
  *
@@ -4997,7 +4997,7 @@ function( id, nr_columns, path, search, clear )
                             if ( path )
                             {
                                 e.style.cursor = "pointer";
-                                e.onclick      = Locations.CreateDownFn( path, Replace( search, t, true ) );
+                                e.onclick      = Locations.CreateDownFn( Replace( path, t, true ), Replace( search, t, true ) );
                                 e.className    = "clickable";
                             }
                         }
