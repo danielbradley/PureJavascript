@@ -336,6 +336,11 @@ function InsertFormValues( form, object )
                     else
 					{
 						input.value = value;
+
+						if ( input.hasAttribute( "data-cascade" ) )
+						{
+							Selects.DoCascade( input );
+						}
 					}
 					input.placeholder = "";
 					input.placeholder = ph;
