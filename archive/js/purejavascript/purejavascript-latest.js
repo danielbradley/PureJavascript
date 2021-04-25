@@ -1,4 +1,4 @@
-/* PureJavascript version 3.1 */
+/* PureJavascript version 3.2 */
 /*
  *  PureJavacript, APIServer.js
  *
@@ -2528,6 +2528,11 @@ function InsertFormValues( form, object )
                     else
 					{
 						input.value = value;
+
+						if ( input.hasAttribute( "data-cascade" ) )
+						{
+							Selects.DoCascade( input );
+						}
 					}
 					input.placeholder = "";
 					input.placeholder = ph;
