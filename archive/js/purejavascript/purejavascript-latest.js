@@ -1,4 +1,4 @@
-/* PureJavascript version 3.2 */
+/* PureJavascript version 3.3 */
 /*
  *  PureJavacript, APIServer.js
  *
@@ -2277,6 +2277,18 @@ function purejavascript_Forms_Changed( event )
     {
         submit.disabled = false;
     }
+}
+
+Forms.DisableAll
+=
+function( form )
+{
+	var len = form.elements.length;
+
+	for ( var i=0; i < len; i++ )
+	{
+		form.elements[i].disabled = true;
+	}
 }
 
 function GetFormValues( form )

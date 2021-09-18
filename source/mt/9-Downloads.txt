@@ -12,30 +12,36 @@ The following downloads are avaialable:
         <table>
             <thead>
                 <tr>
-                    <th>Version </th>
-                    <th>Created </th>
+                    <th>Version        </th>
+                    <th>File           </th>
+                    <th>Created        </th>
+                    <th>Integrity Hash </th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td><a href='/resources/downloads/purejavascript-latest.js'>purejavascript-latest-dev.js (3.1)</a></td>
-                    <td>2021-04-07</td>
+                    <td>Latest Dev</td>
+                    <td><a href='/resources/downloads/purejavascript-latest-dev.js'>purejavascript-latest-dev.js</a></td>
+                    <td>2021-09-18</td>
+                    <td><small>9xiOEmsS+clRTIvSJxachneoJf1CbuK6fM92lim1J+NvcDxHKxUO96BJO/QkmNDz</small></td>
                 </tr>
                 <tr>
-                    <td><a href='/resources/downloads/purejavascript-3.1.js'>purejavascript-3.1.js</a></td>
-                    <td>2021-04-07</td>
-                </tr>
-                <tr>
-                    <td><a href='/resources/downloads/purejavascript-2.x-dev.js'>purejavascript-2.y-dev.js</a></td>
-                    <td>2021-01-01</td>
-                </tr>
-                <tr>
+                    <td>Latest</td>
                     <td><a href='/resources/downloads/purejavascript-latest.js'>purejavascript-latest.js</a></td>
-                    <td>2020-12-15</td>
+                    <td>2021-09-18</td>
+                    <td><small>9xiOEmsS+clRTIvSJxachneoJf1CbuK6fM92lim1J+NvcDxHKxUO96BJO/QkmNDz</small></td>
                 </tr>
                 <tr>
-                    <td><a href='/resources/downloads/purejavascript-2.x.js'>purejavascript-2.x</a></td>
-                    <td>2020-12-15</td>
+                    <td>3.3</td>
+                    <td><a href='/resources/downloads/purejavascript-3.3.js'>purejavascript-3.3.js</a></td>
+                    <td>2021-09-18</td>
+                    <td><small>9xiOEmsS+clRTIvSJxachneoJf1CbuK6fM92lim1J+NvcDxHKxUO96BJO/QkmNDz</small></td>
+                </tr>
+                <tr>
+                    <td>3.2</td>
+                    <td><a href='/resources/downloads/purejavascript-3.2.js'>purejavascript-3.2.js</a></td>
+                    <td>2021-04-25</td>
+                    <td><small>3dKLi4z00F+qV4+ukxLDjwWBYimzx+W9iecWuSnwIoY3ABzRYYSWcqx57X883GSG</small></td>
                 </tr>
             </tbody>
         </table>
