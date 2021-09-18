@@ -59,7 +59,27 @@ function purejavascript_Forms_Changed( event )
 }
 ~
 
+... Disable All
 
+|
+Forms.DisableAll( form )
+|
+
+Disables all form elements.
+
+~_gen/js/Forms.js~
+Forms.DisableAll
+=
+function( form )
+{
+	var len = form.elements.length;
+
+	for ( var i=0; i < len; i++ )
+	{
+		form.elements[i].disabled = true;
+	}
+}
+~
 
 ... Get Values
 
