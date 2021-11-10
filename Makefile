@@ -1,4 +1,4 @@
-version=3.3
+version=3.4
 
 .PHONY: archive
 
@@ -16,6 +16,7 @@ dev_copy:
 	mkdir -p _resources/downloads
 	cp -f  archive/js/purejavascript/purejavascript-$(version)-dev.js _resources/downloads
 	cp -f  archive/js/purejavascript/purejavascript-latest-dev.js     _resources/downloads
+	shasum -b -a 384 archive/js/purejavascript/purejavascript-latest-dev.js | awk '{ print $1 }' | xxd -r -p | base64
 
 copy:
 	mkdir -p _resources/downloads
@@ -23,6 +24,7 @@ copy:
 	cp -rf share/resources/thirdparty _resources
 
 release_proxy: archive/js/purejavascript/purejavascript-$(version).js
+	shasum -b -a 384 archive/js/purejavascript/purejavascript-$(version).js | awk '{ print $1 }' | xxd -r -p | base64
 
 archive/js/purejavascript/purejavascript-$(version).js:
 	mkdir -p archive/js/purejavascript

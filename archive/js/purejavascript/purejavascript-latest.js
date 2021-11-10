@@ -1,4 +1,4 @@
-/* PureJavascript version 3.3 */
+/* PureJavascript version 3.4 */
 /*
  *  PureJavacript, APIServer.js
  *
@@ -8,6 +8,7 @@
  */
 
 APIServer = Resolve;
+APIServer.IsSubdomain = true;
 
 function Resolve()
 {
@@ -1929,29 +1930,36 @@ function Toggle( id )
 
 Toggle.Show
 =
-function ( e )
+function ( e, display )
 {
-    switch ( e.tagName )
+    if ( ! display )
     {
-    case "TABLE":
-        e.style.display    = "table";
-        break;
+	    switch ( e.tagName )
+	    {
+	    case "TABLE":
+	        e.style.display    = "table";
+	        break;
 
-    case "TR":
-        e.style.display    = "table-row-group";
-        break;
+	    case "TR":
+	        e.style.display    = "table-row-group";
+	        break;
 
-    case "TH":
-        e.style.display    = "table-cell";
-        break;
+	    case "TH":
+	        e.style.display    = "table-cell";
+	        break;
 
-    case "TD":
-        e.style.display    = "table-cell";
-        break;
+	    case "TD":
+	        e.style.display    = "table-cell";
+	        break;
 
-    default:
-        e.style.display    = "block";
-    }
+	    default:
+	        e.style.display    = "block";
+	    }
+	}
+	else
+	{
+		e.style.display = display;
+	}
 
 	e.style.visibility = "visible";
 
@@ -1970,7 +1978,7 @@ function ( e )
 
 Elements.HideShow
 =
-function ( cls, id )
+function ( cls, id, display )
 {
     var elements = document.getElementsByClassName( cls );
     var e        = document.getElementById( id );
@@ -1985,7 +1993,7 @@ function ( cls, id )
 
     if ( e )
     {
-        Toggle.Show( e );
+        Toggle.Show( e, display );
         Class.AddClass( e, "active" );
     }
 
