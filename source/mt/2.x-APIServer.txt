@@ -20,8 +20,10 @@ If SSL is being used, the returned port is 8443; other 8080.
 APIServer = Resolve;
 APIServer.IsSubdomain = true;
 
-function Resolve()
+function Resolve( host )
 {
+    if ( host === undefined ) host = "api";
+
     var base_domain = Resolve.ExtractBaseDomain( location.hostname );
 	var dom         = "";
     var http_port   = Resolve.httpPort  ? Resolve.httpPort  : "80";
@@ -31,11 +33,11 @@ function Resolve()
 	switch ( location.protocol )
 	{
 	case "http:":
-		dom = location.protocol + "//api" + base_domain + ":" + http_port;
+		dom = location.protocol + "//" + host + base_domain + ":" + http_port;
 		break;
 
 	case "https:":
-        dom = location.protocol + "//api" + base_domain + ":" + https_port;
+        dom = location.protocol + "//" + host + base_domain + ":" + https_port;
 		break;
 	}
 

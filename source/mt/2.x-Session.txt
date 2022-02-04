@@ -25,7 +25,7 @@ function Session( Redirect )
 {
 	Session.Redirect = Redirect;
 
-	Call( "/api/auth/session/", new Array(), Session.Switch );
+	Call( "/api/auth/session/", {}, Session.Switch );
 }
 ~
 

@@ -16,10 +16,11 @@ The Auth module is used to authenticate to compatible authentication system.
 !
 
 ~_gen/js/Auth.js~
-Auth                 = {}
-Auth.Login           = Auth_Login;
-Auth.Logout          = Auth_Logout;
-Auth.LogoutAndReload = Auth_LogoutAndReload;
+Auth                    = {}
+Auth.Login              = Auth_Login;
+Auth.Login.LocalStorage = Auth_Login_LocalStorage;
+Auth.Logout             = Auth_Logout;
+Auth.LogoutAndReload    = Auth_LogoutAndReload;
 ~
 
 ... Login
@@ -64,6 +65,12 @@ function Auth_Login( event )
 }
 ~
 
+~_gen/js/Auth.js~
+function Auth_Login_LocalStorage( event )
+{
+    Submit( event, Auth.Login.LocalStorageHandler );
+}
+~
 
 ... Logout
 
@@ -88,8 +95,23 @@ function Auth_Logout( logout_api_url )
     }
     else
     {
-    	Call( "/auth/logout/", new Array(), Auth.Logout.Handler );
+    	Call( "/api/auth/logout/", new Array(), Auth.Logout.Handler );
     }
+
+    if ( DataStorage.Local.HasItem( "sessionid" ) )
+    {
+        var storage = DataStorage.Local;
+
+        storage.RemoveItem( "idtype"        );
+        storage.RemoveItem( "accessid"      );
+        storage.RemoveItem( "email"         );
+        storage.RemoveItem( "given"         );
+        storage.RemoveItem( "group_code"    );
+        storage.RemoveItem( "sessionid"     );
+        storage.RemoveItem( "Authorization" );
+    }
+
+    UnsetCookie( "accessid" );
 }
 ~
 
@@ -234,7 +256,10 @@ function( responseText )
 
                 Auth.SetCookie( "Authorization", "", 1 );
 
-                location.reload();   /*  Only line different from standard Auth.Login.Handler */
+                var redirect_path = obj.redirect_path ? obj.redirect_path : "/";
+                var redirect_url  = location.protocol + "//" + location.host + redirect_path;
+
+                location.assign( redirect_url );
             }
         }
     }
@@ -244,7 +269,7 @@ Auth.Logout.Handler
 =
 function ( responseText )
 {
-	location.replace( location.protocol + "//" + location.hostname + "/" );
+	location.assign( location.protocol + "//" + location.hostname + "/" );
 }
 
 Auth.LogoutAndReload.Handler
@@ -300,3 +325,57 @@ function( cname, cvalue, exdays )
 }
 ~
 
+~_gen/js/Auth.js~
+Auth.Login.LocalStorageHandler
+=
+function ( responseText )
+{
+    var json = JSON.parse( responseText );
+
+    if ( "" != responseText )
+    {
+        var json = JSON.parse( responseText );
+
+        if ( "ERROR" == json.status )
+        {
+            switch ( json.error.split( " " )[0] )
+            {
+            case "INVALID_USER":
+            case "INVALID_PASSWORD":
+            case "INVALID_CREDENTIALS":
+                alert( "Invalid username or password." );
+                break;
+
+            case "INVALID_LOGINS":
+                alert( "Too many invalid logins have occurred. To reset your invalid login count, please reset your password." );
+                break;
+
+            default:
+                alert( "An unexpected error occurred, please try again later." );
+            }
+        }
+        else if ( json.results && (1 !== json.results.length) )
+        {
+            alert( "Session was not returned as expected, please try again later." );
+        }
+        else
+        {
+            var obj = json.results[0];
+
+            if ( obj && obj.idtype )
+            {
+                var storage = DataStorage.Local;
+
+                storage.SetItem( "sessionid",     obj.sessionid  );
+
+                Auth.SetCookie( "accessid", obj.accessid, 1 );
+
+                var redirect_path = obj.redirect_path ? obj.redirect_path : "/";
+                var redirect_url  = location.protocol + "//" + location.host + redirect_path;
+
+                location.assign( redirect_url );
+            }
+        }
+    }
+}
+~

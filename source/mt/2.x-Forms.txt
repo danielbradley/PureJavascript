@@ -529,7 +529,6 @@ Forms.Submit( event, custom_handler )
 function Submit( event, custom_handler )
 {
 	var form       = event.target;
-	var apihost    = Resolve();
 	var handler    = custom_handler ? custom_handler : Submit.SubmitDefaultHandler;
 	var parameters = GetFormValues( form );
 
@@ -542,7 +541,7 @@ function Submit( event, custom_handler )
 			var url     = form.getAttribute( "data-delete-url" );
 			var handler = form.handler ? form.handler : handler;
 
-			Call( apihost + url, parameters, handler );
+			Call( url, parameters, handler );
 		}
 	}
 	else
@@ -551,7 +550,7 @@ function Submit( event, custom_handler )
 		var url        = form.getAttribute( "data-url" );
 		var handler    = form.handler ? form.handler : handler;
 
-		Call( apihost + url, parameters, handler );
+		Call( url, parameters, handler );
 	}
 	else
 	if ( form.hasAttribute( "data-submit-url" ) )
@@ -559,7 +558,7 @@ function Submit( event, custom_handler )
 		var url        = form.getAttribute( "data-submit-url" );
 		var handler    = form.handler ? form.handler : handler;
 
-		Call( apihost + url, parameters, handler );
+		Call( url, parameters, handler );
 	}
 	return false;
 }

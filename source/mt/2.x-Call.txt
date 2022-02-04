@@ -34,6 +34,11 @@ function Call( endpoint, parameters, custom_handler )
 {
 	parameters['wab_requesting_url'] = location.protocol + "//" + location.host + location.pathname;
 
+	if ( DataStorage.Local.HasItem( "sessionid" ) )
+	{
+		parameters['sid'] = DataStorage.Local.GetItem( "sessionid" );
+	}
+
 	if ( document.body.hasAttribute( "data-csrf" ) )
 	{
 		var csrf = document.body.getAttribute( "data-csrf" );
@@ -56,7 +61,16 @@ function Call( endpoint, parameters, custom_handler )
 
 	if ( "http" != endpoint.substr( 0, 4 ) )
 	{
-		endpoint = Resolve() + endpoint;
+		switch ( endpoint.substr( 0, 3 ) )
+		{
+		case "/ap":
+			endpoint = Resolve( "api" ) + endpoint;
+			break;
+
+		case "/fn":
+			endpoint = Resolve( "fn"  ) + endpoint;
+			break;
+		}
 	}
 
 	if ( 'async' in parameters && ("true" === parameters['async']) )
