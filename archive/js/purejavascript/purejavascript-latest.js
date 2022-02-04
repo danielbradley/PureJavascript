@@ -1,4 +1,4 @@
-/* PureJavascript version 3.4 */
+/* PureJavascript version 3.5 */
 /*
  *  PureJavacript, APIServer.js
  *
@@ -10,8 +10,10 @@
 APIServer = Resolve;
 APIServer.IsSubdomain = true;
 
-function Resolve()
+function Resolve( host )
 {
+    if ( host === undefined ) host = "api";
+
     var base_domain = Resolve.ExtractBaseDomain( location.hostname );
 	var dom         = "";
     var http_port   = Resolve.httpPort  ? Resolve.httpPort  : "80";
@@ -21,11 +23,11 @@ function Resolve()
 	switch ( location.protocol )
 	{
 	case "http:":
-		dom = location.protocol + "//api" + base_domain + ":" + http_port;
+		dom = location.protocol + "//" + host + base_domain + ":" + http_port;
 		break;
 
 	case "https:":
-        dom = location.protocol + "//api" + base_domain + ":" + https_port;
+        dom = location.protocol + "//" + host + base_domain + ":" + https_port;
 		break;
 	}
 
@@ -164,14 +166,20 @@ function( sld, tld )
  *  License LGPL v2
  */
 
-Auth                 = {}
-Auth.Login           = Auth_Login;
-Auth.Logout          = Auth_Logout;
-Auth.LogoutAndReload = Auth_LogoutAndReload;
+Auth                    = {}
+Auth.Login              = Auth_Login;
+Auth.Login.LocalStorage = Auth_Login_LocalStorage;
+Auth.Logout             = Auth_Logout;
+Auth.LogoutAndReload    = Auth_LogoutAndReload;
 
 function Auth_Login( event )
 {
 	Submit( event, Auth.Login.Handler );
+}
+
+function Auth_Login_LocalStorage( event )
+{
+    Submit( event, Auth.Login.LocalStorageHandler );
 }
 
 function Auth_Logout( logout_api_url )
@@ -186,8 +194,23 @@ function Auth_Logout( logout_api_url )
     }
     else
     {
-    	Call( "/auth/logout/", new Array(), Auth.Logout.Handler );
+    	Call( "/api/auth/logout/", new Array(), Auth.Logout.Handler );
     }
+
+    if ( DataStorage.Local.HasItem( "sessionid" ) )
+    {
+        var storage = DataStorage.Local;
+
+        storage.RemoveItem( "idtype"        );
+        storage.RemoveItem( "accessid"      );
+        storage.RemoveItem( "email"         );
+        storage.RemoveItem( "given"         );
+        storage.RemoveItem( "group_code"    );
+        storage.RemoveItem( "sessionid"     );
+        storage.RemoveItem( "Authorization" );
+    }
+
+    UnsetCookie( "accessid" );
 }
 
 function Auth_LogoutAndReload( logout_api_url )
@@ -315,7 +338,10 @@ function( responseText )
 
                 Auth.SetCookie( "Authorization", "", 1 );
 
-                location.reload();   /*  Only line different from standard Auth.Login.Handler */
+                var redirect_path = obj.redirect_path ? obj.redirect_path : "/";
+                var redirect_url  = location.protocol + "//" + location.host + redirect_path;
+
+                location.assign( redirect_url );
             }
         }
     }
@@ -325,7 +351,7 @@ Auth.Logout.Handler
 =
 function ( responseText )
 {
-	location.replace( location.protocol + "//" + location.hostname + "/" );
+	location.assign( location.protocol + "//" + location.hostname + "/" );
 }
 
 Auth.LogoutAndReload.Handler
@@ -378,6 +404,59 @@ function( cname, cvalue, exdays )
     d.setTime(d.getTime() + (exdays*24*60*60*1000));
     var expires = "expires="+d.toUTCString();
     document.cookie = cname + "=" + cvalue + "; " + ";path=/;secure;SameSite=strict";
+}
+
+Auth.Login.LocalStorageHandler
+=
+function ( responseText )
+{
+    var json = JSON.parse( responseText );
+
+    if ( "" != responseText )
+    {
+        var json = JSON.parse( responseText );
+
+        if ( "ERROR" == json.status )
+        {
+            switch ( json.error.split( " " )[0] )
+            {
+            case "INVALID_USER":
+            case "INVALID_PASSWORD":
+            case "INVALID_CREDENTIALS":
+                alert( "Invalid username or password." );
+                break;
+
+            case "INVALID_LOGINS":
+                alert( "Too many invalid logins have occurred. To reset your invalid login count, please reset your password." );
+                break;
+
+            default:
+                alert( "An unexpected error occurred, please try again later." );
+            }
+        }
+        else if ( json.results && (1 !== json.results.length) )
+        {
+            alert( "Session was not returned as expected, please try again later." );
+        }
+        else
+        {
+            var obj = json.results[0];
+
+            if ( obj && obj.idtype )
+            {
+                var storage = DataStorage.Local;
+
+                storage.SetItem( "sessionid",     obj.sessionid  );
+
+                Auth.SetCookie( "accessid", obj.accessid, 1 );
+
+                var redirect_path = obj.redirect_path ? obj.redirect_path : "/";
+                var redirect_url  = location.protocol + "//" + location.host + redirect_path;
+
+                location.assign( redirect_url );
+            }
+        }
+    }
 }
 
 /*
@@ -844,6 +923,11 @@ function Call( endpoint, parameters, custom_handler )
 {
 	parameters['wab_requesting_url'] = location.protocol + "//" + location.host + location.pathname;
 
+	if ( DataStorage.Local.HasItem( "sessionid" ) )
+	{
+		parameters['sid'] = DataStorage.Local.GetItem( "sessionid" );
+	}
+
 	if ( document.body.hasAttribute( "data-csrf" ) )
 	{
 		var csrf = document.body.getAttribute( "data-csrf" );
@@ -866,7 +950,16 @@ function Call( endpoint, parameters, custom_handler )
 
 	if ( "http" != endpoint.substr( 0, 4 ) )
 	{
-		endpoint = Resolve() + endpoint;
+		switch ( endpoint.substr( 0, 3 ) )
+		{
+		case "/ap":
+			endpoint = Resolve( "api" ) + endpoint;
+			break;
+
+		case "/fn":
+			endpoint = Resolve( "fn"  ) + endpoint;
+			break;
+		}
 	}
 
 	if ( 'async' in parameters && ("true" === parameters['async']) )
@@ -2696,7 +2789,6 @@ function SelectAll( event, form_id )
 function Submit( event, custom_handler )
 {
 	var form       = event.target;
-	var apihost    = Resolve();
 	var handler    = custom_handler ? custom_handler : Submit.SubmitDefaultHandler;
 	var parameters = GetFormValues( form );
 
@@ -2709,7 +2801,7 @@ function Submit( event, custom_handler )
 			var url     = form.getAttribute( "data-delete-url" );
 			var handler = form.handler ? form.handler : handler;
 
-			Call( apihost + url, parameters, handler );
+			Call( url, parameters, handler );
 		}
 	}
 	else
@@ -2718,7 +2810,7 @@ function Submit( event, custom_handler )
 		var url        = form.getAttribute( "data-url" );
 		var handler    = form.handler ? form.handler : handler;
 
-		Call( apihost + url, parameters, handler );
+		Call( url, parameters, handler );
 	}
 	else
 	if ( form.hasAttribute( "data-submit-url" ) )
@@ -2726,7 +2818,7 @@ function Submit( event, custom_handler )
 		var url        = form.getAttribute( "data-submit-url" );
 		var handler    = form.handler ? form.handler : handler;
 
-		Call( apihost + url, parameters, handler );
+		Call( url, parameters, handler );
 	}
 	return false;
 }
@@ -4822,7 +4914,7 @@ function Session( Redirect )
 {
 	Session.Redirect = Redirect;
 
-	Call( "/api/auth/session/", new Array(), Session.Switch );
+	Call( "/api/auth/session/", {}, Session.Switch );
 }
 
 Session.Switch
