@@ -12,12 +12,15 @@
 !
 
 ~_gen/js/Elements.js~
-Elements          = {}
-Elements.Toggle   = Toggle
-Elements.Show     = Toggle.Show
-Elements.Hide     = Toggle.Hide
-Elements.ShowHide = ShowHide;
-Elements.HideShow = null;
+Elements            = {}
+Elements.Toggle     = Toggle
+Elements.Show       = Toggle.Show
+Elements.Hide       = Toggle.Hide
+Elements.ShowHide   = ShowHide;
+Elements.HideShow   = null;
+Elements.SetFnSetup   = null;
+Elements.SetFnSubmit  = null;
+Elements.SetFnHandler = null;
 ~
 
 
@@ -207,5 +210,62 @@ ShowHide.MakeInactive
 function( e )
 {
 	Class.RemoveClass( e, "active" );
+}
+~
+
+|
+Elements.SetFnSetup( id, fn )
+|
+
+If element with /id/ exists, sets fn as setup function.
+
+~_gen/js/Elements.js~
+Elements.SetFnSetup
+=
+function( id, fn )
+{
+	var e = document.getElementById( id );
+	if ( e )
+	{
+		e.setup = fn;
+	}
+}
+~
+
+|
+Elements.SetFnSubmit( id, fn )
+|
+
+If element with /id/ exists, sets fn as submit function.
+
+~_gen/js/Elements.js~
+Elements.SetFnSubmit
+=
+function( id, fn )
+{
+	var e = document.getElementById( id );
+	if ( e )
+	{
+		e.addEventListener( 'submit', fn );
+	}
+}
+~
+
+|
+Elements.SetFnHandler( id, fn )
+|
+
+If element with /id/ exists, sets fn as handler function.
+
+~_gen/js/Elements.js~
+Elements.SetFnHandler
+=
+function( id, fn )
+{
+	var e = document.getElementById( id );
+	if ( e )
+	{
+		e.handler = fn;
+	}
 }
 ~

@@ -30,6 +30,7 @@ Forms.Submit               = Submit
 Forms.SubmitTableValues    = SubmitTableValues
 Forms.Validate             = Validate
 Forms.ValidateForm         = ValidateForm
+Forms.Validate.Submit      = Validate.Submit
 ~
 
 
@@ -904,6 +905,30 @@ function ValidateForm( form )
 	}
 
 	return valid;
+}
+~
+
+... Validate Form
+
+|
+Forms.Validate.Submit( event )
+|
+
+Convenience function to allow validation and submission to be perforemd by adding an event listener via javascript.
+Example usage:
+
+~
+document.getElementById( <id> ).addEventListener( 'subit', Forms.Validate.Submit );
+~
+
+~_gen/js/Forms.js~
+Validate.Submit
+=
+function( event )
+{
+	event.preventDefault();
+
+	Forms.Validate( event, Forms.Submit );
 }
 ~
 

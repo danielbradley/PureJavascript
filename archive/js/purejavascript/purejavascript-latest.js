@@ -1,4 +1,4 @@
-/* PureJavascript version 3.5 */
+/* PureJavascript version 3.6 */
 /*
  *  PureJavacript, APIServer.js
  *
@@ -1190,6 +1190,76 @@ function( e, className )
 }
 
 /*
+ *  PureJavacript, Convert.js
+ *
+ *  Copyright 2022, CrossAdaptive
+ *
+ *  License LGPL v2
+ */
+
+Convert = {}
+Convert.ResponseTo = ConvertResponseTo;
+
+function ConvertResponseTo( type, response ) // return [byte]
+{
+    var ret = [];
+
+    switch ( type )
+    {
+    case "application/json":
+        ret.push( JSON.stringify( response ) );
+        break;
+
+    case "text/csv":
+        ret.push( ConvertResponseTo.ToCSV( response.results ) );
+        break;
+    }
+
+    return ret;
+}
+
+ConvertResponseTo.ToCSV
+=
+function( results )
+{
+    var csv   = "";
+    var n     = results.length;
+    var first = results[0];
+    var order = [];
+
+    //  Write the headers to csv
+    for ( const [key, value] of Object.entries(first) )
+    {
+        csv += '"' + HTMLEntities.Decode( key ) + '"' + ",";
+
+        order.push( key );
+    } 
+    csv += '\n';
+
+    //  Write each tuple as csv rows
+    for ( var i=0; i < n; i++ )
+    {
+        var row = results[i];
+
+        for ( key in order )
+        {
+            value = row[order[key]];
+
+            if ( value )
+            {
+                csv += '"' + HTMLEntities.Decode( value ).replace( /"/g, '""' ) + '"' + ",";
+            }
+            else
+            {
+                csv += '"' + value + '"' + ",";
+            }
+        }
+        csv += '\n';
+    }
+    return csv;
+}
+
+/*
  *  PureJavacript, Cookie.js
  *
  *  Copyright 2014 - 2017, CrossAdaptive
@@ -1994,12 +2064,15 @@ function( day, month )
  *  Copyright 2014 - 2017, CrossAdaptive
  */
 
-Elements          = {}
-Elements.Toggle   = Toggle
-Elements.Show     = Toggle.Show
-Elements.Hide     = Toggle.Hide
-Elements.ShowHide = ShowHide;
-Elements.HideShow = null;
+Elements            = {}
+Elements.Toggle     = Toggle
+Elements.Show       = Toggle.Show
+Elements.Hide       = Toggle.Hide
+Elements.ShowHide   = ShowHide;
+Elements.HideShow   = null;
+Elements.SetFnSetup   = null;
+Elements.SetFnSubmit  = null;
+Elements.SetFnHandler = null;
 
 function Toggle( id )
 {
@@ -2142,6 +2215,39 @@ ShowHide.MakeInactive
 function( e )
 {
 	Class.RemoveClass( e, "active" );
+}
+
+Elements.SetFnSetup
+=
+function( id, fn )
+{
+	var e = document.getElementById( id );
+	if ( e )
+	{
+		e.setup = fn;
+	}
+}
+
+Elements.SetFnSubmit
+=
+function( id, fn )
+{
+	var e = document.getElementById( id );
+	if ( e )
+	{
+		e.addEventListener( 'submit', fn );
+	}
+}
+
+Elements.SetFnHandler
+=
+function( id, fn )
+{
+	var e = document.getElementById( id );
+	if ( e )
+	{
+		e.handler = fn;
+	}
 }
 
 /*
@@ -2367,6 +2473,7 @@ Forms.Submit               = Submit
 Forms.SubmitTableValues    = SubmitTableValues
 Forms.Validate             = Validate
 Forms.ValidateForm         = ValidateForm
+Forms.Validate.Submit      = Validate.Submit
 
 function purejavascript_Forms_Changed( event )
 {
@@ -3139,6 +3246,15 @@ function ValidateForm( form )
 	}
 
 	return valid;
+}
+
+Validate.Submit
+=
+function( event )
+{
+	event.preventDefault();
+
+	Forms.Validate( event, Forms.Submit );
 }
 
 function WordLimit( elements )
@@ -5419,10 +5535,12 @@ function( id )
     =
     function( responseText )
     {
-        var div  = document.getElementById( id );
-        var t    = document.getElementById( id + "-template" );
+        var div  = document.getElementById( id                     );
+        var t    = document.getElementById( id + "-template"       );
+        var et   = document.getElementById( id + "-empty-template" );
+
         var more = div.getAttribute( "data-more" );
-        var type = t.getAttribute( "data-type" );
+        var type =   t.getAttribute( "data-type" );
 
         if ( div && t )
         {
@@ -5442,6 +5560,19 @@ function( id )
                 var limit  = parseInt( json.limit );
                     limit  = isNaN( limit ) ? 0 : limit;
 
+                if ( 0 == n )
+                {
+                    if ( et )
+                    {
+                        var type            = type ? type : "DIV";
+                        var child           = document.createElement( type );
+                            child.className = cls;
+                            child.innerHTML = et.innerHTML;
+
+                        div.appendChild( child );
+                    }
+                }
+                else
                 if ( (0 == n) && (0 == offset) )
                 {
                     // Ignore for now.
@@ -5494,10 +5625,9 @@ function( id, handler, parameter )
     =
     function( responseText )
     {
-        if ( null === responseText )
+        if ( ! responseText )
         {
             setTimeout( function() { handler( parameter ) }, 1000 );
-            //handler( parameter );
         }
         else
         {
@@ -5514,6 +5644,40 @@ function( id, handler, parameter )
         }
     }
     
+    return fn;
+}
+
+Setup.CreateFormFinalFn
+= function( form_id, key, handler )
+{
+    var fn
+    =
+    function( responseText )
+    {
+        var url      = document.getElementById( form_id ).getAttribute( "data-final-url" );
+        var response = JSON.parse( responseText );
+
+        if ( "ERROR" == response.status )
+        {
+            alert( response.error );
+        }
+        else
+        if ( !url )
+        {
+            alert( "Missing --data-final-url for form with id: " + form_id );
+        }
+        else
+        if ( response.results && response.results[0] )
+        {
+            var first = response.results[0];
+            var parameters = {};
+                parameters[key] = first[key];
+
+            Call( url, parameters, null );
+
+            window.setTimeout( handler, 1000 );
+        }
+    }
     return fn;
 }
 
@@ -5648,6 +5812,73 @@ function( container )
             break;
         }
     }
+}
+
+Setup.Download
+=
+function( event )
+{
+    var link         = event.target;
+    var id           = link.id;
+    var converter_fn = link.converter;
+    var type         = link.getAttribute( "data-content-type"  );
+    var url          = link.getAttribute( "data-download-url"  );
+    var name         = link.getAttribute( "data-download-name" );
+    var params       = Locations.SearchValues();
+
+    params.submit    = name ? name : "";
+    params.target_id = id;
+
+    link.removeEventListener( 'click', Setup.Download );
+    link.onclick = null;
+
+    Call
+    (
+        url,
+        params,
+        Setup.CreateDownloadLinkFn( type, converter_fn )
+    );
+}
+
+Setup.CreateDownloadLinkFn
+=
+function( type, converter_fn )
+{
+    var fn
+    =
+    function( responseText )
+    {
+        var response = JSON.parse( responseText );
+
+        if ( "ERROR" == response.status )
+        {
+            alert( response.error );
+        }
+        else
+        {
+            var target_id = response.target_id;
+            var name      = response.submit;
+
+            const blob = new Blob
+            (
+                converter_fn( type, response ),
+                { type: type }
+            );
+
+            const url = URL.createObjectURL(blob);
+
+            var a      = document.getElementById( target_id );
+                a.href = url;
+
+            if ( name )
+            {
+                a.download = name;
+            }
+
+            a.click();
+        }
+    }
+    return fn;
 }
 
 /*
