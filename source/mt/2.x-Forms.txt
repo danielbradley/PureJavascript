@@ -530,6 +530,17 @@ Forms.Submit( event, custom_handler )
 function Submit( event, custom_handler )
 {
 	var form       = event.target;
+	var submits    = form.querySelectorAll( "BUTTON[type=submit]" );
+	var n          = submits.length;
+
+	//
+	//	Too many unintended consequences.
+	//
+	//for ( var i=0; i < n; i++ )
+	//{
+	//	submits[i].disabled = true;
+	//}
+
 	var handler    = custom_handler ? custom_handler : Submit.SubmitDefaultHandler;
 	var parameters = GetFormValues( form );
 
