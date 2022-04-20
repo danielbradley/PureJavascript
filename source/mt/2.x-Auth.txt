@@ -248,13 +248,13 @@ function( responseText )
 
             if ( obj && obj.idtype )
             {
-                Auth.SetIDTypeCookie( obj.idtype );
-                Auth.SetCookie( "accessid",   obj.accessid,   1 );
-                Auth.SetCookie( "email",      obj.email,      1 );
-                Auth.SetCookie( "given",      obj.given_name, 1 );
-                Auth.SetCookie( "group_code", obj.group_code, 1 );
+                Auth.SetCookie( "accessid", obj.accessid, 1 );
 
-                Auth.SetCookie( "Authorization", "", 1 );
+                //Auth.SetIDTypeCookie( obj.idtype );
+                //Auth.SetCookie( "Authorization", "",             1 );
+                //Auth.SetCookie( "email",         obj.email,      1 );
+                //Auth.SetCookie( "given",         obj.given_name, 1 );
+                //Auth.SetCookie( "group_code",    obj.group_code, 1 );
 
                 var redirect_path = obj.redirect_path ? obj.redirect_path : "/";
                 var redirect_url  = location.protocol + "//" + location.host + redirect_path;
@@ -366,7 +366,7 @@ function ( responseText )
             {
                 var storage = DataStorage.Local;
 
-                storage.SetItem( "sessionid",     obj.sessionid  );
+                storage.SetItem( "sessionid", obj.sessionid  );
 
                 Auth.SetCookie( "accessid", obj.accessid, 1 );
 
