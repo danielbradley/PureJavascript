@@ -168,6 +168,7 @@ CSVFile.SplitAndTrim
 =
 function( line )
 {
+	var line  = line.replace( /^&#xfeff;/, '' );
 	var array = new Array();
 	var bits  = CSVFile.SplitWhileRespectingQuotes( line, "," );
 	var n     = bits.length;
