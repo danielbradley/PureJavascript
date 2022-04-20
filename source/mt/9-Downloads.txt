@@ -21,21 +21,24 @@ The following downloads are avaialable:
             <tbody>
                 <tr>
                     <td>Latest Dev</td>
-                    <td><a href='/resources/downloads/purejavascript-latest-dev.js'>purejavascript-latest-dev.js</a></td>
-                    <td>2021-11-10</td>
-                    <td><small>sha384-TUlWGsh/4UgYhu7X6GoCYjAIXNOIHPz4wY5nC/djMDIrgxiCBsR6LHzH3s9dbQ6O</small></td>
-                </tr>
-                <tr>
-                    <td>3.4 Dev</td>
-                    <td><a href='/resources/downloads/purejavascript-3.4-dev.js'>purejavascript-3.4-dev.js</a></td>
-                    <td>2021-11-10</td>
-                    <td><small>sha384-TUlWGsh/4UgYhu7X6GoCYjAIXNOIHPz4wY5nC/djMDIrgxiCBsR6LHzH3s9dbQ6O</small></td>
+                    <td><a href='/resources/downloads/purejavascript-3.7.3-dev.js'>purejavascript-3.7.3-dev.js</a></td>
+                    <td>2022-04-11</td>
+                    <td><small>sha384-tXiAaJtEs+jAd1N0clBGUJL1NLX/JNDKoEg6Va/xsC2V540hoem0o53tsCpLRJ9K</small></td>
                 </tr>
                 <tr>
                     <td>Latest</td>
                     <td><a href='/resources/downloads/purejavascript-latest.js'>purejavascript-latest.js</a></td>
-                    <td>2021-11-10</td>
-                    <td><small>sha384-TUlWGsh/4UgYhu7X6GoCYjAIXNOIHPz4wY5nC/djMDIrgxiCBsR6LHzH3s9dbQ6O</small></td>
+                    <td>2022-03-25</td>
+                    <td><small>sha384-G1HVjk9ZTp/yU4Ad10H5cs1GzNRPRBtJR3q+ZWKFRMwgp10H+Bj1QIR7iBCNVxQz</small></td>
+                </tr>
+                <!--
+                    Add latest release below here.
+                -->
+                <tr>
+                    <td>3.6</td>
+                    <td><a href='/resources/downloads/purejavascript-3.6.js'>purejavascript-3.6.js</a></td>
+                    <td>2022-03-25</td>
+                    <td><small>sha384-G1HVjk9ZTp/yU4Ad10H5cs1GzNRPRBtJR3q+ZWKFRMwgp10H+Bj1QIR7iBCNVxQz</small></td>
                 </tr>
                 <tr>
                     <td>3.4</td>
