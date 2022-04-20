@@ -64,6 +64,7 @@ function Call( endpoint, parameters, custom_handler )
 		switch ( endpoint.substr( 0, 3 ) )
 		{
 		case "/ap":
+		case "/au":
 			endpoint = Resolve( "api" ) + endpoint;
 			break;
 
