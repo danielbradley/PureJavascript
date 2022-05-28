@@ -330,13 +330,14 @@ function( responseText )
 
             if ( obj && obj.idtype )
             {
-                Auth.SetCookie( "accessid", obj.accessid, 1 );
+                Auth.SetCookie( "accessid",      obj.accessid, 1 );
+                Auth.SetCookie( "Authorization", "",           1 );
 
                 //Auth.SetIDTypeCookie( obj.idtype );
-                //Auth.SetCookie( "Authorization", "",             1 );
-                //Auth.SetCookie( "email",         obj.email,      1 );
-                //Auth.SetCookie( "given",         obj.given_name, 1 );
-                //Auth.SetCookie( "group_code",    obj.group_code, 1 );
+                //Auth.SetCookie( "email",      obj.email,      1 );
+                //Auth.SetCookie( "given",      obj.given_name, 1 );
+                //Auth.SetCookie( "group_code", obj.group_code, 1 );
+
 
                 var redirect_path = obj.redirect_path ? obj.redirect_path : "/";
                 var redirect_url  = location.protocol + "//" + location.host + redirect_path;
@@ -446,7 +447,7 @@ function ( responseText )
             {
                 var storage = DataStorage.Local;
 
-                storage.SetItem( "sessionid", obj.sessionid  );
+                storage.SetItem( "sessionid",     obj.sessionid  );
 
                 Auth.SetCookie( "accessid", obj.accessid, 1 );
 
@@ -2978,13 +2979,6 @@ function SubmitTableValues( event, verify )
 	var table      = document.getElementById( target_id );
 	var endpoint   = table.getAttribute( "data-url" );
 	var parameters = Forms.GetValues( form );
-	var submit     = form.querySelectorAll( "BUTTON" );
-	var n          = submit.length;
-
-	for ( var i=0; i < n; i++ )
-	{
-		submit[i].disabled = true;
-	}
 
 	if ( ! verify )
 	{
@@ -3119,20 +3113,17 @@ function( json, table, i )
 {
 	if ( "OK" == json.status )
 	{
-		table.rows[i].classList.add( "import_ok" );
 		table.rows[i].style.background = "green";
 		table.rows[i].style.color      = "white";
 	}
 	else
 	if ( "EXISTS" == json.error )
 	{
-		table.rows[i].classList.add( "import_exists" );
 		table.rows[i].style.background = "#888";
 		table.rows[i].style.color      = "#ddd";
 	}
 	else
 	{
-		table.rows[i].classList.add( "import_error" );
 		table.rows[i].style.background = "red";
 		table.rows[i].style.color      = "white";
 	}
