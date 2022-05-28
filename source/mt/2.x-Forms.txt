@@ -618,6 +618,13 @@ function SubmitTableValues( event, verify )
 	var table      = document.getElementById( target_id );
 	var endpoint   = table.getAttribute( "data-url" );
 	var parameters = Forms.GetValues( form );
+	var submit     = form.querySelectorAll( "BUTTON" );
+	var n          = submit.length;
+
+	for ( var i=0; i < n; i++ )
+	{
+		submit[i].disabled = true;
+	}
 
 	if ( ! verify )
 	{
@@ -752,17 +759,20 @@ function( json, table, i )
 {
 	if ( "OK" == json.status )
 	{
+		table.rows[i].classList.add( "import_ok" );
 		table.rows[i].style.background = "green";
 		table.rows[i].style.color      = "white";
 	}
 	else
 	if ( "EXISTS" == json.error )
 	{
+		table.rows[i].classList.add( "import_exists" );
 		table.rows[i].style.background = "#888";
 		table.rows[i].style.color      = "#ddd";
 	}
 	else
 	{
+		table.rows[i].classList.add( "import_error" );
 		table.rows[i].style.background = "red";
 		table.rows[i].style.color      = "white";
 	}
