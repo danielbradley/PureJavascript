@@ -21,9 +21,9 @@ The following downloads are avaialable:
             <tbody>
                 <tr>
                     <td>Latest Dev</td>
-                    <td><a href='/resources/downloads/purejavascript-3.7.3-dev.js'>purejavascript-3.7.3-dev.js</a></td>
+                    <td><a href='/resources/downloads/purejavascript-3.7.4-dev.js'>purejavascript-3.7.4-dev.js</a></td>
                     <td>2022-04-11</td>
-                    <td><small>sha384-tXiAaJtEs+jAd1N0clBGUJL1NLX/JNDKoEg6Va/xsC2V540hoem0o53tsCpLRJ9K</small></td>
+                    <td><small>sha384-RoOD07glrVhftPeq0IbKp4grQdgoHeqP/eA8AW+SmGdFI66aGhg+hkTRsU7HT6WF</small></td>
                 </tr>
                 <tr>
                     <td>Latest</td>
