@@ -20,20 +20,20 @@ The following downloads are avaialable:
             </thead>
             <tbody>
                 <tr>
-                    <td>Latest Dev</td>
-                    <td><a href='/resources/downloads/purejavascript-3.7.4-dev.js'>purejavascript-3.7.4-dev.js</a></td>
-                    <td>2022-04-11</td>
-                    <td><small>sha384-RoOD07glrVhftPeq0IbKp4grQdgoHeqP/eA8AW+SmGdFI66aGhg+hkTRsU7HT6WF</small></td>
-                </tr>
-                <tr>
                     <td>Latest</td>
                     <td><a href='/resources/downloads/purejavascript-latest.js'>purejavascript-latest.js</a></td>
-                    <td>2022-03-25</td>
-                    <td><small>sha384-G1HVjk9ZTp/yU4Ad10H5cs1GzNRPRBtJR3q+ZWKFRMwgp10H+Bj1QIR7iBCNVxQz</small></td>
+                    <td>2022-05-28</td>
+                    <td><small>sha384-RoOD07glrVhftPeq0IbKp4grQdgoHeqP/eA8AW+SmGdFI66aGhg+hkTRsU7HT6WF</small></td>
                 </tr>
                 <!--
                     Add latest release below here.
                 -->
+                <tr>
+                    <td>3.7</td>
+                    <td><a href='/resources/downloads/purejavascript-3.7.js'>purejavascript-3.7.js</a></td>
+                    <td>2022-05-28</td>
+                    <td><small>sha384-RoOD07glrVhftPeq0IbKp4grQdgoHeqP/eA8AW+SmGdFI66aGhg+hkTRsU7HT6WF</small></td>
+                </tr>
                 <tr>
                     <td>3.6</td>
                     <td><a href='/resources/downloads/purejavascript-3.6.js'>purejavascript-3.6.js</a></td>

@@ -1,4 +1,5 @@
-version=3.6
+version=3.7
+dev=
 
 .PHONY: archive
 
@@ -14,9 +15,8 @@ public:
 
 dev_copy:
 	mkdir -p _resources/downloads
-	cp -f  archive/js/purejavascript/purejavascript-$(version)-dev.js _resources/downloads
-	cp -f  archive/js/purejavascript/purejavascript-latest-dev.js     _resources/downloads
-	shasum -b -a 384 archive/js/purejavascript/purejavascript-latest-dev.js | awk '{ print $1 }' | xxd -r -p | base64
+	cp -f  archive/js/purejavascript/purejavascript-$(version)-dev.js*       _resources/downloads
+	cp -f  archive/js/purejavascript/purejavascript-$(version)$(dev)-dev.js* _resources/downloads
 
 copy:
 	mkdir -p _resources/downloads
@@ -24,17 +24,20 @@ copy:
 	cp -rf share/resources/thirdparty _resources
 
 release_proxy: archive/js/purejavascript/purejavascript-$(version).js
-	shasum -b -a 384 archive/js/purejavascript/purejavascript-$(version).js | awk '{ print $1 }' | xxd -r -p | base64
 
 archive/js/purejavascript/purejavascript-$(version).js:
 	mkdir -p archive/js/purejavascript
 	cat `find -s _gen/js -name "*.js"` > archive/js/purejavascript/purejavascript-$(version).js
 	cp -f archive/js/purejavascript/purejavascript-$(version).js archive/js/purejavascript/purejavascript-latest.js
+	shasum -b -a 384 archive/js/purejavascript/purejavascript-$(version).js | awk '{ print $1 }' | xxd -r -p | base64 > archive/js/purejavascript/purejavascript-$(version).js.sha384
+	echo archive/js/purejavascript/purejavascript-$(version).js.sha384
 
 dev_proxy:
 	mkdir -p archive/js/purejavascript
-	cat `find -s _gen/js -name "*.js"` > archive/js/purejavascript/purejavascript-$(version)-dev.js
-	cp -f archive/js/purejavascript/purejavascript-$(version)-dev.js archive/js/purejavascript/purejavascript-latest-dev.js
+	cat `find -s _gen/js -name "*.js"` > archive/js/purejavascript/purejavascript-$(version)$(dev)-dev.js
+	cp -f archive/js/purejavascript/purejavascript-$(version)$(dev)-dev.js archive/js/purejavascript/purejavascript-latest-dev.js
+	shasum -b -a 384 archive/js/purejavascript/purejavascript-$(version)$(dev)-dev.js | awk '{ print $1 }' | xxd -r -p | base64 > archive/js/purejavascript/purejavascript-$(version)$(dev)-dev.js.sha384
+	printf "sha384-" | cat - archive/js/purejavascript/purejavascript-$(version)$(dev)-dev.js.sha384
 
 artifacts: doc content
 
