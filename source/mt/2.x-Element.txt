@@ -269,3 +269,22 @@ function( id, fn )
 	}
 }
 ~
+
+|
+Elements.SetFnEventListener( id, event_type, fn )
+|
+
+If element with /id/ exists, sets fn as event listener for event_type.
+
+~_gen/js/Elements.js~
+Elements.SetFnEventListener
+=
+function( id, event_type, fn )
+{
+	var e = document.getElementById( id );
+	if ( e )
+	{
+		e.addEventListener( event_type, fn );
+	}
+}
+~
