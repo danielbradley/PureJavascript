@@ -1,5 +1,5 @@
-version=3.7
-dev=
+version=3.8
+dev=.1
 
 .PHONY: archive
 
@@ -15,7 +15,6 @@ public:
 
 dev_copy:
 	mkdir -p _resources/downloads
-	cp -f  archive/js/purejavascript/purejavascript-$(version)-dev.js*       _resources/downloads
 	cp -f  archive/js/purejavascript/purejavascript-$(version)$(dev)-dev.js* _resources/downloads
 
 copy:
