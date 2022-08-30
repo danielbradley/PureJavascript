@@ -18,6 +18,7 @@ function Resolve( host )
 	var dom         = "";
     var http_port   = Resolve.httpPort  ? Resolve.httpPort  : "80";
     var https_port  = Resolve.httpsPort ? Resolve.httpsPort : "443";
+        https_port  = Resolve.IsLocalAPIServer() ? "8443" : https_port;
 
 	switch ( location.protocol )
 	{
@@ -927,18 +928,6 @@ function Call( endpoint, parameters, custom_handler )
 {
 	parameters['wab_requesting_url'] = location.protocol + "//" + location.host + location.pathname;
 
-	if ( DataStorage.Local.HasItem ( "sessionid" ) && !Call.UseXSessionIDHeader )
-	{
-		parameters['sid'] = DataStorage.Local.GetItem( "sessionid" );
-	}
-
-	if ( document.body.hasAttribute( "data-csrf" ) && !Call.UseXCSRFTokenHeader )
-	{
-		var csrf = document.body.getAttribute( "data-csrf" );
-
-		if ( "NONE" != csrf ) parameters['wab_csrf_token'] = csrf;
-	}
-
 	var search = endpoint.indexOf( "?" );
 	if ( -1 !== search )
 	{
@@ -987,12 +976,12 @@ function Call( endpoint, parameters, custom_handler )
 
 		var httpRequest = Call.Post( endpoint, command, handler, 0, 0 );
 
-		if ( DataStorage.Local.HasItem( "sessionid" ) && Call.UseXSessionIDHeader )
+		if ( DataStorage.Local.HasItem( "sessionid" ) )
 		{
 			httpRequest.setRequestHeader( "X-Session-ID", DataStorage.Local.GetItem( "sessionid" ) );
 		}
 
-		if ( document.body.hasAttribute( "data-csrf" ) && Call.UseXCSRFTokenHeader )
+		if ( document.body.hasAttribute( "data-csrf" ) )
 		{
 			var csrf = document.body.getAttribute( "data-csrf" );
 
@@ -1578,6 +1567,7 @@ function( datalist, responseText )
 
 		datalist.parentNode.insertBefore( ul, datalist.nextSibling );
 		datalist.sublist  = ul;
+		//datalist.cascade  = onchange;
 		datalist.onchange = null;
 		
 		if ( "OK" == json.status )
@@ -1606,9 +1596,7 @@ function( datalist, responseText )
 					for ( var j=0; j < m; j++ )
 					{
 						var li = document.createElement( "LI" );
-							li.setAttribute( "data-name", tuple.tuples[j].name );
-							li.setAttribute( "data-text", tuple.tuples[j].text );
-							li.innerHTML        = tuple.tuples[j].text;
+							li.innerHTML = tuple.tuples[j].text;
 							li.dataListItemType = "contains";
 
 						ul.appendChild( li );
@@ -1741,7 +1729,6 @@ function( event )
 
 	if ( datalist )
 	{
-		datalist.setAttribute( "data-name", li.getAttribute( "data-name" ) );
 		datalist.value = li.innerHTML.trim().replace( "&amp;", "&" );
 		datalist.setCustomValidity( "" );
 
@@ -2880,14 +2867,6 @@ function InsertFormValues( form, object )
 				}
 			}
 		}
-	}
-
-	var randoms = form.querySelectorAll( "INPUT[data-generate-random]" );
-	var n       = randoms.length;
-
-	for ( var i=0; i < n; i++ )
-	{
-		randoms[i].value = Strings.GenerateSalt();
 	}
 }
 
@@ -5986,8 +5965,6 @@ function( type, converter_fn )
 
 Strings = {}
 Strings.EndsWith     = StringEndsWith
-Strings.GenerateSalt = StringGenerateSalt
-Strings.RandomHex    = StringRandomHex
 Strings.StartsWith   = StringStartsWith
 Strings.StripUnicode = StringStripUnicode
 Strings.Truncate     = StringTruncate
@@ -5999,27 +5976,6 @@ function StringEndsWith( string, suffix )
 	var i = string.indexOf( suffix );
 
 	return (i == (n - s));
-}
-
-function StringGenerateSalt()
-{
-	return Strings.RandomHex( 64 );
-}
-
-function StringRandomHex( length )
-{
-	var array = new Uint8Array( length );
-
-	window.crypto.getRandomValues( array );
-
-	return Array.from( array, StringRandomHex.ToHex ).join( '' );
-}
-
-StringRandomHex.ToHex
-=
-function( decimalValue )
-{
-	return decimalValue.toString( 16 ).padStart( 2, "0" );
 }
 
 function StringStartsWith( string, prefix )

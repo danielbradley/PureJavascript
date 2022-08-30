@@ -1578,6 +1578,7 @@ function( datalist, responseText )
 
 		datalist.parentNode.insertBefore( ul, datalist.nextSibling );
 		datalist.sublist  = ul;
+		//datalist.cascade  = onchange;
 		datalist.onchange = null;
 		
 		if ( "OK" == json.status )
@@ -1606,9 +1607,7 @@ function( datalist, responseText )
 					for ( var j=0; j < m; j++ )
 					{
 						var li = document.createElement( "LI" );
-							li.setAttribute( "data-name", tuple.tuples[j].name );
-							li.setAttribute( "data-text", tuple.tuples[j].text );
-							li.innerHTML        = tuple.tuples[j].text;
+							li.innerHTML = tuple.tuples[j].text;
 							li.dataListItemType = "contains";
 
 						ul.appendChild( li );
@@ -1741,7 +1740,6 @@ function( event )
 
 	if ( datalist )
 	{
-		datalist.setAttribute( "data-name", li.getAttribute( "data-name" ) );
 		datalist.value = li.innerHTML.trim().replace( "&amp;", "&" );
 		datalist.setCustomValidity( "" );
 

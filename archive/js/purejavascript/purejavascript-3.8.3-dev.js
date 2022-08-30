@@ -18,6 +18,7 @@ function Resolve( host )
 	var dom         = "";
     var http_port   = Resolve.httpPort  ? Resolve.httpPort  : "80";
     var https_port  = Resolve.httpsPort ? Resolve.httpsPort : "443";
+        https_port  = Resolve.IsLocalAPIServer() ? "8443" : https_port;
 
 	switch ( location.protocol )
 	{
@@ -173,15 +174,11 @@ Auth.LogoutAndReload    = Auth_LogoutAndReload;
 
 function Auth_Login( event )
 {
-    event.preventDefault();
-
 	Submit( event, Auth.Login.Handler );
 }
 
 function Auth_Login_LocalStorage( event )
 {
-    event.preventDefault();
-
     Submit( event, Auth.Login.LocalStorageHandler );
 }
 
@@ -927,18 +924,6 @@ function Call( endpoint, parameters, custom_handler )
 {
 	parameters['wab_requesting_url'] = location.protocol + "//" + location.host + location.pathname;
 
-	if ( DataStorage.Local.HasItem ( "sessionid" ) && !Call.UseXSessionIDHeader )
-	{
-		parameters['sid'] = DataStorage.Local.GetItem( "sessionid" );
-	}
-
-	if ( document.body.hasAttribute( "data-csrf" ) && !Call.UseXCSRFTokenHeader )
-	{
-		var csrf = document.body.getAttribute( "data-csrf" );
-
-		if ( "NONE" != csrf ) parameters['wab_csrf_token'] = csrf;
-	}
-
 	var search = endpoint.indexOf( "?" );
 	if ( -1 !== search )
 	{
@@ -987,12 +972,12 @@ function Call( endpoint, parameters, custom_handler )
 
 		var httpRequest = Call.Post( endpoint, command, handler, 0, 0 );
 
-		if ( DataStorage.Local.HasItem( "sessionid" ) && Call.UseXSessionIDHeader )
+		if ( DataStorage.Local.HasItem( "sessionid" ) )
 		{
 			httpRequest.setRequestHeader( "X-Session-ID", DataStorage.Local.GetItem( "sessionid" ) );
 		}
 
-		if ( document.body.hasAttribute( "data-csrf" ) && Call.UseXCSRFTokenHeader )
+		if ( document.body.hasAttribute( "data-csrf" ) )
 		{
 			var csrf = document.body.getAttribute( "data-csrf" );
 
@@ -1255,41 +1240,37 @@ function( results )
 {
     var csv   = "";
     var n     = results.length;
+    var first = results[0];
+    var order = [];
 
-    if ( 0 < n )
+    //  Write the headers to csv
+    for ( const [key, value] of Object.entries(first) )
     {
-        var first = results[0];
-        var order = [];
+        csv += '"' + HTMLEntities.Decode( key ) + '"' + ",";
 
-        //  Write the headers to csv
-        for ( const [key, value] of Object.entries(first) )
+        order.push( key );
+    } 
+    csv += '\n';
+
+    //  Write each tuple as csv rows
+    for ( var i=0; i < n; i++ )
+    {
+        var row = results[i];
+
+        for ( key in order )
         {
-            csv += '"' + HTMLEntities.Decode( key ) + '"' + ",";
+            value = row[order[key]];
 
-            order.push( key );
-        } 
-        csv += '\n';
-
-        //  Write each tuple as csv rows
-        for ( var i=0; i < n; i++ )
-        {
-            var row = results[i];
-
-            for ( key in order )
+            if ( value )
             {
-                value = row[order[key]];
-
-                if ( value )
-                {
-                    csv += '"' + HTMLEntities.Decode( value ).replace( /"/g, '""' ) + '"' + ",";
-                }
-                else
-                {
-                    csv += '"' + value + '"' + ",";
-                }
+                csv += '"' + HTMLEntities.Decode( value ).replace( /"/g, '""' ) + '"' + ",";
             }
-            csv += '\n';
+            else
+            {
+                csv += '"' + value + '"' + ",";
+            }
         }
+        csv += '\n';
     }
     return csv;
 }
@@ -1578,6 +1559,7 @@ function( datalist, responseText )
 
 		datalist.parentNode.insertBefore( ul, datalist.nextSibling );
 		datalist.sublist  = ul;
+		//datalist.cascade  = onchange;
 		datalist.onchange = null;
 		
 		if ( "OK" == json.status )
@@ -1606,9 +1588,7 @@ function( datalist, responseText )
 					for ( var j=0; j < m; j++ )
 					{
 						var li = document.createElement( "LI" );
-							li.setAttribute( "data-name", tuple.tuples[j].name );
-							li.setAttribute( "data-text", tuple.tuples[j].text );
-							li.innerHTML        = tuple.tuples[j].text;
+							li.innerHTML = tuple.tuples[j].text;
 							li.dataListItemType = "contains";
 
 						ul.appendChild( li );
@@ -1741,7 +1721,6 @@ function( event )
 
 	if ( datalist )
 	{
-		datalist.setAttribute( "data-name", li.getAttribute( "data-name" ) );
 		datalist.value = li.innerHTML.trim().replace( "&amp;", "&" );
 		datalist.setCustomValidity( "" );
 
@@ -2880,14 +2859,6 @@ function InsertFormValues( form, object )
 				}
 			}
 		}
-	}
-
-	var randoms = form.querySelectorAll( "INPUT[data-generate-random]" );
-	var n       = randoms.length;
-
-	for ( var i=0; i < n; i++ )
-	{
-		randoms[i].value = Strings.GenerateSalt();
 	}
 }
 
@@ -4500,34 +4471,28 @@ GetSearchValues.CreateDictionary
 function( url_search_parameters )
 {
     var object = new Object;
-
-    if ( 0 < url_search_parameters.length )
+    
+    var bits = url_search_parameters.substring( 1 ).split( "&" );
+    var n    = bits.length;
+    
+    for ( var i=0; i < n; i++ )
     {
-        var bits = ('?' == url_search_parameters[0])
-                 ? url_search_parameters.substring( 1 ).split( "&" )
-                 : url_search_parameters.substring( 0 ).split( "&" );
+        var keyvalue = bits[i].split( "=" );
 
-        var n    = bits.length;
-        
-        for ( var i=0; i < n; i++ )
+        if ( 2 == keyvalue.length )
         {
-            var keyvalue = bits[i].split( "=" );
+            var key = "";
+            var val = "";
 
-            if ( 2 == keyvalue.length )
+            try
             {
-                var key = "";
-                var val = "";
-
-                try
-                {
-                    key = decodeURIComponent( keyvalue[0] );
-                    val = decodeURIComponent( keyvalue[1] );
-                }
-                catch ( err )
-                {}
-
-                if ( (null != key) && (null != val) ) object[key] = val;
+                key = decodeURIComponent( keyvalue[0] );
+                val = decodeURIComponent( keyvalue[1] );
             }
+            catch ( err )
+            {}
+
+            if ( (null != key) && (null != val) ) object[key] = val;
         }
     }
     return object;
@@ -5917,11 +5882,7 @@ function( event )
     var type         = link.getAttribute( "data-content-type"  );
     var url          = link.getAttribute( "data-download-url"  );
     var name         = link.getAttribute( "data-download-name" );
-    var params       = link.hasAttribute( "data-download-parameters" )
-                     ? GetSearchValues.CreateDictionary( link.getAttribute( "data-download-parameters" ) )
-                     : Locations.SearchValues();
-
-    event.preventDefault();
+    var params       = Locations.SearchValues();
 
     params.submit    = name ? name : "";
     params.target_id = id;
@@ -5986,8 +5947,6 @@ function( type, converter_fn )
 
 Strings = {}
 Strings.EndsWith     = StringEndsWith
-Strings.GenerateSalt = StringGenerateSalt
-Strings.RandomHex    = StringRandomHex
 Strings.StartsWith   = StringStartsWith
 Strings.StripUnicode = StringStripUnicode
 Strings.Truncate     = StringTruncate
@@ -5999,27 +5958,6 @@ function StringEndsWith( string, suffix )
 	var i = string.indexOf( suffix );
 
 	return (i == (n - s));
-}
-
-function StringGenerateSalt()
-{
-	return Strings.RandomHex( 64 );
-}
-
-function StringRandomHex( length )
-{
-	var array = new Uint8Array( length );
-
-	window.crypto.getRandomValues( array );
-
-	return Array.from( array, StringRandomHex.ToHex ).join( '' );
-}
-
-StringRandomHex.ToHex
-=
-function( decimalValue )
-{
-	return decimalValue.toString( 16 ).padStart( 2, "0" );
 }
 
 function StringStartsWith( string, prefix )
