@@ -442,9 +442,16 @@ function InsertFormValues( form, object )
 			}
 		}
 	}
+
+	var randoms = form.querySelectorAll( "INPUT[data-generate-random]" );
+	var n       = randoms.length;
+
+	for ( var i=0; i < n; i++ )
+	{
+		randoms[i].value = Strings.GenerateSalt();
+	}
 }
 ~
-
 
 ... Save (form values)
 
@@ -577,7 +584,7 @@ function Submit( event, custom_handler )
 
 Submit.SubmitDefaultHandler
 =
-function( responseText )
+function( responseText, target )
 {
 	var json = JSON.parse( responseText );
 	
@@ -775,6 +782,16 @@ function( json, table, i )
 		table.rows[i].classList.add( "import_error" );
 		table.rows[i].style.background = "red";
 		table.rows[i].style.color      = "white";
+	}
+
+	if ( "ERROR" == json.status )
+	{
+		table.rows[i].title = json.error;
+	}
+
+	if ( table.customRowHandler )
+	{
+		table.customRowHandler( table.rows[i], json );
 	}
 }
 

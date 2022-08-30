@@ -756,7 +756,11 @@ function( event )
     var type         = link.getAttribute( "data-content-type"  );
     var url          = link.getAttribute( "data-download-url"  );
     var name         = link.getAttribute( "data-download-name" );
-    var params       = Locations.SearchValues();
+    var params       = link.hasAttribute( "data-download-parameters" )
+                     ? GetSearchValues.CreateDictionary( link.getAttribute( "data-download-parameters" ) )
+                     : Locations.SearchValues();
+
+    event.preventDefault();
 
     params.submit    = name ? name : "";
     params.target_id = id;

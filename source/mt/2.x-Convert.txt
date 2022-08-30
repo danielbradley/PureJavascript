@@ -45,37 +45,41 @@ function( results )
 {
     var csv   = "";
     var n     = results.length;
-    var first = results[0];
-    var order = [];
 
-    //  Write the headers to csv
-    for ( const [key, value] of Object.entries(first) )
+    if ( 0 < n )
     {
-        csv += '"' + HTMLEntities.Decode( key ) + '"' + ",";
+        var first = results[0];
+        var order = [];
 
-        order.push( key );
-    } 
-    csv += '\n';
-
-    //  Write each tuple as csv rows
-    for ( var i=0; i < n; i++ )
-    {
-        var row = results[i];
-
-        for ( key in order )
+        //  Write the headers to csv
+        for ( const [key, value] of Object.entries(first) )
         {
-            value = row[order[key]];
+            csv += '"' + HTMLEntities.Decode( key ) + '"' + ",";
 
-            if ( value )
-            {
-                csv += '"' + HTMLEntities.Decode( value ).replace( /"/g, '""' ) + '"' + ",";
-            }
-            else
-            {
-                csv += '"' + value + '"' + ",";
-            }
-        }
+            order.push( key );
+        } 
         csv += '\n';
+
+        //  Write each tuple as csv rows
+        for ( var i=0; i < n; i++ )
+        {
+            var row = results[i];
+
+            for ( key in order )
+            {
+                value = row[order[key]];
+
+                if ( value )
+                {
+                    csv += '"' + HTMLEntities.Decode( value ).replace( /"/g, '""' ) + '"' + ",";
+                }
+                else
+                {
+                    csv += '"' + value + '"' + ",";
+                }
+            }
+            csv += '\n';
+        }
     }
     return csv;
 }

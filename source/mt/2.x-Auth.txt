@@ -61,6 +61,8 @@ This means that the 'sessionid' will be passed each time a call is made to the A
 ~_gen/js/Auth.js~
 function Auth_Login( event )
 {
+    event.preventDefault();
+
 	Submit( event, Auth.Login.Handler );
 }
 ~
@@ -68,6 +70,8 @@ function Auth_Login( event )
 ~_gen/js/Auth.js~
 function Auth_Login_LocalStorage( event )
 {
+    event.preventDefault();
+
     Submit( event, Auth.Login.LocalStorageHandler );
 }
 ~

@@ -34,12 +34,12 @@ function Call( endpoint, parameters, custom_handler )
 {
 	parameters['wab_requesting_url'] = location.protocol + "//" + location.host + location.pathname;
 
-	if ( DataStorage.Local.HasItem( "sessionid" ) )
+	if ( DataStorage.Local.HasItem ( "sessionid" ) && !Call.UseXSessionIDHeader )
 	{
 		parameters['sid'] = DataStorage.Local.GetItem( "sessionid" );
 	}
 
-	if ( document.body.hasAttribute( "data-csrf" ) )
+	if ( document.body.hasAttribute( "data-csrf" ) && !Call.UseXCSRFTokenHeader )
 	{
 		var csrf = document.body.getAttribute( "data-csrf" );
 
@@ -76,12 +76,40 @@ function Call( endpoint, parameters, custom_handler )
 
 	if ( 'async' in parameters && ("true" === parameters['async']) )
 	{
-		Call.Post( endpoint, command, null, 0, 0 );
-		handler( null );
+		var httpRequest = Call.Post( endpoint, command, null, 0, 0 );
+			httpRequest.send( command );
+
+			handler( null, event );
 	}
 	else
 	{
-		Call.Post( endpoint, command, handler, 0, 0 );
+		var target = event ? event.target : null;
+
+		//var wrapper
+		//=
+		//function ( responseText )
+		//{
+		//	handler( responseText, target );
+		//}
+
+		var httpRequest = Call.Post( endpoint, command, handler, 0, 0 );
+
+		if ( DataStorage.Local.HasItem( "sessionid" ) && Call.UseXSessionIDHeader )
+		{
+			httpRequest.setRequestHeader( "X-Session-ID", DataStorage.Local.GetItem( "sessionid" ) );
+		}
+
+		if ( document.body.hasAttribute( "data-csrf" ) && Call.UseXCSRFTokenHeader )
+		{
+			var csrf = document.body.getAttribute( "data-csrf" );
+
+			if ( "NONE" != csrf )
+			{
+				httpRequest.setRequestHeader( "X-CSRF-Token", csrf );
+			}
+		}
+
+		httpRequest.send( command );
 	}
 }
 ~
@@ -93,16 +121,14 @@ Call.Post
 =
 function ( endpoint, command, handler, timeout, timeouts )
 {
-	var httpRequest = Call.CreateXMLHttpRequest( "POST", endpoint, command, handler, timeout, timeouts );
-		httpRequest.send( command );
+	return Call.CreateXMLHttpRequest( "POST", endpoint, command, handler, timeout, timeouts );
 }
 
 Call.Get
 =
 function ( endpoint, command, handler, timeout, timeouts )
 {
-	var httpRequest = Call.CreateXMLHttpRequest( "GET", endpoint, command, handler, timeout, timeouts );
-		httpRequest.send( command );
+	return Call.CreateXMLHttpRequest( "GET", endpoint, command, handler, timeout, timeouts );
 }
 
 Call.CreateXMLHttpRequest

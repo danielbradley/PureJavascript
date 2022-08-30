@@ -14,11 +14,12 @@
 ~_gen/js/Strings.js~
 Strings = {}
 Strings.EndsWith     = StringEndsWith
+Strings.GenerateSalt = StringGenerateSalt
+Strings.RandomHex    = StringRandomHex
 Strings.StartsWith   = StringStartsWith
 Strings.StripUnicode = StringStripUnicode
 Strings.Truncate     = StringTruncate
 ~
-
 
 ... Ends with
 
@@ -34,6 +35,49 @@ function StringEndsWith( string, suffix )
 	var i = string.indexOf( suffix );
 
 	return (i == (n - s));
+}
+~
+
+... Generate Salt
+
+|
+Strings.GenerateSalt
+|
+
+Returns a string of random hex characters that is 64 characters in length.
+
+~_gen/js/Strings.js~
+function StringGenerateSalt()
+{
+	return Strings.RandomHex( 64 );
+}
+~
+
+... Random Hex
+
+|
+Strings.RandomHex
+|
+
+Returns a string of random hex characters.
+
+Based on: https://stackoverflow.com/a/27747377
+
+~_gen/js/Strings.js~
+function StringRandomHex( length )
+{
+	var array = new Uint8Array( length );
+
+	window.crypto.getRandomValues( array );
+
+	return Array.from( array, StringRandomHex.ToHex ).join( '' );
+}
+
+StringRandomHex.ToHex
+=
+function( decimalValue )
+{
+	return decimalValue.toString( 16 ).padStart( 2, "0" );
 }
 ~
 

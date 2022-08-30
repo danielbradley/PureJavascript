@@ -39,28 +39,34 @@ GetSearchValues.CreateDictionary
 function( url_search_parameters )
 {
     var object = new Object;
-    
-    var bits = url_search_parameters.substring( 1 ).split( "&" );
-    var n    = bits.length;
-    
-    for ( var i=0; i < n; i++ )
+
+    if ( 0 < url_search_parameters.length )
     {
-        var keyvalue = bits[i].split( "=" );
+        var bits = ('?' == url_search_parameters[0])
+                 ? url_search_parameters.substring( 1 ).split( "&" )
+                 : url_search_parameters.substring( 0 ).split( "&" );
 
-        if ( 2 == keyvalue.length )
+        var n    = bits.length;
+        
+        for ( var i=0; i < n; i++ )
         {
-            var key = "";
-            var val = "";
+            var keyvalue = bits[i].split( "=" );
 
-            try
+            if ( 2 == keyvalue.length )
             {
-                key = decodeURIComponent( keyvalue[0] );
-                val = decodeURIComponent( keyvalue[1] );
-            }
-            catch ( err )
-            {}
+                var key = "";
+                var val = "";
 
-            if ( (null != key) && (null != val) ) object[key] = val;
+                try
+                {
+                    key = decodeURIComponent( keyvalue[0] );
+                    val = decodeURIComponent( keyvalue[1] );
+                }
+                catch ( err )
+                {}
+
+                if ( (null != key) && (null != val) ) object[key] = val;
+            }
         }
     }
     return object;

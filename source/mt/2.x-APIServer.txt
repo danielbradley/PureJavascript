@@ -28,7 +28,6 @@ function Resolve( host )
 	var dom         = "";
     var http_port   = Resolve.httpPort  ? Resolve.httpPort  : "80";
     var https_port  = Resolve.httpsPort ? Resolve.httpsPort : "443";
-        https_port  = Resolve.IsLocalAPIServer() ? "8443" : https_port;
 
 	switch ( location.protocol )
 	{
