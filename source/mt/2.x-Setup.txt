@@ -674,6 +674,13 @@ function( element, parameters )
 
 		Call( Resolve() + url, parameters, handler );
 	}
+    else
+    if ( "FORM" == element.tagName )
+    {
+        var fakeResponseText = '{"status":"OK","results":[{}]}';
+
+        InsertResponseValues( element.id, null, fakeResponseText );
+    }
 }
 
 Setup.DefaultHandler

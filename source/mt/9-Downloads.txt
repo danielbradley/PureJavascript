@@ -21,9 +21,9 @@ The following downloads are avaialable:
             <tbody>
                 <tr>
                     <td>Latest Dev</td>
-                    <td><a href='/resources/downloads/purejavascript-3.8-dev.js'>purejavascript-3.8-dev.js</a></td>
-                    <td>2022-08-30</td>
-                    <td><small>sha384-BY1xwDGW6VFh2mb7Yw5SNdrIcOoPJ2scJJGsQGzM6mAz/5MWyiHqrV5S1W7mmOHe</small></td>
+                    <td><a href='/resources/downloads/purejavascript-3.8.1-dev.js'>purejavascript-3.8.1-dev.js</a></td>
+                    <td>2022-08-31</td>
+                    <td><small>Warning!! This may change randomly without notice.</small></td>
                 </tr>
                 <tr>
                     <td>Latest</td>
