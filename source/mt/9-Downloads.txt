@@ -19,21 +19,27 @@ The following downloads are avaialable:
                 </tr>
             </thead>
             <tbody>
-                <tr>
+                <!-- tr>
                     <td>Latest Dev</td>
                     <td><a href='/resources/downloads/purejavascript-3.8.1-dev.js'>purejavascript-3.8.1-dev.js</a></td>
                     <td>2022-08-31</td>
                     <td><small>Warning!! This may change randomly without notice.</small></td>
-                </tr>
+                </tr -->
                 <tr>
                     <td>Latest</td>
                     <td><a href='/resources/downloads/purejavascript-latest.js'>purejavascript-latest.js</a></td>
-                    <td>2022-08-30</td>
-                    <td><small>sha384-BY1xwDGW6VFh2mb7Yw5SNdrIcOoPJ2scJJGsQGzM6mAz/5MWyiHqrV5S1W7mmOHe</small></td>
+                    <td>2022-08-31</td>
+                    <td><small>sha384-416IZ2cJxnomhBzX0i74VXzWFCIhjTQuyC4Xpz4P99aqrUzpdweNvknOD9iO/l/v</small></td>
                 </tr>
                 <!--
                     Add latest release below here.
                 -->
+                <tr>
+                    <td>3.9</td>
+                    <td><a href='/resources/downloads/purejavascript-3.9.js'>purejavascript-3.9.js</a></td>
+                    <td>2022-08-31</td>
+                    <td><small>sha384-416IZ2cJxnomhBzX0i74VXzWFCIhjTQuyC4Xpz4P99aqrUzpdweNvknOD9iO/l/v</small></td>
+                </tr>
                 <tr>
                     <td>3.8</td>
                     <td><a href='/resources/downloads/purejavascript-3.8.js'>purejavascript-3.8.js</a></td>

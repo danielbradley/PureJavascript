@@ -1,4 +1,4 @@
-/* PureJavascript version 3.8 */
+/* PureJavascript version 3.9 */
 /*
  *  PureJavacript, APIServer.js
  *
@@ -2646,20 +2646,24 @@ function InsertResponseValues( formID, keyName, responseText )
 	else
 	{
 		var parameters = GetSearchValues();
+		var form       = document.getElementById( formID );
 		
-		if ( (null == keyName) || ("" != parameters[keyName]) )
+		if ( form && ((null == keyName) || ("" != parameters[keyName])) )
 		{
+			form.autocomplete = "off";
+
 			var json = JSON.parse( responseText );
-			var form = document.getElementById( formID );
-				form.autocomplete = "off";
 
-			if ( json && form && ("OK" == json.status) && (1 == json.results.length) )
+			if ( json && form && ("OK" == json.status))
 			{
-				var tuple = json.results[0];
+				if ( 1 == json.results.length )
+				{
+					var tuple = json.results[0];
 
-				form.disabled = ("1" === tuple["form_disabled"]);
+					form.disabled = ("1" === tuple["form_disabled"]);
 
-				InsertFormValues( form, tuple );
+					InsertFormValues( form, tuple );
+				}
 
 				status = true;
 
@@ -2951,17 +2955,22 @@ function SelectAll( event, form_id )
 
 function Submit( event, custom_handler )
 {
-	var form       = event.target;
-	var submits    = form.querySelectorAll( "BUTTON[type=submit]" );
-	var n          = submits.length;
+	var form    = event.target;
+	var buttons = form.querySelectorAll( "BUTTON" );
+	var n       = buttons.length;
 
 	//
 	//	Too many unintended consequences.
 	//
-	//for ( var i=0; i < n; i++ )
-	//{
-	//	submits[i].disabled = true;
-	//}
+	for ( var i=0; i < n; i++ )
+	{
+		var button = buttons[i];
+
+		if ( "button" != button.type )
+		{
+			button.disabled = true;
+		}
+	}
 
 	var handler    = custom_handler ? custom_handler : Submit.SubmitDefaultHandler;
 	var parameters = GetFormValues( form );
@@ -5839,6 +5848,13 @@ function( element, parameters )
 
 		Call( Resolve() + url, parameters, handler );
 	}
+    else
+    if ( "FORM" == element.tagName )
+    {
+        var fakeResponseText = '{"status":"OK","results":[{}]}';
+
+        InsertResponseValues( element.id, null, fakeResponseText );
+    }
 }
 
 Setup.DefaultHandler
