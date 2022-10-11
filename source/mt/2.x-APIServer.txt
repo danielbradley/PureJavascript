@@ -24,7 +24,14 @@ function Resolve( host )
 {
     if ( host === undefined ) host = "api";
 
-    var base_domain = Resolve.ExtractBaseDomain( location.hostname );
+    var base_domain = "." + location.hostname;
+
+    if ( Resolve.UseExtractBaseDomain )
+    {
+        base_domain = Resolve.ExtractBaseDomain( location.hostname );
+    }
+
+    var base_domain = "." + location.hostname;
 	var dom         = "";
     var http_port   = Resolve.httpPort  ? Resolve.httpPort  : "80";
     var https_port  = Resolve.httpsPort ? Resolve.httpsPort : "443";
