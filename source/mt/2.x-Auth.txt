@@ -93,7 +93,7 @@ function Auth_Logout( logout_api_url )
 	Auth.UnsetSessionIDTypeCookie();
 	Auth.UnsetCookie( "email" );
 
-    if ( logout_api_url )
+    if ( "string" === typeof logout_api_url )
     {
         Call(  logout_api_url, new Array(), Auth.Logout.Handler );
     }
