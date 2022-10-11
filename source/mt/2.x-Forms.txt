@@ -49,14 +49,20 @@ This function is called by input fields when they change in order to enable the 
 ~_gen/js/Forms.js~
 function purejavascript_Forms_Changed( event )
 {
-    var input  = event.target;
-    var form   = input.form;
-    var submit = form.querySelector( "BUTTON[type='submit']" );
+    var input   = event.target;
+    var form    = input.form;
+    var buttons = form.querySelectorAll( "BUTTON" );
+    var n       = buttons.length;
 
-    if ( submit )
+    for ( var i=0; i < n; i++ )
     {
-        submit.disabled = false;
-    }
+    	var submit = buttons[i];
+
+	    if ( submit && ("button" != submit.type) )
+	    {
+	        submit.disabled = false;
+	    }
+	}
 }
 ~
 
