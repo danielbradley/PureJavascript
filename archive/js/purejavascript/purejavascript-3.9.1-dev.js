@@ -2532,20 +2532,14 @@ Forms.Validate.Submit      = Validate.Submit
 
 function purejavascript_Forms_Changed( event )
 {
-    var input   = event.target;
-    var form    = input.form;
-    var buttons = form.querySelectorAll( "BUTTON" );
-    var n       = buttons.length;
+    var input  = event.target;
+    var form   = input.form;
+    var submit = form.querySelector( "BUTTON[type='submit']" );
 
-    for ( var i=0; i < n; i++ )
+    if ( submit )
     {
-    	var submit = buttons[i];
-
-	    if ( submit && ("button" != submit.type) )
-	    {
-	        submit.disabled = false;
-	    }
-	}
+        submit.disabled = false;
+    }
 }
 
 Forms.DisableAll

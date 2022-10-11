@@ -1,5 +1,5 @@
 version=3.9
-dev=
+dev=.2
 
 .PHONY: archive
 
