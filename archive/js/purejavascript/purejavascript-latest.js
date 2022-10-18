@@ -1,4 +1,4 @@
-/* PureJavascript version 3.9 */
+/* PureJavascript version 4.0 */
 /*
  *  PureJavacript, APIServer.js
  *
@@ -14,7 +14,14 @@ function Resolve( host )
 {
     if ( host === undefined ) host = "api";
 
-    var base_domain = Resolve.ExtractBaseDomain( location.hostname );
+    var base_domain = "." + location.hostname;
+
+    if ( Resolve.UseExtractBaseDomain )
+    {
+        base_domain = Resolve.ExtractBaseDomain( location.hostname );
+    }
+
+    var base_domain = "." + location.hostname;
 	var dom         = "";
     var http_port   = Resolve.httpPort  ? Resolve.httpPort  : "80";
     var https_port  = Resolve.httpsPort ? Resolve.httpsPort : "443";
@@ -191,7 +198,7 @@ function Auth_Logout( logout_api_url )
 	Auth.UnsetSessionIDTypeCookie();
 	Auth.UnsetCookie( "email" );
 
-    if ( logout_api_url )
+    if ( "string" === typeof logout_api_url )
     {
         Call(  logout_api_url, new Array(), Auth.Logout.Handler );
     }
@@ -1094,10 +1101,12 @@ function( self, endpoint, handler )
 		default:
 			console.log( "Got status: " + status );
 		}
+		self.onreadystatechange = null;
 		break;
 		
 	default:
 		console.log( "Unexpected httpRequest ready state: " + self.readyState );
+		self.onreadystatechange = null;
 	}
 }
 
@@ -2525,14 +2534,20 @@ Forms.Validate.Submit      = Validate.Submit
 
 function purejavascript_Forms_Changed( event )
 {
-    var input  = event.target;
-    var form   = input.form;
-    var submit = form.querySelector( "BUTTON[type='submit']" );
+    var input   = event.target;
+    var form    = input.form;
+    var buttons = form.querySelectorAll( "BUTTON" );
+    var n       = buttons.length;
 
-    if ( submit )
+    for ( var i=0; i < n; i++ )
     {
-        submit.disabled = false;
-    }
+    	var submit = buttons[i];
+
+	    if ( submit && ("button" != submit.type) )
+	    {
+	        submit.disabled = false;
+	    }
+	}
 }
 
 Forms.DisableAll

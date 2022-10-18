@@ -1,4 +1,4 @@
-/* PureJavascript version 4.0 */
+/* PureJavascript version 3.9 */
 /*
  *  PureJavacript, APIServer.js
  *

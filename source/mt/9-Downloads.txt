@@ -19,21 +19,27 @@ The following downloads are avaialable:
                 </tr>
             </thead>
             <tbody>
-                <tr>
+                <!-- tr>
                     <td>Latest Dev</td>
-                    <td><a href='/resources/downloads/purejavascript-3.9.2-dev.js'>purejavascript-3.9.2-dev.js</a></td>
-                    <td>2022-09-15</td>
-                    <td><small>Warning!! This may change randomly without notice.</small></td>
-                </tr>
+                    <td><a href='/resources/downloads/purejavascript-3.9.3-dev.js'>purejavascript-3.9.3-dev.js</a></td>
+                    <td>2022-10-11</td>
+                    <td><small>Warning!! This may change and break randomly without notice.</small></td>
+                </tr -->
                 <tr>
                     <td>Latest</td>
                     <td><a href='/resources/downloads/purejavascript-latest.js'>purejavascript-latest.js</a></td>
-                    <td>2022-08-31</td>
-                    <td><small>sha384-416IZ2cJxnomhBzX0i74VXzWFCIhjTQuyC4Xpz4P99aqrUzpdweNvknOD9iO/l/v</small></td>
+                    <td>2022-10-18</td>
+                    <td><small>sha384-FWBnNErBbO8w9XiqwSARzvcEHgDiUqS9ONM0JV/gHBLPa3TR+ch4TgWD6SjfWpWH</small></td>
                 </tr>
                 <!--
                     Add latest release below here.
                 -->
+                <tr>
+                    <td>4.0</td>
+                    <td><a href='/resources/downloads/purejavascript-4.0.js'>purejavascript-4.0.js</a></td>
+                    <td>2022-10-18</td>
+                    <td><small>sha384-FWBnNErBbO8w9XiqwSARzvcEHgDiUqS9ONM0JV/gHBLPa3TR+ch4TgWD6SjfWpWH</small></td>
+                </tr>
                 <tr>
                     <td>3.9</td>
                     <td><a href='/resources/downloads/purejavascript-3.9.js'>purejavascript-3.9.js</a></td>
