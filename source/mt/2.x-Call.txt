@@ -205,10 +205,12 @@ function( self, endpoint, handler )
 		default:
 			console.log( "Got status: " + status );
 		}
+		self.onreadystatechange = null;
 		break;
 		
 	default:
 		console.log( "Unexpected httpRequest ready state: " + self.readyState );
+		self.onreadystatechange = null;
 	}
 }
 
