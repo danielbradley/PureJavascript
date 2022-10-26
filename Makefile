@@ -1,5 +1,5 @@
 version=4.0
-dev=
+dev=.1
 
 .PHONY: archive
 
@@ -15,7 +15,8 @@ public:
 
 dev_copy:
 	mkdir -p _resources/downloads
-	cp -f  archive/js/purejavascript/purejavascript-$(version)$(dev)-dev.js* _resources/downloads
+	cp -f  archive/js/purejavascript/purejavascript-$(version)$(dev)-dev.js*  _resources/downloads
+	cp -f  archive/js/purejavascript/purejavascript-$(version)$(dev)-dev.mjs* _resources/downloads
 
 copy:
 	mkdir -p _resources/downloads
@@ -26,17 +27,25 @@ release_proxy: archive/js/purejavascript/purejavascript-$(version).js
 
 archive/js/purejavascript/purejavascript-$(version).js:
 	mkdir -p archive/js/purejavascript
+	cat `find -s _gen/js -name "*?js"` > archive/js/purejavascript/purejavascript-$(version).mjs
 	cat `find -s _gen/js -name "*.js"` > archive/js/purejavascript/purejavascript-$(version).js
-	cp -f archive/js/purejavascript/purejavascript-$(version).js archive/js/purejavascript/purejavascript-latest.js
-	shasum -b -a 384 archive/js/purejavascript/purejavascript-$(version).js | awk '{ print $1 }' | xxd -r -p | base64 > archive/js/purejavascript/purejavascript-$(version).js.sha384
+	cp -f archive/js/purejavascript/purejavascript-$(version).js  archive/js/purejavascript/purejavascript-latest.js
+	cp -f archive/js/purejavascript/purejavascript-$(version).mjs archive/js/purejavascript/purejavascript-latest.mjs
+	shasum -b -a 384 archive/js/purejavascript/purejavascript-$(version).js  | awk '{ print $1 }' | xxd -r -p | base64 > archive/js/purejavascript/purejavascript-$(version).js.sha384
+	shasum -b -a 384 archive/js/purejavascript/purejavascript-$(version).mjs | awk '{ print $1 }' | xxd -r -p | base64 > archive/js/purejavascript/purejavascript-$(version).mjs.sha384
 	echo archive/js/purejavascript/purejavascript-$(version).js.sha384
+	echo archive/js/purejavascript/purejavascript-$(version).mjs.sha384
 
 dev_proxy:
 	mkdir -p archive/js/purejavascript
+	cat `find -s _gen/js -name "*?js"` > archive/js/purejavascript/purejavascript-$(version)$(dev)-dev.mjs
 	cat `find -s _gen/js -name "*.js"` > archive/js/purejavascript/purejavascript-$(version)$(dev)-dev.js
-	cp -f archive/js/purejavascript/purejavascript-$(version)$(dev)-dev.js archive/js/purejavascript/purejavascript-latest-dev.js
-	shasum -b -a 384 archive/js/purejavascript/purejavascript-$(version)$(dev)-dev.js | awk '{ print $1 }' | xxd -r -p | base64 > archive/js/purejavascript/purejavascript-$(version)$(dev)-dev.js.sha384
+	cp -f archive/js/purejavascript/purejavascript-$(version)$(dev)-dev.js  archive/js/purejavascript/purejavascript-latest-dev.js
+	cp -f archive/js/purejavascript/purejavascript-$(version)$(dev)-dev.mjs archive/js/purejavascript/purejavascript-latest-dev.mjs
+	shasum -b -a 384 archive/js/purejavascript/purejavascript-$(version)$(dev)-dev.js  | awk '{ print $1 }' | xxd -r -p | base64 > archive/js/purejavascript/purejavascript-$(version)$(dev)-dev.js.sha384
+	shasum -b -a 384 archive/js/purejavascript/purejavascript-$(version)$(dev)-dev.mjs | awk '{ print $1 }' | xxd -r -p | base64 > archive/js/purejavascript/purejavascript-$(version)$(dev)-dev.mjs.sha384
 	printf "sha384-" | cat - archive/js/purejavascript/purejavascript-$(version)$(dev)-dev.js.sha384
+	printf "sha384-" | cat - archive/js/purejavascript/purejavascript-$(version)$(dev)-dev.mjs.sha384
 
 artifacts: doc content
 
@@ -45,6 +54,7 @@ doc:
 	max2html --style source/css/style.css --out _documentation/purejavascript source/mt/*.txt
 
 quasi:
+	mkdir -p _gen/js
 	echo "/* PureJavascript version $(version) */" > _gen/js/AAA.js
 	quasi -f . source/mt/*.txt
 
@@ -56,6 +66,7 @@ content:
 	libexec/tools/generate_content.sh  _content/source-base64         article  source/mt/*-Base64.txt
 	libexec/tools/generate_content.sh  _content/source-call           article  source/mt/*-Call.txt
 	libexec/tools/generate_content.sh  _content/source-class          article  source/mt/*-Class.txt
+	libexec/tools/generate_content.sh  _content/source-convert        article  source/mt/*-Convert.txt
 	libexec/tools/generate_content.sh  _content/source-cookie         article  source/mt/*-Cookie.txt
 	libexec/tools/generate_content.sh  _content/source-csv_file       article  source/mt/*-CSV_file.txt
 	libexec/tools/generate_content.sh  _content/source-date           article  source/mt/*-Date.txt
