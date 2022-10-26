@@ -6112,3 +6112,36 @@ function StringTruncate( text, max_length )
 	return text;
 }
 
+export
+{
+    APIServer,
+    Auth,
+    Base64,
+    Call,
+    Class,
+    Convert,
+    Cookie,
+    CSVFile,
+    Datalist,
+    DataStorage,
+    Datetime,
+    Elements,
+    Enum,
+    Filter,
+    Forms,
+    Geocode,
+    Helper,
+    HTMLEntities,
+    InputFile,
+    Is,
+    Links,
+    Load,
+    Locations,
+    Menu,
+    Modal,
+    Selects,
+    Session,
+    Setup,
+    Strings
+}
+

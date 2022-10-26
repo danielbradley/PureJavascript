@@ -1,0 +1,527 @@
+/* Content CSS Version 0.3 */
+
+/* CSS RESET */
+
+BODY,
+BODY > MAIN,
+BODY > HEADER,
+BODY > FOOTER,
+BODY > DIALOG,
+BODY > DIALOG > HEADER,
+BODY > DIALOG > FORM,
+BODY > DIALOG > FOOTER
+{
+    outline:                 0;
+    margin:                  0;
+    border:                  0;
+    padding:                 0;
+}
+
+/* BODY */
+
+HTML
+{
+    min-height:                  100vh;
+    scroll-padding-top:          4.0rem;
+}
+
+BODY
+{
+    min-height:                  100vh;
+    position:                    relative;
+    line-height:                 1.6;
+
+    overflow-y:                  scroll;
+}
+
+BODY *
+{
+    font-family:                 sans-serif;
+}
+
+BODY PRE
+{
+    font-family:                 monospace;
+}
+
+H1, H2, H3, H4, H5, H6
+{
+    margin:  1.0rem;
+    padding: 0;
+}
+
+H1 { font-size: 2.0rem; line-height: 2.0rem; }
+H2 { font-size: 1.8rem; line-height: 1.8rem; }
+H3 { font-size: 1.6rem; line-height: 1.6rem; }
+H4 { font-size: 1.4rem; line-height: 1.4rem; }
+H5 { font-size: 1.2rem; line-height: 1.2rem; }
+H6 { font-size: 1.0rem; line-height: 1.0rem; }
+
+P
+{
+    margin:      0.75rem 1.0rem;
+    line-height: 1.5rem;
+}
+
+.default_tables TABLE
+{
+    box-sizing:  border-box;
+    margin:      1.0rem 0;
+    padding:     0 1.0rem;
+    width:       100%;
+    line-height: 1.5rem;
+}
+
+.default_tables TABLE THEAD TR TH
+{
+    text-align:  left;
+}
+
+/* BODY HEADER */
+
+BODY > HEADER
+{
+    position:                fixed;
+    top:                     0;
+    left:                    0;
+    right:                   0;
+}
+
+BODY > HEADER
+{
+    box-sizing:              border-box;
+    height:                  3.0rem;
+}
+
+BODY HEADER
+{
+    display:                 flex;
+    justify-content:         space-between;
+    background:              black;
+}
+
+BODY HEADER NAV
+{
+    display:                 flex;
+    align-items:             center;
+}
+
+BODY HEADER NAV A,
+BODY HEADER NAV SPAN,
+BODY HEADER NAV H1
+{
+    margin:                  0;
+    padding:                 0 1.0rem;
+    text-decoration:         none;
+    font-size:               1.0rem;
+    color:                   white;
+    letter-spacing:          1.2px;
+
+    transition:              transform 1s;
+}
+
+BODY HEADER NAV A H1
+{
+    padding:                 0;
+}
+
+BODY > FOOTER
+{
+    position:                absolute;
+    left:                    0;
+    right:                   0;
+    bottom:                  0;
+}
+
+BODY > FOOTER
+{
+    box-sizing:              border-box;
+    height:                  3.0rem;
+    background:              black;
+}
+
+BODY FOOTER
+{
+    display:                 flex;
+    justify-content:         space-between;
+}
+
+BODY FOOTER > NAV
+{
+    display:                 flex;
+    align-items:             center;
+}
+
+BODY FOOTER > NAV A,
+BODY FOOTER > NAV SPAN
+{
+    display:                 inline;
+    padding:                 0 1.0rem;
+    text-decoration:         none;
+    font-size:               1.0rem;
+    font-weight:             300;
+    color:                   white;
+}
+
+BODY FOOTER > NAV:first-child > A:first-child,
+BODY FOOTER > NAV:first-child > SPAN:first-child
+{
+    padding-left:            1.0rem;
+}
+
+BODY FOOTER > NAV:last-child > A:last-child,
+BODY FOOTER > NAV:last-child > SPAN:last-child
+{
+    padding-right:           1.0rem;
+}
+
+BODY > MAIN
+{
+    min-height:              100vh;
+    box-sizing:              border-box;
+    width:                   100%;
+
+    padding-top:             3.0rem;
+    padding-bottom:          3.0rem;
+
+    position:                relative;
+    top:                     initial;
+    left:                    initial;
+    right:                   initial;
+    bottom:                  initial;
+}
+
+BODY > MAIN
+{
+    display:                 flex;
+    flex-direction:          row-reverse;
+}
+
+BODY > MAIN.full_page
+{
+    padding-top:             0.0rem;
+    padding-bottom:          0.0rem;
+}
+
+XBODY > MAIN > *
+{
+    height:                  100%;
+}
+
+BODY > MAIN > ASIDE
+{
+    flex-basis:              auto;
+
+    /* Overflow interferes with sticky */
+    overflow:                initial;
+
+    flex-grow:               0;
+    flex-shrink:             0;
+
+    -ms-overflow-style:      none;
+    scrollbar-width:         none;
+
+    transition:              width 1s;
+    
+    /* Overflows header
+    z-index:                 100;
+    */
+}
+
+BODY > MAIN > ASIDE.hover
+{
+    width: auto;
+}
+
+BODY MAIN.default_styles ASIDE
+{
+    background: #333;
+    color:      #FFF;
+}
+
+.sticky
+{
+    position:   -webkit-sticky;
+    position:   sticky;
+    top:        3.0rem;
+
+    max-height: calc(100vh - 3.0rem);
+    overflow-y: auto;
+
+    -ms-overflow-style:      none;
+    scrollbar-width:         none;
+}
+
+.sticky::-webkit-scrollbar
+{
+    display: none;
+}
+
+BODY MAIN.default_styles ASIDE A:any-link
+{
+    color:           #FFF;
+    text-decoration: none;
+}
+
+BODY > MAIN > ASIDE::-webkit-scrollbar
+{
+    display:                 none;
+}
+
+BODY > MAIN > ASIDE::-webkit-scrollbar
+{
+    display:                 none;
+}
+
+BODY > MAIN > ASIDE > NAV > A
+{
+    box-sizing:              border-box;
+    display:                 block;
+    height:                  3.0rem;
+    line-height:             3.0rem;
+    padding-left:            1.0rem;
+    padding-right:           1.0rem;
+    border-bottom:           solid 1px #666;
+    position:                relative;
+    overflow:                hidden;
+}
+
+BODY > MAIN > ASIDE > NAV > A.icon
+{
+    padding-left:            3.0rem;
+}
+
+@media only screen and (max-width:1000px)
+{
+    BODY > MAIN.default_media_queries > ASIDE
+    {
+        position:            absolute;
+        top:                 3.0rem;
+        bottom:              3.0rem;
+        width:               3.0rem;
+        z-index:             1;
+
+        transition:          width 1s;
+    }
+
+    BODY > MAIN.default_media_queries > ASIDE + ARTICLE
+    {
+        margin-left:         auto;
+    }
+
+    BODY > MAIN.default_media_queries > ASIDE:hover
+    {
+        width:               auto;
+    }
+}
+
+@media (hover:none)
+{
+    BODY > MAIN > ASIDE:not(.hover):hover
+    {
+        width:               3.0rem;
+    }
+}
+
+BODY > MAIN > ASIDE > NAV > A
+{
+    white-space:             nowrap;
+}
+
+BODY > MAIN > ASIDE > NAV > A:hover
+{
+    color:                   white;
+}
+
+BODY > MAIN > ASIDE > NAV > A.icon:before
+{
+    position:                absolute;
+    left:                    1.0rem;
+    font-family:             Awesome;
+    text-align:              left;
+    vertical-align:          middle;
+    font-size:               1.0rem;
+}
+
+BODY > MAIN > ARTICLE
+{
+    flex-grow:               1;
+    overflow:                auto;
+    margin:                  1.0rem;
+}
+
+/* BODY > DIALOG */
+
+BODY > DIALOG
+{
+    position:                fixed;
+    top:                     0;
+    left:                    0;
+    right:                   0;
+    bottom:                  0;
+    width:                   100vw;
+    height:                  100vh;
+
+    background:              rgba( 0, 0, 0, 0.6 );
+    display:                 none;
+}
+
+BODY > DIALOG
+{
+    flex-direction:          column;
+    justify-content:         center;
+    align-items:             center;
+}
+
+BODY > DIALOG > HEADER,
+BODY > DIALOG > FORM,
+BODY > DIALOG > FOOTER
+{
+    max-width:               600px;
+    width:                   100vw;
+}
+
+BODY > DIALOG > HEADER
+{
+    height:                  80px;
+    background:              #AFAFAE;
+}
+
+BODY > DIALOG > HEADER > NAV > H1
+{
+    font-size:               24px;
+    font-weight:             bold;
+    color:                   #777;
+}
+
+BODY > DIALOG > FORM
+{
+    height:                  auto;
+    background:              #EFEFEE;
+}
+
+BODY > DIALOG > FOOTER
+{
+    height:                  40px;
+    background:              #AFAFAE;
+    color:                   white;    
+}
+
+FORM DIV.fieldset
+{
+    padding:                 20px 10px 20px 10px;
+    display:                 flex;
+    flex-wrap:               wrap;
+}
+
+FORM LABEL
+{
+    display:                 block;
+    box-sizing:              border-box;
+    width:                   100%;
+    padding:                 0 10px;
+}
+
+FORM LABEL.half_width
+{
+    width:                   50%;
+}
+
+FORM LABEL.third_width
+{
+    width:                   33.3333333333%;
+}
+
+FORM LABEL.quarter_width,
+FORM LABEL.fourth_width
+{
+    width:                   25%;
+}
+
+FORM LABEL.fifth_width
+{
+    width:                   20%;
+}
+
+FORM LABEL.sixth_width
+{
+    width:                   16.666666666%;
+}
+
+FORM LABEL EM
+{
+    display:                 block;
+    padding-bottom:          5px;
+}
+
+FORM LABEL INPUT
+{
+    width:                   100%;
+}
+
+FORM INPUT
+{
+    box-sizing:              border-box;
+    height:                  40px;
+    line-height:             20px;
+    padding:                 10px 20px;
+    font-size:               14px;
+    border:                  solid 1px #aaa;
+    outline:                 0;
+}
+
+FORM DIV.buttons
+{
+    box-sizing:              border-box;
+    padding:                 20px 20px 20px 20px;
+    position:                relative;
+}
+
+FORM BUTTON
+{
+    width:                   100%;
+    height:                  40px;
+    background:              DarkGray;
+    color:                   white;
+    font-size:               17px;
+    cursor:                  pointer;
+    outline:                 0;
+    padding:                 0;
+    border:                  0;
+}
+
+SPAN.desktop
+{
+    display: inline;
+}
+
+A
+{
+    cursor: pointer;
+}
+
+.rotate90
+{
+    transform:  rotate(-90deg);
+}
+
+@media only screen and (max-width:1000px)
+{
+    BODY MAIN.default_responsive ASIDE
+    {
+        width: 0;
+    }
+}
+
+A.icon.edit:before { content:"\0f044"; }
+
+A.icon:before
+{
+    font-family: Awesome;
+}
+
+A.icon.menu:before
+{
+    content: '\0f0c9';
+}
+
