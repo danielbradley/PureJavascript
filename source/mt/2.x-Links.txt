@@ -12,6 +12,7 @@
 !
 
 ~_gen/js/Links.js~
+var
 Links          = {}
 Links.Activate = LinksActivate
 Links.Complete = LinksComplete

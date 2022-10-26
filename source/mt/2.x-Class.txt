@@ -12,6 +12,7 @@
 !
 
 ~_gen/js/Class.js~
+var
 Class             = {}
 Class.AddClass    = AddClass;
 Class.RemoveClass = RemoveClass;

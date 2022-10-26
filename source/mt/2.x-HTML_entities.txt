@@ -12,6 +12,7 @@
 !
 
 ~_gen/js/HTMLEntities.js~
+var
 HTMLEntities        = {}
 HTMLEntities.Encode = HTMLEntitiesEncode
 HTMLEntities.Decode = DecodeHTMLEntities

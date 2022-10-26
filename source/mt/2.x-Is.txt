@@ -12,6 +12,7 @@
 !
 
 ~_gen/js/Is.js~
+var
 Is        = {}
 Is.Date   = IsDate
 Is.Prefix = IsPrefix

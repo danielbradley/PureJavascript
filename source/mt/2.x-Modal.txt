@@ -12,6 +12,7 @@
 !
 
 ~_gen/js/Modal.js~
+var
 Modal        = {}
 Modal.Close  = CloseModals;
 Modal.Toggle = ToggleModal;

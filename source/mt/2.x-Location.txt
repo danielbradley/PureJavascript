@@ -12,6 +12,7 @@
 !
 
 ~_gen/js/Locations.js~
+var
 Locations              = {}
 Locations.SearchValues = GetSearchValues
 Locations.SearchValue  = GetSearchValue

@@ -12,6 +12,7 @@
 !
 
 ~_gen/js/Strings.js~
+var
 Strings = {}
 Strings.EndsWith     = StringEndsWith
 Strings.GenerateSalt = StringGenerateSalt

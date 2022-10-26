@@ -12,6 +12,7 @@
 !
 
 ~_gen/js/Elements.js~
+var
 Elements            = {}
 Elements.Toggle     = Toggle
 Elements.Show       = Toggle.Show

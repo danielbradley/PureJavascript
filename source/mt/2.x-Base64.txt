@@ -16,6 +16,7 @@
 The Base64 module is merely a convenience class that encapsulates the use of the 'btoa' and 'atob' native Javascript functions.
 
 ~_gen/js/Base64.js~
+var
 Base64 = {}
 Base64.Encode = Base64Encode;
 Base64.Decode = Base64Decode;

@@ -12,6 +12,7 @@
 !
 
 ~_gen/js/Load.js~
+var
 Load           = {}
 Load.ImageFile = LoadInputFromImageFile
 Load.Table     = LoadTableFromFile

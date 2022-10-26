@@ -12,6 +12,7 @@
 !
 
 ~_gen/js/Datetime.js~
+var
 Datetime         = {}
 Datetime.IsValid = DateIsValid
 Datetime.ToYMD   = YMDDate

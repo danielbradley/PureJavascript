@@ -13,7 +13,7 @@
 <li><a href='/source/csv_file/'      >CSV File      </a>
 <li><a href='/source/datalist/'      >Datalist      </a>
 <li><a href='/source/data_storage/'  >Data Storage  </a>
-<li><a href='/source/date/'          >Date          </a>
+<li><a href='/source/datetime/'      >Datetime      </a>
 <li><a href='/source/element/'       >Element       </a>
 <li><a href='/source/enum/'          >Enum          </a>
 <li><a href='/source/filter/'        >Filter        </a>
@@ -25,7 +25,7 @@
 <li><a href='/source/is/'            >Is            </a>
 <li><a href='/source/links/'         >Links         </a>
 <li><a href='/source/load/'          >Load          </a>
-<li><a href='/source/location/'      >Location      </a>
+<li><a href='/source/locations/'     >Locations     </a>
 <li><a href='/source/menu/'          >Menu          </a>
 <li><a href='/source/modal/'         >Modal         </a>
 <li><a href='/source/selects/'       >Selects       </a>
@@ -34,3 +34,40 @@
 <li><a href='/source/string/'        >String        </a>
 </ul>
 ~
+
+!
+~!_gen/js/_export.mjs~
+export
+{
+    APIServer,
+    Auth,
+    Base64,
+    Call,
+    Class,
+    Convert,
+    Cookie,
+    CSVFile,
+    Datalist,
+    DataStorage,
+    Datetime,
+    Elements,
+    Enum,
+    Filter,
+    Forms,
+    Geocode,
+    Helper,
+    HTMLEntities,
+    InputFile,
+    Is,
+    Links,
+    Load,
+    Locations,
+    Menu,
+    Modal,
+    Selects,
+    Session,
+    Setup,
+    Strings
+}
+~
+!

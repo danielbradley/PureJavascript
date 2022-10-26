@@ -19,6 +19,7 @@ and the function will fill in the values of that form, as appropriate.
 !
 
 ~_gen/js/Forms.js~
+var
 Forms                      = {}
 Forms.Changed              = purejavascript_Forms_Changed
 Forms.GetValues            = GetFormValues

@@ -17,6 +17,7 @@ If SSL is being used, the returned port is 8443; other 8080.
 !
 
 ~_gen/js/APIServer.js~
+var
 APIServer = Resolve;
 APIServer.IsSubdomain = true;
 

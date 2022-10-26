@@ -16,6 +16,7 @@ The Auth module is used to authenticate to compatible authentication system.
 !
 
 ~_gen/js/Auth.js~
+var
 Auth                    = {}
 Auth.Login              = Auth_Login;
 Auth.Login.LocalStorage = Auth_Login_LocalStorage;

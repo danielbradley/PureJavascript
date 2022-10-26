@@ -12,6 +12,7 @@
 !
 
 ~_gen/js/Cookie.js~
+var
 Cookie            = {}
 Cookie.Get        = GetCookie
 Cookie.Set        = SetCookie

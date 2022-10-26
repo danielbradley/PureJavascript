@@ -12,6 +12,7 @@
 !
 
 ~_gen/js/DataStorage.js~
+var
 DataStorage         = {}
 DataStorage.Local   = {}
 DataStorage.Session = {}
