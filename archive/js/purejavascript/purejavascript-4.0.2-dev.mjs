@@ -1,4 +1,4 @@
-/* PureJavascript version 4.0.3 */
+/* PureJavascript version 4.0.2 */
 /*
  *  PureJavacript, APIServer.js
  *
@@ -953,7 +953,7 @@ function Call( endpoint, parameters, custom_handler )
 	if ( -1 !== search )
 	{
 		var override_parameters = GetSearchValues.CreateDictionary( endpoint.substring( search ) );
-		for ( const index in override_parameters )
+		for ( index in override_parameters )
 		{
 			parameters[index] = override_parameters[index];
 		}
@@ -1120,7 +1120,7 @@ function( parameters )
 	var string = "";
 	var sep    = "";
 
-	for ( const member in parameters )
+	for ( member in parameters )
 	{
 		if ( "" != member )
 		{
@@ -1289,7 +1289,7 @@ function( results )
         {
             var row = results[i];
 
-            for ( const key in order )
+            for ( key in order )
             {
                 value = row[order[key]];
 
@@ -2367,7 +2367,7 @@ function Filter( id, tag_name, pattern )
 
             Toggle.Show( e );
 
-            for ( const index in terms )
+            for ( index in terms )
             {
                 var term = terms[index];
 
@@ -2389,7 +2389,7 @@ function( e, t )
 
     if ( e.children && (0 < e.children.length) )
     {
-        for ( const index in e.children )
+        for ( index in e.children )
         {
             var child = e.children[index];
 
@@ -2489,7 +2489,7 @@ function( form )
             if ( "" != input.value )
             {
                 var bits = input.value.split( " " );
-                for ( const index in bits )
+                for ( index in bits )
                 {
                     values.push( bits[index].toLowerCase() );
                 }
@@ -3992,7 +3992,7 @@ function( table, quoteStyle )
 	entities['62'] = '&gt;'
 
 	// ascii decimals to real symbols
-	for ( const decimal in entities)
+	for (decimal in entities)
 	{
 		if (entities.hasOwnProperty(decimal))
 		{
@@ -4042,7 +4042,7 @@ function GetTuple( obj )
 
 	if ( obj instanceof Array )
 	{
-		for ( const index in obj )
+		for ( index in obj )
 		{
 			tuple = GetTuple( obj[index] );
 			break;
@@ -4587,7 +4587,7 @@ function Up( search_parameters )
     {
         loc += "?";
 
-        for ( const key in search_parameters )
+        for ( key in search_parameters )
         {
             loc += search_parameters[key] + "=" + Recode( GetSearchValue( search_parameters[key] ) ) + "&";
         }
@@ -4629,7 +4629,7 @@ function TwoUp( search_parameters )
     {
         loc += "?";
 
-        for ( const key in search_parameters )
+        for ( key in search_parameters )
         {
             loc += search_parameters[key] + "=" + Recode( GetSearchValue( search_parameters[key] ) ) + "&";
         }
@@ -6086,5 +6086,37 @@ function StringTruncate( text, max_length )
 		text = text.substring( 0, max_length - 3 ) + "...";
 	}
 	return text;
+}
+
+export
+{
+    APIServer,
+    Auth,
+    Base64,
+    Call,
+    Class,
+    Convert,
+    Cookie,
+    CSVFile,
+    Datalist,
+    DataStorage,
+    Datetime,
+    Elements,
+    Enum,
+    Filter,
+    Forms,
+    Geocode,
+    HTMLEntities,
+    InputFile,
+    Is,
+    Links,
+    Load,
+    Locations,
+    Menu,
+    Modal,
+    Selects,
+    Session,
+    Setup,
+    Strings
 }
 

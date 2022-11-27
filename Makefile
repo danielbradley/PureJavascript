@@ -1,5 +1,5 @@
 version=4.0
-dev=.1
+dev=.3
 
 .PHONY: archive
 
@@ -8,9 +8,9 @@ default:
 
 dev:     quasi           dev_proxy     dev_copy
 
-release: quasi artifacts release_proxy copy
+release: quasi artifacts release_proxy
 
-public:
+public: copy
 	rsync --delete -avz _content _resources ../../_Public/com.purejavascript
 
 dev_copy:
@@ -20,7 +20,8 @@ dev_copy:
 
 copy:
 	mkdir -p _resources/downloads
-	cp -f  archive/js/purejavascript/*.js _resources/downloads
+	cp -f  archive/js/purejavascript/*.js  _resources/downloads
+	cp -f  archive/js/purejavascript/*.mjs _resources/downloads
 	cp -rf share/resources/thirdparty _resources
 
 release_proxy: archive/js/purejavascript/purejavascript-$(version).js
@@ -55,7 +56,7 @@ doc:
 
 quasi:
 	mkdir -p _gen/js
-	echo "/* PureJavascript version $(version) */" > _gen/js/AAA.js
+	echo "/* PureJavascript version $(version)$(dev) */" > _gen/js/AAA.js
 	quasi -f . source/mt/*.txt
 
 content:
