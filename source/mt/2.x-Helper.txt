@@ -28,7 +28,7 @@ function GetTuple( obj )
 
 	if ( obj instanceof Array )
 	{
-		for ( index in obj )
+		for ( const index in obj )
 		{
 			tuple = GetTuple( obj[index] );
 			break;

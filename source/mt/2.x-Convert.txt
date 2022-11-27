@@ -66,7 +66,7 @@ function( results )
         {
             var row = results[i];
 
-            for ( key in order )
+            for ( const key in order )
             {
                 value = row[order[key]];
 

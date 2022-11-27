@@ -133,7 +133,7 @@ function Up( search_parameters )
     {
         loc += "?";
 
-        for ( key in search_parameters )
+        for ( const key in search_parameters )
         {
             loc += search_parameters[key] + "=" + Recode( GetSearchValue( search_parameters[key] ) ) + "&";
         }
@@ -188,7 +188,7 @@ function TwoUp( search_parameters )
     {
         loc += "?";
 
-        for ( key in search_parameters )
+        for ( const key in search_parameters )
         {
             loc += search_parameters[key] + "=" + Recode( GetSearchValue( search_parameters[key] ) ) + "&";
         }

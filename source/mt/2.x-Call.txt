@@ -50,7 +50,7 @@ function Call( endpoint, parameters, custom_handler )
 	if ( -1 !== search )
 	{
 		var override_parameters = GetSearchValues.CreateDictionary( endpoint.substring( search ) );
-		for ( index in override_parameters )
+		for ( const index in override_parameters )
 		{
 			parameters[index] = override_parameters[index];
 		}
@@ -221,7 +221,7 @@ function( parameters )
 	var string = "";
 	var sep    = "";
 
-	for ( member in parameters )
+	for ( const member in parameters )
 	{
 		if ( "" != member )
 		{

@@ -55,7 +55,6 @@ export
     Filter,
     Forms,
     Geocode,
-    Helper,
     HTMLEntities,
     InputFile,
     Is,

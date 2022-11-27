@@ -320,7 +320,7 @@ function( table, quoteStyle )
 	entities['62'] = '&gt;'
 
 	// ascii decimals to real symbols
-	for (decimal in entities)
+	for ( const decimal in entities)
 	{
 		if (entities.hasOwnProperty(decimal))
 		{
