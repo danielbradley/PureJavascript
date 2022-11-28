@@ -22,9 +22,9 @@ The following downloads are avaialable:
             <tbody>
                 <tr>
                     <td>Latest Dev</td>
-                    <td><a href='/resources/downloads/purejavascript-0.4.3-dev.js'>purejavascript-0.4.3-dev.js</a></td>
-                    <td><a href='/resources/downloads/purejavascript-0.4.3-dev.mjs'>.mjs</a></td>
-                    <td>2022-11-25</td>
+                    <td><a href='/resources/downloads/purejavascript-4.0.4-dev.js'>purejavascript-4.0.4-dev.js</a></td>
+                    <td><a href='/resources/downloads/purejavascript-4.0.4-dev.mjs'>.mjs</a></td>
+                    <td>2022-11-28</td>
                     <td><small>Warning!! This may change and break randomly without notice.</small></td>
                 </tr>
                 <tr>

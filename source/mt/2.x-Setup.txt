@@ -718,6 +718,31 @@ function( parameters )
                 s.setAttribute( "data-value", value );
             }
         }
+        else
+        if ( true == s.hasAttribute( "data-local" ) )
+        {
+            var select = s;
+            var path   = location.pathname;
+            var name   = select.name;
+            var key    = name + "|" + path;
+
+            if ( Session.user_hash )
+            {
+                key = Session.user_hash + "|" + name + "|" + path;
+            }
+
+            if ( DataStorage.Local.HasItem( key ) )
+            {
+                var value = DataStorage.Local.GetItem( key )
+
+                parameters[name] = value;
+
+                if ( ! s.hasAttribute( "data-value" ) )
+                {
+                    s.setAttribute( "data-value", value );
+                }
+            }
+        }
     }
 
     return parameters;

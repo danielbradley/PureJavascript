@@ -50,7 +50,7 @@ function( key, value )
 
 	if ( typeof( Storage ) !== "undefined" )
 	{
-		if ( value && "" != value )
+		if ( value || ("" == value.trim()) )
 		{
 			window.localStorage.setItem( key, value );
 		
@@ -145,7 +145,7 @@ function( key, value )
 
 	if ( typeof( Storage ) !== "undefined" )
 	{
-		if ( value && "" != value )
+		if ( value || ("" == value.trim()) )
 		{
 			window.sessionStorage.setItem( key, value );
 		
@@ -218,5 +218,34 @@ function( key )
 		success = window.sessionStorage.hasOwnProperty( key );
 	}
 	return success;
+}
+~
+
+... Has item (session)
+
+|
+DataStorage.Session.HasItem( key )
+|
+
+~_gen/js/DataStorage.js~
+DataStorage.SetSelectFilter
+=
+function( event )
+{
+    var select = event.target;
+    var path   = location.pathname;
+    var name   = select.name;
+    var value  = select.options[select.selectedIndex].value;
+
+    var key = name + "|" + path;
+
+    if ( Session.user_hash )
+    {
+	    key = Session.user_hash + "|" + name + "|" + path;
+	}
+
+	DataStorage.Local.SetItem( key, value );
+
+    location.reload();
 }
 ~
