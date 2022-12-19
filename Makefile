@@ -1,30 +1,30 @@
-version=4.0
-dev=.4
+version=4.1
+dev=.0
 
 .PHONY: archive
 
 default:
 	echo "make dev | release | public"
 
-dev:     quasi           dev_proxy     dev_copy
+dev:     quasi archive/js/purejavascript/purejavascript-$(version)$(dev).js
 
-release: quasi artifacts release_proxy
+release: quasi archive/js/purejavascript/purejavascript-$(version).js
 
-public: copy
-	rsync --delete -avz _content _resources ../../_Public/com.purejavascript
+quasi:
+	mkdir -p _gen/js
+	echo "/* PureJavascript version $(version)$(dev) */" > _gen/js/AAA.js
+	quasi -f . source/mt/*.txt
 
-dev_copy:
-	mkdir -p _resources/downloads
-	cp -f  archive/js/purejavascript/purejavascript-$(version)$(dev)-dev.js*  _resources/downloads
-	cp -f  archive/js/purejavascript/purejavascript-$(version)$(dev)-dev.mjs* _resources/downloads
-
-copy:
-	mkdir -p _resources/downloads
-	cp -f  archive/js/purejavascript/*.js  _resources/downloads
-	cp -f  archive/js/purejavascript/*.mjs _resources/downloads
-	cp -rf share/resources/thirdparty _resources
-
-release_proxy: archive/js/purejavascript/purejavascript-$(version).js
+archive/js/purejavascript/purejavascript-$(version)$(dev).js:
+	mkdir -p archive/js/purejavascript
+	cat `find -s _gen/js -name "*?js"` > archive/js/purejavascript/purejavascript-$(version)$(dev)-dev.mjs
+	cat `find -s _gen/js -name "*.js"` > archive/js/purejavascript/purejavascript-$(version)$(dev)-dev.js
+	cp -f archive/js/purejavascript/purejavascript-$(version)$(dev)-dev.js  archive/js/purejavascript/purejavascript-latest-dev.js
+	cp -f archive/js/purejavascript/purejavascript-$(version)$(dev)-dev.mjs archive/js/purejavascript/purejavascript-latest-dev.mjs
+	shasum -b -a 384 archive/js/purejavascript/purejavascript-$(version)$(dev)-dev.js  | awk '{ print $1 }' | xxd -r -p | base64 > archive/js/purejavascript/purejavascript-$(version)$(dev)-dev.js.sha384
+	shasum -b -a 384 archive/js/purejavascript/purejavascript-$(version)$(dev)-dev.mjs | awk '{ print $1 }' | xxd -r -p | base64 > archive/js/purejavascript/purejavascript-$(version)$(dev)-dev.mjs.sha384
+	printf "sha384-" | cat - archive/js/purejavascript/purejavascript-$(version)$(dev)-dev.js.sha384
+	printf "sha384-" | cat - archive/js/purejavascript/purejavascript-$(version)$(dev)-dev.mjs.sha384
 
 archive/js/purejavascript/purejavascript-$(version).js:
 	mkdir -p archive/js/purejavascript
@@ -37,27 +37,24 @@ archive/js/purejavascript/purejavascript-$(version).js:
 	echo archive/js/purejavascript/purejavascript-$(version).js.sha384
 	echo archive/js/purejavascript/purejavascript-$(version).mjs.sha384
 
-dev_proxy:
-	mkdir -p archive/js/purejavascript
-	cat `find -s _gen/js -name "*?js"` > archive/js/purejavascript/purejavascript-$(version)$(dev)-dev.mjs
-	cat `find -s _gen/js -name "*.js"` > archive/js/purejavascript/purejavascript-$(version)$(dev)-dev.js
-	cp -f archive/js/purejavascript/purejavascript-$(version)$(dev)-dev.js  archive/js/purejavascript/purejavascript-latest-dev.js
-	cp -f archive/js/purejavascript/purejavascript-$(version)$(dev)-dev.mjs archive/js/purejavascript/purejavascript-latest-dev.mjs
-	shasum -b -a 384 archive/js/purejavascript/purejavascript-$(version)$(dev)-dev.js  | awk '{ print $1 }' | xxd -r -p | base64 > archive/js/purejavascript/purejavascript-$(version)$(dev)-dev.js.sha384
-	shasum -b -a 384 archive/js/purejavascript/purejavascript-$(version)$(dev)-dev.mjs | awk '{ print $1 }' | xxd -r -p | base64 > archive/js/purejavascript/purejavascript-$(version)$(dev)-dev.mjs.sha384
-	printf "sha384-" | cat - archive/js/purejavascript/purejavascript-$(version)$(dev)-dev.js.sha384
-	printf "sha384-" | cat - archive/js/purejavascript/purejavascript-$(version)$(dev)-dev.mjs.sha384
+public:  artifacts copy
+	rsync --delete -avz _content _resources ../../_Public/com.purejavascript
 
-artifacts: doc content
+copy:
+	mkdir -p _resources/downloads
+	rsync --delete -avz archive/js/purejavascript/*.js   _resources/downloads
+	rsync --delete -avz archive/js/purejavascript/*.mjs  _resources/downloads
+	rsync --delete -avz share/resources/thirdparty       _resources/downloads
+
+	#cp -f  archive/js/purejavascript/*.js  _resources/downloads
+	#cp -f  archive/js/purejavascript/*.mjs _resources/downloads
+	#cp -rf share/resources/thirdparty _resources
+
+artifacts: quasi doc content
 
 doc:
 	mkdir -p _documentation
 	max2html --style source/css/style.css --out _documentation/purejavascript source/mt/*.txt
-
-quasi:
-	mkdir -p _gen/js
-	echo "/* PureJavascript version $(version)$(dev) */" > _gen/js/AAA.js
-	quasi -f . source/mt/*.txt
 
 content:
 	libexec/tools/generate_content.sh  _content/source                article  source/mt/2-Source.txt

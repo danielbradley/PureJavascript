@@ -14,82 +14,80 @@ The following downloads are avaialable:
                 <tr>
                     <th>Version        </th>
                     <th>File           </th>
-                    <th>JS Module         </th>
                     <th>Created        </th>
                     <th>Integrity Hash </th>
                 </tr>
             </thead>
             <tbody>
+                <!--
                 <tr>
                     <td>Latest Dev</td>
-                    <td><a href='/resources/downloads/purejavascript-4.0.4-dev.js'>purejavascript-4.0.4-dev.js</a></td>
-                    <td><a href='/resources/downloads/purejavascript-4.0.4-dev.mjs'>.mjs</a></td>
+                    <td>
+                        <a href='/resources/downloads/purejavascript-4.0.4-dev.js'>purejavascript-4.0.4-dev.js</a> &ndash;
+                        <a href='/resources/downloads/purejavascript-4.0.4-dev.mjs'>.mjs</a>
+                    </td>
                     <td>2022-11-28</td>
                     <td><small>Warning!! This may change and break randomly without notice.</small></td>
                 </tr>
-                <tr>
-                    <td>Latest</td>
-                    <td><a href='/resources/downloads/purejavascript-latest.js'>purejavascript-latest.js</a></td>
-                    <td/>
-                    <td>2022-10-18</td>
-                    <td><small>sha384-FWBnNErBbO8w9XiqwSARzvcEHgDiUqS9ONM0JV/gHBLPa3TR+ch4TgWD6SjfWpWH</small></td>
-                </tr>
-                <!--
                     Add latest release below here.
                 -->
                 <tr>
+                    <td>4.1</td>
+                    <td><a href='/resources/downloads/purejavascript-4.1.js'>purejavascript-4.1.js</a></td>
+                    <td>2022-11-28</td>
+                    <td><small>sha384-m3EtjkQJsbrgFxoA/KHl0wpEN5TmV+cWS9nnOZWuc/EqznTST8+69vk55pVVy2tT</small></td>
+                </tr>
+                <tr>
+                    <td>4.1</td>
+                    <td><a href='/resources/downloads/purejavascript-4.1.mjs'>purejavascript-4.1.mjs</a></td>
+                    <td>2022-11-28</td>
+                    <td><small>sha384-FLUxe/koUJL1r6TcyqM3cFZjDcAIiOkAgqZjb6oDbwYx4L5pkvSrSgPOlOdGNBuL</small></td>
+                </tr>
+                <tr>
                     <td>4.0</td>
                     <td><a href='/resources/downloads/purejavascript-4.0.js'>purejavascript-4.0.js</a></td>
-                    <td/>
                     <td>2022-10-18</td>
                     <td><small>sha384-FWBnNErBbO8w9XiqwSARzvcEHgDiUqS9ONM0JV/gHBLPa3TR+ch4TgWD6SjfWpWH</small></td>
                 </tr>
                 <tr>
                     <td>3.9</td>
                     <td><a href='/resources/downloads/purejavascript-3.9.js'>purejavascript-3.9.js</a></td>
-                    <td/>
                     <td>2022-08-31</td>
                     <td><small>sha384-416IZ2cJxnomhBzX0i74VXzWFCIhjTQuyC4Xpz4P99aqrUzpdweNvknOD9iO/l/v</small></td>
                 </tr>
                 <tr>
                     <td>3.8</td>
                     <td><a href='/resources/downloads/purejavascript-3.8.js'>purejavascript-3.8.js</a></td>
-                    <td/>
                     <td>2022-08-30</td>
                     <td><small>sha384-BY1xwDGW6VFh2mb7Yw5SNdrIcOoPJ2scJJGsQGzM6mAz/5MWyiHqrV5S1W7mmOHe</small></td>
                 </tr>
                 <tr>
                     <td>3.7</td>
                     <td><a href='/resources/downloads/purejavascript-3.7.js'>purejavascript-3.7.js</a></td>
-                    <td/>
                     <td>2022-05-28</td>
                     <td><small>sha384-RoOD07glrVhftPeq0IbKp4grQdgoHeqP/eA8AW+SmGdFI66aGhg+hkTRsU7HT6WF</small></td>
                 </tr>
                 <tr>
                     <td>3.6</td>
                     <td><a href='/resources/downloads/purejavascript-3.6.js'>purejavascript-3.6.js</a></td>
-                    <td/>
                     <td>2022-03-25</td>
                     <td><small>sha384-G1HVjk9ZTp/yU4Ad10H5cs1GzNRPRBtJR3q+ZWKFRMwgp10H+Bj1QIR7iBCNVxQz</small></td>
                 </tr>
                 <tr>
                     <td>3.4</td>
                     <td><a href='/resources/downloads/purejavascript-3.4.js'>purejavascript-3.4.js</a></td>
-                    <td/>
                     <td>2021-11-10</td>
                     <td><small>sha384-TUlWGsh/4UgYhu7X6GoCYjAIXNOIHPz4wY5nC/djMDIrgxiCBsR6LHzH3s9dbQ6O</small></td>
                 </tr>
                 <tr>
                     <td>3.3</td>
                     <td><a href='/resources/downloads/purejavascript-3.3.js'>purejavascript-3.3.js</a></td>
-                    <td/>
                     <td>2021-09-18</td>
                     <td><small>sha384-9xiOEmsS+clRTIvSJxachneoJf1CbuK6fM92lim1J+NvcDxHKxUO96BJO/QkmNDz</small></td>
                 </tr>
                 <tr>
                     <td>3.2</td>
                     <td><a href='/resources/downloads/purejavascript-3.2.js'>purejavascript-3.2.js</a></td>
-                    <td/>
                     <td>2021-04-25</td>
                     <td><small>sha384-3dKLi4z00F+qV4+ukxLDjwWBYimzx+W9iecWuSnwIoY3ABzRYYSWcqx57X883GSG</small></td>
                 </tr>
