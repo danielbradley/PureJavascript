@@ -1,4 +1,4 @@
-/* PureJavascript version 4.1.2 */
+/* PureJavascript version 4.1.1 */
 /*
  *  PureJavacript, APIServer.js
  *
@@ -4829,7 +4829,10 @@ function()
 		}
 	}
 
-	Selects.Multiselect( Selects.ArrayToString( kinds ), "", Selects.setup.handler );
+	if ( kinds.length )
+	{
+		Selects.Multiselect( Selects.ArrayToString( kinds ), "", Selects.setup.handler );
+	}
 }
 
 Selects.setup.handler
@@ -4852,12 +4855,6 @@ function( responseText )
 			lists[name] = tuples;
 		}
 		Selects.setup.init( lists );
-	}
-
-	if ( Selects.CallSetup )
-	{
-		Selects.CallSetup = false
-		Setup();
 	}
 }
 
@@ -5252,14 +5249,6 @@ function Setup()
 	Setup.Elements( document.getElementsByTagName( "DIV"   ) );
 	Setup.Elements( document.getElementsByTagName( "FORM"  ) );
 	Setup.Elements( document.getElementsByTagName( "TBODY" ) );
-}
-
-Setup.All
-=
-function()
-{
-    Selects.CallSetup = true;
-    Selects( APIServer );
 }
 
 Setup.CreateTableSetupFn
@@ -5888,6 +5877,26 @@ function( element, parameters )
 		Call( Resolve() + url, parameters, handler );
 	}
     else
+    if ( element && element.hasAttribute( "data-inject-url" ) )
+    {
+        var url        = element.getAttribute( "data-inject-url" );
+        var handler    = Setup.DefaultHandler;
+
+        if ( element.hasOwnProperty( "setup" ) )
+        {
+            handler = element.setup;
+
+            handler = handler ? handler : element.handler;
+        }
+
+        if ( !parameters.target_id && element.hasAttribute( "id" ) )
+        {
+            parameters.target_id = element.getAttribute( "id" );
+        }
+
+        Call( Resolve() + url, parameters, handler );
+    }
+    else
     if ( "FORM" == element.tagName )
     {
         var fakeResponseText = '{"status":"OK","results":[{}]}';
@@ -6143,37 +6152,5 @@ function StringTruncate( text, max_length )
 		text = text.substring( 0, max_length - 3 ) + "...";
 	}
 	return text;
-}
-
-export
-{
-    APIServer,
-    Auth,
-    Base64,
-    Call,
-    Class,
-    Convert,
-    Cookie,
-    CSVFile,
-    Datalist,
-    DataStorage,
-    Datetime,
-    Elements,
-    Enum,
-    Filter,
-    Forms,
-    Geocode,
-    HTMLEntities,
-    InputFile,
-    Is,
-    Links,
-    Load,
-    Locations,
-    Menu,
-    Modal,
-    Selects,
-    Session,
-    Setup,
-    Strings
 }
 
