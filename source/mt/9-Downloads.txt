@@ -19,6 +19,7 @@ The following downloads are avaialable:
                 </tr>
             </thead>
             <tbody>
+                <!--
                 <tr>
                     <td>Latest Dev</td>
                     <td>
@@ -28,9 +29,22 @@ The following downloads are avaialable:
                     <td>2023-02-01</td>
                     <td><small>Warning!! This may change and break randomly without notice.</small></td>
                 </tr>
+                -->
                 <!--
                     Add latest release below here.
                 -->
+                <tr>
+                    <td>4.2</td>
+                    <td><a href='/resources/downloads/purejavascript-4.2.js'>purejavascript-4.2.js</a></td>
+                    <td>2023-02-01</td>
+                    <td><small>sha384-QbYPCidzHIKvWBr/9ryHvwArLLrHhx0NhgpsDWyJ1Xaokuck9KWoxpVRBEhSi2v/</small></td>
+                </tr>
+                <tr>
+                    <td>4.2</td>
+                    <td><a href='/resources/downloads/purejavascript-4.2.mjs'>purejavascript-4.2.mjs</a></td>
+                    <td>2023-02-01</td>
+                    <td><small>sha384-KXMN+VhkeDiVmbbyQLjZL0r/RR0LZ9fbtQL9MYWlGPnquXlrwXKZ+wqJvz8BpHc4</small></td>
+                </tr>
                 <tr>
                     <td>4.1</td>
                     <td><a href='/resources/downloads/purejavascript-4.1.js'>purejavascript-4.1.js</a></td>
