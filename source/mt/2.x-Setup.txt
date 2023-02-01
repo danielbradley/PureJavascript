@@ -27,6 +27,16 @@ function Setup()
 ~
 
 ~_gen/js/Setup.js~
+Setup.All
+=
+function()
+{
+    Selects.CallSetup = true;
+    Selects( APIServer );
+}
+~
+
+~_gen/js/Setup.js~
 Setup.CreateTableSetupFn
 =
 function( id, nr_columns, clear )
