@@ -561,20 +561,47 @@ function( id, handler, parameter )
         }
         else
         {
-            var json = JSON.parse( responseText );
+            var response = JSON.parse( responseText );
 
-            if ( json && ("ERROR" == json.status) )
+            if ( response && ("ERROR" == response.status) )
             {
-                alert( json.error );
+                alert( response.error );
             }
             else
             {
+                if ( 1 == response.results.length )
+                {
+                    Setup.CreateFormHandlerFn.UpdateSearchVariables( response.results[0] );
+                }
+
                 handler( parameter );
             }
         }
     }
     
     return fn;
+}
+~
+
+~_gen/js/Setup.js~
+Setup.CreateFormHandlerFn.UpdateSearchVariables
+=
+function( tuple )
+{
+    var parameters = Locations.SearchValues();
+    var n          = parameters.length;
+
+    for (const [key, value] of Object.entries(parameters))
+    {
+        if ( tuple.hasOwnProperty( key ) )
+        {
+            parameters[key] = tuple[key];
+        }
+    }
+
+    var search = "?" + Call.EncodeToString( parameters );
+
+    window.history.replaceState( null, null, search );
 }
 ~
 

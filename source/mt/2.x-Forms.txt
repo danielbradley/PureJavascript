@@ -602,11 +602,16 @@ Submit.SubmitDefaultHandler
 =
 function( responseText, target )
 {
-	var json = JSON.parse( responseText );
+	var response = JSON.parse( responseText );
 	
-	if ( "OK" == json.status )
+	if ( "OK" == response.status )
 	{
-        Locations.Up();
+		if ( 1 == response.results.length )
+		{
+			Setup.CreateFormHandlerFn.UpdateSearchVariables( response.results[0] );
+		}
+
+        Locations.Reload();
 	}
 }
 
@@ -614,15 +619,15 @@ Submit.SubmitReloadHandler
 =
 function( responseText )
 {
-	var json = JSON.parse( responseText );
+	var response = JSON.parse( responseText );
 	
-	if ( "OK" == json.status )
+	if ( "OK" == response.status )
 	{
         location.reload();
 	}
     else
     {
-        alert( "Error: " + json.error )
+        alert( "Error: " + response.error )
     }
 }
 ~

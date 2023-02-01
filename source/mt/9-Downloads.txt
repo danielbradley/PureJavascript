@@ -22,10 +22,10 @@ The following downloads are avaialable:
                 <tr>
                     <td>Latest Dev</td>
                     <td>
-                        <a href='/resources/downloads/purejavascript-4.1.2-dev.js'>purejavascript-4.1.2-dev.js</a> &ndash;
-                        <a href='/resources/downloads/purejavascript-4.1.2-dev.mjs'>.mjs</a>
+                        <a href='/resources/downloads/purejavascript-4.1.3-dev.js'>purejavascript-4.1.3-dev.js</a> &ndash;
+                        <a href='/resources/downloads/purejavascript-4.1.3-dev.mjs'>.mjs</a>
                     </td>
-                    <td>2023-01-16</td>
+                    <td>2023-02-01</td>
                     <td><small>Warning!! This may change and break randomly without notice.</small></td>
                 </tr>
                 <!--

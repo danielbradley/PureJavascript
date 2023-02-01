@@ -58,7 +58,7 @@ function()
 		}
 	}
 
-	if ( kinds.length )
+	if ( kinds.length || Selects.CallSetup )
 	{
 		Selects.Multiselect( Selects.ArrayToString( kinds ), "", Selects.setup.handler );
 	}
